@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tourism API Test</title>
     <style>
         body {
@@ -9,91 +10,156 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f5f5f5;
         }
-        div {
-            margin-bottom: 20px;
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        input {
-            padding: 5px;
-            margin-right: 10px;
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
         button {
-            padding: 5px 15px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
         #result {
-            background-color: #f4f4f4;
+            background-color: #f8f9fa;
             padding: 15px;
             border-radius: 5px;
             white-space: pre-wrap;
             word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .loading {
+            color: #007bff;
+            font-style: italic;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .success {
+            color: #28a745;
         }
     </style>
 </head>
 <body>
-    <h1>관광 API 테스트</h1>
-    
-    <div>
-        <h2>키워드 검색</h2>
-        <input type="text" id="keyword" placeholder="검색어" value="서울">
-        <button onclick="searchKeyword()">검색</button>
+    <div class="container">
+        <h1>🏖️ 관광 API 테스트</h1>
+        
+        <div class="section">
+            <h2>🔍 키워드 검색</h2>
+            <input type="text" id="keyword" placeholder="검색어" value="서울">
+            <input type="number" id="keyword_rows" placeholder="결과 수" value="5" min="1" max="100">
+            <button onclick="searchKeyword()">검색</button>
+        </div>
+        
+        <div class="section">
+            <h2>📍 위치 기반 검색</h2>
+            <input type="text" id="mapX" placeholder="경도" value="126.981611">
+            <input type="text" id="mapY" placeholder="위도" value="37.568477">
+            <input type="number" id="radius" placeholder="반경(m)" value="1000" min="100" max="20000">
+            <input type="number" id="location_rows" placeholder="결과 수" value="5" min="1" max="100">
+            <button onclick="searchLocation()">검색</button>
+        </div>
+        
+        <div class="section">
+            <h2>🗺️ 지역 기반 검색</h2>
+            <select id="areaCode">
+                <option value="1">서울</option>
+                <option value="2">인천</option>
+                <option value="3">대전</option>
+                <option value="4">대구</option>
+                <option value="5">광주</option>
+                <option value="6">부산</option>
+                <option value="7">울산</option>
+                <option value="8">세종</option>
+                <option value="31">경기</option>
+                <option value="32">강원</option>
+                <option value="33">충북</option>
+                <option value="34">충남</option>
+                <option value="35">경북</option>
+                <option value="36">경남</option>
+                <option value="37">전북</option>
+                <option value="38">전남</option>
+                <option value="39">제주</option>
+            </select>
+            <input type="number" id="area_rows" placeholder="결과 수" value="5" min="1" max="100">
+            <button onclick="searchArea()">검색</button>
+        </div>
+        
+        <div class="section">
+            <h2>📋 결과</h2>
+            <pre id="result">결과가 여기에 표시됩니다...</pre>
+        </div>
     </div>
-    
-    <div>
-        <h2>위치 기반 검색</h2>
-        <input type="text" id="mapX" placeholder="경도" value="126.981611">
-        <input type="text" id="mapY" placeholder="위도" value="37.568477">
-        <button onclick="searchLocation()">검색</button>
-    </div>
-    
-    <div>
-        <h2>지역 기반 검색</h2>
-        <select id="areaCode">
-            <option value="1">서울</option>
-            <option value="2">인천</option>
-            <option value="3">대전</option>
-            <option value="4">대구</option>
-            <option value="5">광주</option>
-            <option value="6">부산</option>
-            <option value="7">울산</option>
-            <option value="8">세종</option>
-            <option value="31">경기</option>
-            <option value="32">강원</option>
-            <option value="33">충북</option>
-            <option value="34">충남</option>
-            <option value="35">경북</option>
-            <option value="36">경남</option>
-            <option value="37">전북</option>
-            <option value="38">전남</option>
-            <option value="39">제주</option>
-        </select>
-        <button onclick="searchArea()">검색</button>
-    </div>
-    
-    <pre id="result">결과가 여기에 표시됩니다...</pre>
     
     <script>
         // API 엔드포인트
         const API_URL = 'https://k-ivory.vercel.app/api/tourism';
         
+        // 결과 표시 함수
+        function showResult(data, isError = false) {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = JSON.stringify(data, null, 2);
+            resultEl.className = isError ? 'error' : 'success';
+        }
+        
+        // 로딩 표시
+        function showLoading(message = '검색 중...') {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = message;
+            resultEl.className = 'loading';
+        }
+        
         // 키워드 검색
         async function searchKeyword() {
             const keyword = document.getElementById('keyword').value;
+            const numOfRows = document.getElementById('keyword_rows').value;
             
             if (!keyword) {
                 alert('검색어를 입력하세요');
                 return;
             }
             
-            document.getElementById('result').textContent = '검색 중...';
+            showLoading(`'${keyword}' 검색 중...`);
             
             try {
-                const response = await fetch(`${API_URL}?operation=searchKeyword&keyword=${encodeURIComponent(keyword)}&numOfRows=5`);
-                
+                const response = await fetch(`${API_URL}?operation=searchKeyword&keyword=${encodeURIComponent(keyword)}&numOfRows=${numOfRows}`);
                 const data = await response.json();
-                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+                showResult(data, !response.ok);
             } catch (error) {
-                document.getElementById('result').textContent = 'Error: ' + error.message;
+                showResult({ error: error.message }, true);
             }
         }
         
@@ -101,43 +167,61 @@
         async function searchLocation() {
             const mapX = document.getElementById('mapX').value;
             const mapY = document.getElementById('mapY').value;
+            const radius = document.getElementById('radius').value;
+            const numOfRows = document.getElementById('location_rows').value;
             
             if (!mapX || !mapY) {
                 alert('경도와 위도를 입력하세요');
                 return;
             }
             
-            document.getElementById('result').textContent = '검색 중...';
+            showLoading('주변 관광지 검색 중...');
             
             try {
-                const response = await fetch(`${API_URL}?operation=locationBasedList&mapX=${mapX}&mapY=${mapY}&radius=1000&numOfRows=5`);
-                
+                const response = await fetch(`${API_URL}?operation=locationBasedList&mapX=${mapX}&mapY=${mapY}&radius=${radius}&numOfRows=${numOfRows}`);
                 const data = await response.json();
-                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+                showResult(data, !response.ok);
             } catch (error) {
-                document.getElementById('result').textContent = 'Error: ' + error.message;
+                showResult({ error: error.message }, true);
             }
         }
         
         // 지역 기반 검색
         async function searchArea() {
             const areaCode = document.getElementById('areaCode').value;
+            const areaName = document.getElementById('areaCode').options[document.getElementById('areaCode').selectedIndex].text;
+            const numOfRows = document.getElementById('area_rows').value;
             
-            document.getElementById('result').textContent = '검색 중...';
+            showLoading(`${areaName} 지역 검색 중...`);
             
             try {
-                const response = await fetch(`${API_URL}?operation=areaBasedList&areaCode=${areaCode}&numOfRows=5`);
-                
+                const response = await fetch(`${API_URL}?operation=areaBasedList&areaCode=${areaCode}&numOfRows=${numOfRows}`);
                 const data = await response.json();
-                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+                showResult(data, !response.ok);
             } catch (error) {
-                document.getElementById('result').textContent = 'Error: ' + error.message;
+                showResult({ error: error.message }, true);
             }
         }
         
         // 엔터키 이벤트
         document.getElementById('keyword').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') searchKeyword();
+        });
+        
+        // 페이지 로드 시 API 상태 확인
+        window.addEventListener('load', async function() {
+            showLoading('API 연결 확인 중...');
+            try {
+                const response = await fetch(API_URL);
+                if (response.ok) {
+                    showResult({ message: 'API 연결 성공! 검색을 시작하세요.' });
+                } else {
+                    const data = await response.json();
+                    showResult(data, true);
+                }
+            } catch (error) {
+                showResult({ error: 'API 연결 실패: ' + error.message }, true);
+            }
         });
     </script>
 </body>
