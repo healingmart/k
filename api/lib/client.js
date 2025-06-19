@@ -210,7 +210,7 @@ class TourismApiClient {
     
     const validatedParams = {
       contentId: String(params.contentId),
-      contentTypeId: params.contentTypeId ? String(params.contentTypeId) : '',
+      // contentTypeId 제거됨 - API에서 거부함
       defaultYN: 'Y',
       firstImageYN: 'Y',
       areacodeYN: 'Y',
