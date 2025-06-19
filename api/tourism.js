@@ -1,8 +1,3 @@
-죄송합니다! tourism.js 파일에 마크다운 텍스트가 들어가서 발생한 오류입니다. 
-
-## **api/tourism.js (올바른 전체 코드)**
-
-```javascript
 /**
  * 관광 API 서버리스 함수 - 메인 엔트리포인트
  * Vercel 배포용 핸들러
@@ -181,6 +176,3 @@ module.exports = async function handler(req, res) {
     });
   }
 };
-```
-
-tourism.js 파일을 위 코드로 완전히 교체하고 재배포하세요!
