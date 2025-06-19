@@ -304,6 +304,31 @@
             font-weight: bold;
         }
         
+        /* 정보 섹션 */
+        .info-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .info-section h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
         /* 반응형 */
         @media (max-width: 768px) {
             .card-grid {
@@ -703,7 +728,7 @@
             return `${(meters / 1000).toFixed(1)}km`;
         }
         
-        // 상세 정보 보기 (현재 데이터 사용)
+        // 상세 정보 보기
         async function showDetail(index) {
             const item = currentItems[index];
             if (!item) return;
@@ -711,24 +736,27 @@
             // 현재 가지고 있는 정보로 모달 표시
             displayDetailFromCurrent(item);
             
-            // 추가 정보 시도 (실패해도 무시)
-            try {
-                showLoading(true);
-                const commonUrl = `${API_URL}?operation=detailCommon&contentId=${item.contentid}`;
-                console.log('상세 정보 요청 시도:', commonUrl);
-                
-                const response = await fetch(commonUrl);
-                const data = await response.json();
-                
-                if (data.success && data.data.items?.item) {
-                    const detailItem = Array.isArray(data.data.items.item) ? data.data.items.item[0] : data.data.items.item;
-                    // 추가 정보가 있으면 업데이트
-                    displayDetailFromCurrent({...item, ...detailItem});
+            // detailIntro 추가 정보 가져오기
+            if (item.contenttypeid) {
+                try {
+                    showLoading(true);
+                    const introUrl = `${API_URL}?operation=detailIntro&contentId=${item.contentid}&contentTypeId=${item.contenttypeid}`;
+                    console.log('추가 정보 요청:', introUrl);
+                    
+                    const response = await fetch(introUrl);
+                    const data = await response.json();
+                    
+                    if (data.success && data.data.items?.item) {
+                        const introItem = Array.isArray(data.data.items.item) ? data.data.items.item[0] : data.data.items.item;
+                        console.log('추가 정보:', introItem);
+                        // 추가 정보로 모달 업데이트
+                        displayDetailWithIntro(item, introItem);
+                    }
+                } catch (error) {
+                    console.log('추가 정보 로드 실패:', error);
+                } finally {
+                    showLoading(false);
                 }
-            } catch (error) {
-                console.log('상세 정보 추가 로드 실패 (무시):', error);
-            } finally {
-                showLoading(false);
             }
         }
         
@@ -769,72 +797,154 @@
                     ${getContentTypeIcon(item.contenttypeid)} ${item.title}
                 </h2>
                 
-                <div style="display: grid; gap: 15px;">
-                    ${item.addr1 ? `
-                        <div>
-                            <strong>📍 주소:</strong><br>
-                            ${item.addr1} ${item.addr2 || ''}
-                            ${item.zipcode ? `(우편번호: ${item.zipcode})` : ''}
+                <div id="detail-content">
+                    <div class="info-section">
+                        <h3>📍 기본 정보</h3>
+                        <div class="info-grid">
+                            ${item.addr1 ? `
+                                <span class="info-label">주소:</span>
+                                <span>${item.addr1} ${item.addr2 || ''} ${item.zipcode ? `(${item.zipcode})` : ''}</span>
+                            ` : ''}
+                            ${item.tel ? `
+                                <span class="info-label">전화:</span>
+                                <span><a href="tel:${item.tel}" style="color: #007bff; text-decoration: none;">${item.tel}</a></span>
+                            ` : ''}
+                            ${item.homepage ? `
+                                <span class="info-label">홈페이지:</span>
+                                <span>${decodeHtml(item.homepage)}</span>
+                            ` : ''}
                         </div>
-                    ` : ''}
-                    
-                    ${item.tel ? `
-                        <div>
-                            <strong>📞 전화:</strong><br>
-                            <a href="tel:${item.tel}" style="color: #007bff; text-decoration: none;">${item.tel}</a>
-                        </div>
-                    ` : ''}
-                    
-                    ${item.homepage ? `
-                        <div>
-                            <strong>🌐 홈페이지:</strong><br>
-                            ${decodeHtml(item.homepage)}
-                        </div>
-                    ` : ''}
+                    </div>
                     
                     ${item.overview ? `
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
-                            <strong>📝 상세 정보:</strong><br>
-                            <p style="margin-top: 10px; line-height: 1.6;">
+                        <div class="info-section">
+                            <h3>📝 상세 설명</h3>
+                            <p style="line-height: 1.6;">
                                 ${decodeHtml(item.overview)}
                             </p>
                         </div>
                     ` : ''}
                     
-                    <!-- 추가 정보들 -->
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
-                        <strong>📊 기본 정보:</strong><br>
-                        <div style="margin-top: 10px; display: grid; gap: 5px; font-size: 14px;">
-                            <div>• 콘텐츠 ID: ${item.contentid}</div>
-                            <div>• 콘텐츠 타입: ${getContentTypeName(item.contenttypeid)}</div>
-                            ${item.cat1 || item.cat2 || item.cat3 ? `<div>• 분류: ${item.cat1 || ''} ${item.cat2 || ''} ${item.cat3 || ''}</div>` : ''}
-                            ${item.sigungucode ? `<div>• 시군구: ${item.sigungucode}</div>` : ''}
-                            ${item.createdtime ? `<div>• 등록일: ${formatDate(item.createdtime)}</div>` : ''}
-                            ${item.modifiedtime ? `<div>• 수정일: ${formatDate(item.modifiedtime)}</div>` : ''}
-                            ${item.distance ? `<div>• 거리: ${formatDistance(item.distance)}</div>` : ''}
-                        </div>
+                    <div id="additional-info">
+                        <!-- 추가 정보가 여기에 들어갑니다 -->
                     </div>
+                </div>
+                
+                <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="window.open('https://map.kakao.com/link/map/${item.title},${item.mapy},${item.mapx}', '_blank')" 
+                            class="btn-kakao">
+                        🗺️ 카카오맵에서 보기
+                    </button>
                     
-                    <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button onclick="window.open('https://map.kakao.com/link/map/${item.title},${item.mapy},${item.mapx}', '_blank')" 
-                                class="btn-kakao">
-                            🗺️ 카카오맵에서 보기
-                        </button>
-                        
-                        <button onclick="window.open('https://map.kakao.com/link/to/${item.title},${item.mapy},${item.mapx}', '_blank')" 
-                                class="btn-route">
-                            🚗 길찾기
-                        </button>
-                        
-                        <button onclick="window.open('https://search.naver.com/search.naver?query=${encodeURIComponent(item.title)}', '_blank')" 
-                                class="btn-web">
-                            🔍 네이버 검색
-                        </button>
-                    </div>
+                    <button onclick="window.open('https://map.kakao.com/link/to/${item.title},${item.mapy},${item.mapx}', '_blank')" 
+                            class="btn-route">
+                        🚗 길찾기
+                    </button>
+                    
+                    <button onclick="window.open('https://search.naver.com/search.naver?query=${encodeURIComponent(item.title)}', '_blank')" 
+                            class="btn-web">
+                        🔍 네이버 검색
+                    </button>
                 </div>
             `;
             
             document.getElementById('modal').style.display = 'block';
+        }
+        
+        // 추가 정보와 함께 상세 표시
+        function displayDetailWithIntro(item, introData) {
+            const additionalInfoDiv = document.getElementById('additional-info');
+            if (!additionalInfoDiv) return;
+            
+            let additionalHtml = '';
+            
+            // 콘텐츠 타입별 추가 정보 표시
+            switch(item.contenttypeid) {
+                case '12': // 관광지
+                    additionalHtml = `
+                        <div class="info-section">
+                            <h3>🕐 이용 정보</h3>
+                            <div class="info-grid">
+                                ${introData.usetime ? `<span class="info-label">이용시간:</span><span>${introData.usetime}</span>` : ''}
+                                ${introData.restdate ? `<span class="info-label">휴무일:</span><span>${introData.restdate}</span>` : ''}
+                                ${introData.parking ? `<span class="info-label">주차:</span><span>${introData.parking}</span>` : ''}
+                                ${introData.chkbabycarriage ? `<span class="info-label">유모차:</span><span>${introData.chkbabycarriage}</span>` : ''}
+                                ${introData.chkpet ? `<span class="info-label">애완동물:</span><span>${introData.chkpet}</span>` : ''}
+                                ${introData.chkcreditcard ? `<span class="info-label">신용카드:</span><span>${introData.chkcreditcard}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case '14': // 문화시설
+                    additionalHtml = `
+                        <div class="info-section">
+                            <h3>🎭 시설 정보</h3>
+                            <div class="info-grid">
+                                ${introData.usetime ? `<span class="info-label">이용시간:</span><span>${introData.usetime}</span>` : ''}
+                                ${introData.restdate ? `<span class="info-label">휴무일:</span><span>${introData.restdate}</span>` : ''}
+                                ${introData.usetimefestival ? `<span class="info-label">관람시간:</span><span>${introData.usetimefestival}</span>` : ''}
+                                ${introData.usefee ? `<span class="info-label">이용요금:</span><span>${introData.usefee}</span>` : ''}
+                                ${introData.parking ? `<span class="info-label">주차:</span><span>${introData.parking}</span>` : ''}
+                                ${introData.parkingfee ? `<span class="info-label">주차요금:</span><span>${introData.parkingfee}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case '15': // 축제/공연
+                    additionalHtml = `
+                        <div class="info-section">
+                            <h3>🎪 행사 정보</h3>
+                            <div class="info-grid">
+                                ${introData.eventstartdate ? `<span class="info-label">시작일:</span><span>${formatDate(introData.eventstartdate)}</span>` : ''}
+                                ${introData.eventenddate ? `<span class="info-label">종료일:</span><span>${formatDate(introData.eventenddate)}</span>` : ''}
+                                ${introData.playtime ? `<span class="info-label">공연시간:</span><span>${introData.playtime}</span>` : ''}
+                                ${introData.eventplace ? `<span class="info-label">행사장소:</span><span>${introData.eventplace}</span>` : ''}
+                                ${introData.usetimefestival ? `<span class="info-label">이용시간:</span><span>${introData.usetimefestival}</span>` : ''}
+                                ${introData.sponsor1 ? `<span class="info-label">주최:</span><span>${introData.sponsor1}</span>` : ''}
+                                ${introData.sponsor2 ? `<span class="info-label">주관:</span><span>${introData.sponsor2}</span>` : ''}
+                                ${introData.agelimit ? `<span class="info-label">연령제한:</span><span>${introData.agelimit}</span>` : ''}
+                                ${introData.bookingplace ? `<span class="info-label">예매처:</span><span>${introData.bookingplace}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case '32': // 숙박
+                    additionalHtml = `
+                        <div class="info-section">
+                            <h3>🏨 숙박 정보</h3>
+                            <div class="info-grid">
+                                ${introData.checkintime ? `<span class="info-label">체크인:</span><span>${introData.checkintime}</span>` : ''}
+                                ${introData.checkouttime ? `<span class="info-label">체크아웃:</span><span>${introData.checkouttime}</span>` : ''}
+                                ${introData.roomcount ? `<span class="info-label">객실수:</span><span>${introData.roomcount}</span>` : ''}
+                                ${introData.roomtype ? `<span class="info-label">객실유형:</span><span>${introData.roomtype}</span>` : ''}
+                                ${introData.parking ? `<span class="info-label">주차:</span><span>${introData.parking}</span>` : ''}
+                                ${introData.reservationurl ? `<span class="info-label">예약:</span><span><a href="${introData.reservationurl}" target="_blank">예약하기</a></span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case '39': // 음식점
+                    additionalHtml = `
+                        <div class="info-section">
+                            <h3>🍽️ 음식점 정보</h3>
+                            <div class="info-grid">
+                                ${introData.firstmenu ? `<span class="info-label">대표메뉴:</span><span>${introData.firstmenu}</span>` : ''}
+                                ${introData.treatmenu ? `<span class="info-label">취급메뉴:</span><span>${introData.treatmenu}</span>` : ''}
+                                ${introData.opentimefood ? `<span class="info-label">영업시간:</span><span>${introData.opentimefood}</span>` : ''}
+                                ${introData.restdatefood ? `<span class="info-label">휴무일:</span><span>${introData.restdatefood}</span>` : ''}
+                                ${introData.seat ? `<span class="info-label">좌석수:</span><span>${introData.seat}</span>` : ''}
+                                ${introData.parking ? `<span class="info-label">주차:</span><span>${introData.parking}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            additionalInfoDiv.innerHTML = additionalHtml;
         }
         
         // 콘텐츠 타입 이름 가져오기
