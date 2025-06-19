@@ -1,9 +1,9 @@
-{
-  "name": "tourism-api",
-  "version": "1.0.0",
-  "type": "module",
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "dependencies": {}
-}
+file:///var/task/api/lib/security.js:5
+import { CONFIG } from './config.js';
+         ^^^^^^
+SyntaxError: The requested module './config.js' does not provide an export named 'CONFIG'
+    at ModuleJob._instantiate (node:internal/modules/esm/module_job:182:21)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:266:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)
+    at async d (/opt/rust/nodejs.js:16:20075)
+Node.js process exited with exit status: 1. The logs above can help with debugging the issue.
