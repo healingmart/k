@@ -1,3 +1,8 @@
+네, HTML 오류를 수정한 전체 코드입니다!
+
+## **전체 HTML 코드 (오류 수정)**
+
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -487,7 +492,7 @@
                     throw new Error(result.error?.message || '검색 실패');
                 }
             } catch (error) {
-                resultsDiv.innerHTML = `<div class="error">오류: ${error.message}</div>`;
+                resultsDiv.innerHTML = '<div class="error">오류: ' + error.message + '</div>';
             } finally {
                 searchButton.disabled = false;
             }
@@ -507,19 +512,28 @@
 
             const itemsArray = Array.isArray(items) ? items : [items];
             
-            resultsDiv.innerHTML = itemsArray.map(item => `
-                <div class="place-card" onclick="showDetail('${item.contentid}', '${item.contenttypeid}')">
-                    <img class="place-image" 
-                         src="${item.firstimage || 'https://via.placeholder.com/400x250?text=No+Image'}" 
-                         alt="${item.title}"
-                         onerror="this.src='https://via.placeholder.com/400x250?text=No+Image'">
-                    <div class="place-content">
-                        <h2 class="place-title">${item.title}</h2>
-                        <div class="place-address">📍 ${item.addr1 || '주소 정보 없음'}</div>
-                        ${item.tel ? `<div class="place-info">📞 ${item.tel}</div>` : ''}
+            resultsDiv.innerHTML = itemsArray.map(item => {
+                const contentId = item.contentid || '';
+                const contentTypeId = item.contenttypeid || '';
+                const title = item.title || '제목 없음';
+                const addr = item.addr1 || '주소 정보 없음';
+                const tel = item.tel || '';
+                const image = item.firstimage || 'https://via.placeholder.com/400x250?text=No+Image';
+                
+                return `
+                    <div class="place-card" onclick="showDetail('${contentId}', '${contentTypeId}')">
+                        <img class="place-image" 
+                             src="${image}" 
+                             alt="${title}"
+                             onerror="this.src='https://via.placeholder.com/400x250?text=No+Image'">
+                        <div class="place-content">
+                            <h2 class="place-title">${title}</h2>
+                            <div class="place-address">📍 ${addr}</div>
+                            ${tel ? '<div class="place-info">📞 ' + tel + '</div>' : ''}
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             updatePagination();
         }
@@ -613,7 +627,7 @@
                 displayDetailInfo(commonData, introData);
 
             } catch (error) {
-                modalBody.innerHTML = `<div class="error">오류: ${error.message}</div>`;
+                modalBody.innerHTML = '<div class="error">오류: ' + error.message + '</div>';
             }
         }
 
@@ -621,51 +635,37 @@
         function displayDetailInfo(commonData, introData) {
             const modalBody = document.getElementById('modalBody');
             
-            let detailHTML = `
-                <h2 class="detail-title">${commonData.title}</h2>
-                
-                <div class="detail-section">
-                    <h3>기본 정보</h3>
-                    <div class="detail-grid">
-                        ${commonData.addr1 ? `
-                            <div class="detail-item">
-                                <div class="detail-label">주소</div>
-                                <div class="detail-value">${commonData.addr1} ${commonData.addr2 || ''}</div>
-                            </div>
-                        ` : ''}
-                        
-                        ${commonData.tel ? `
-                            <div class="detail-item">
-                                <div class="detail-label">전화번호</div>
-                                <div class="detail-value">${commonData.tel}</div>
-                            </div>
-                        ` : ''}
-                        
-                        ${commonData.homepage ? `
-                            <div class="detail-item">
-                                <div class="detail-label">홈페이지</div>
-                                <div class="detail-value">${commonData.homepage}</div>
-                            </div>
-                        ` : ''}
-                        
-                        ${commonData.zipcode ? `
-                            <div class="detail-item">
-                                <div class="detail-label">우편번호</div>
-                                <div class="detail-value">${commonData.zipcode}</div>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
+            let detailHTML = '<h2 class="detail-title">' + (commonData.title || '제목 없음') + '</h2>';
+            
+            // 기본 정보
+            detailHTML += '<div class="detail-section"><h3>기본 정보</h3><div class="detail-grid">';
+            
+            if (commonData.addr1) {
+                detailHTML += '<div class="detail-item"><div class="detail-label">주소</div><div class="detail-value">' + 
+                              commonData.addr1 + (commonData.addr2 ? ' ' + commonData.addr2 : '') + '</div></div>';
+            }
+            
+            if (commonData.tel) {
+                detailHTML += '<div class="detail-item"><div class="detail-label">전화번호</div><div class="detail-value">' + 
+                              commonData.tel + '</div></div>';
+            }
+            
+            if (commonData.homepage) {
+                detailHTML += '<div class="detail-item"><div class="detail-label">홈페이지</div><div class="detail-value">' + 
+                              commonData.homepage + '</div></div>';
+            }
+            
+            if (commonData.zipcode) {
+                detailHTML += '<div class="detail-item"><div class="detail-label">우편번호</div><div class="detail-value">' + 
+                              commonData.zipcode + '</div></div>';
+            }
+            
+            detailHTML += '</div></div>';
 
             // 개요 정보
             if (commonData.overview) {
-                detailHTML += `
-                    <div class="detail-section">
-                        <h3>상세 설명</h3>
-                        <div class="detail-value">${commonData.overview}</div>
-                    </div>
-                `;
+                detailHTML += '<div class="detail-section"><h3>상세 설명</h3><div class="detail-value">' + 
+                              commonData.overview + '</div></div>';
             }
 
             // 타입별 추가 정보
@@ -675,21 +675,11 @@
 
             // 지도 정보
             if (commonData.mapx && commonData.mapy) {
-                detailHTML += `
-                    <div class="detail-section">
-                        <h3>위치 정보</h3>
-                        <div class="detail-grid">
-                            <div class="detail-item">
-                                <div class="detail-label">위도</div>
-                                <div class="detail-value">${commonData.mapy}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">경도</div>
-                                <div class="detail-value">${commonData.mapx}</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                detailHTML += '<div class="detail-section"><h3>위치 정보</h3><div class="detail-grid">' +
+                              '<div class="detail-item"><div class="detail-label">위도</div><div class="detail-value">' + 
+                              commonData.mapy + '</div></div>' +
+                              '<div class="detail-item"><div class="detail-label">경도</div><div class="detail-value">' + 
+                              commonData.mapx + '</div></div></div></div>';
             }
 
             modalBody.innerHTML = detailHTML;
@@ -757,7 +747,10 @@
                 if (introData.checkouttime) html += createDetailItem('체크아웃', introData.checkouttime);
                 if (introData.roomcount) html += createDetailItem('객실수', introData.roomcount);
                 if (introData.roomtype) html += createDetailItem('객실유형', introData.roomtype);
-                if (introData.reservationurl) html += createDetailItem('예약안내', `<a href="${introData.reservationurl}" target="_blank">예약하기</a>`);
+                if (introData.reservationurl) {
+                    html += '<div class="detail-item"><div class="detail-label">예약안내</div><div class="detail-value">' +
+                            '<a href="' + introData.reservationurl + '" target="_blank">예약하기</a></div></div>';
+                }
                 if (introData.reservationlodging) html += createDetailItem('예약안내', introData.reservationlodging);
                 if (introData.parkinglodging) html += createDetailItem('주차시설', introData.parkinglodging);
                 if (introData.foodplace) html += createDetailItem('식음료장', introData.foodplace);
@@ -796,18 +789,14 @@
         // 상세 정보 아이템 생성
         function createDetailItem(label, value) {
             if (!value || value === 'null') return '';
-            return `
-                <div class="detail-item">
-                    <div class="detail-label">${label}</div>
-                    <div class="detail-value">${value}</div>
-                </div>
-            `;
+            return '<div class="detail-item"><div class="detail-label">' + label + 
+                   '</div><div class="detail-value">' + value + '</div></div>';
         }
 
         // 날짜 포맷
         function formatDate(dateStr) {
             if (!dateStr || dateStr.length !== 8) return dateStr;
-            return `${dateStr.substr(0, 4)}-${dateStr.substr(4, 2)}-${dateStr.substr(6, 2)}`;
+            return dateStr.substr(0, 4) + '-' + dateStr.substr(4, 2) + '-' + dateStr.substr(6, 2);
         }
 
         // 모달 닫기
@@ -830,3 +819,6 @@
     </script>
 </body>
 </html>
+```
+
+모든 템플릿 리터럴(`)을 일반 문자열 연결(+)로 변경하여 HTML 오류를 해결했습니다!
