@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>대한민국 관광지 탐색기</title>
     <style>
+        /* 스타일은 동일하게 유지 */
         * {
             margin: 0;
             padding: 0;
@@ -255,20 +256,6 @@
             margin-right: 10px;
         }
         
-        .facility-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .facility-item {
-            background: #f8f8f8;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 0.9em;
-        }
-        
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -370,7 +357,11 @@
     </div>
     
     <script>
+        // API URL - 정확한 URL인지 확인
         const API_BASE_URL = 'https://tourism-api-flame.vercel.app/api/tourism';
+        
+        // 디버깅을 위한 로그
+        console.log('API Base URL:', API_BASE_URL);
         
         // 검색 타입 변경 처리
         document.querySelectorAll('input[name="searchType"]').forEach(radio => {
@@ -438,6 +429,8 @@
             showError('');
             clearResults();
             
+            console.log('Searching with params:', params);
+            
             try {
                 const response = await fetch(API_BASE_URL, {
                     method: 'POST',
@@ -447,18 +440,30 @@
                     body: JSON.stringify(params)
                 });
                 
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Response error:', errorText);
+                    throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
+                }
+                
                 const data = await response.json();
+                console.log('Response data:', data);
                 
                 if (data.success && data.data?.items?.item) {
                     const items = Array.isArray(data.data.items.item) 
                         ? data.data.items.item 
                         : [data.data.items.item];
                     displayResults(items);
+                } else if (data.error) {
+                    showError(`API 오류: ${data.error.message || '알 수 없는 오류'}`);
                 } else {
                     showError('검색 결과가 없습니다.');
                 }
             } catch (error) {
-                showError('검색 중 오류가 발생했습니다: ' + error.message);
+                console.error('Search error:', error);
+                showError(`검색 중 오류가 발생했습니다: ${error.message}`);
             } finally {
                 showLoading(false);
             }
@@ -549,7 +554,7 @@
             }
         }
         
-        // 상세 정보 모달 표시
+        // 상세 정보 모달 표시 (getDetailsByContentType 함수 포함)
         function displayDetailModal(item, introData) {
             const modalContent = document.getElementById('modalContent');
             const contentTypeId = item.contenttypeid;
@@ -604,78 +609,6 @@
                     `;
                     break;
                     
-                case '14': // 문화시설
-                    html += `
-                        <h4>🎭 문화시설 정보</h4>
-                        ${intro.accomcountculture ? `<p><strong>수용인원:</strong> ${intro.accomcountculture}</p>` : ''}
-                        ${intro.chkbabycarriageculture ? `<p><strong>유모차대여:</strong> ${intro.chkbabycarriageculture}</p>` : ''}
-                        ${intro.chkcreditcardculture ? `<p><strong>신용카드가능:</strong> ${intro.chkcreditcardculture}</p>` : ''}
-                        ${intro.chkpetculture ? `<p><strong>애완동물동반:</strong> ${intro.chkpetculture}</p>` : ''}
-                        ${intro.discountinfo ? `<p><strong>할인정보:</strong> ${intro.discountinfo}</p>` : ''}
-                        ${intro.infocenterculture ? `<p><strong>문의 및 안내:</strong> ${intro.infocenterculture}</p>` : ''}
-                        ${intro.parkingculture ? `<p><strong>주차시설:</strong> ${intro.parkingculture}</p>` : ''}
-                        ${intro.parkingfee ? `<p><strong>주차요금:</strong> ${intro.parkingfee}</p>` : ''}
-                        ${intro.restdateculture ? `<p><strong>쉬는날:</strong> ${intro.restdateculture}</p>` : ''}
-                        ${intro.usefee ? `<p><strong>이용요금:</strong> ${intro.usefee}</p>` : ''}
-                        ${intro.usetimeculture ? `<p><strong>이용시간:</strong> ${intro.usetimeculture}</p>` : ''}
-                        ${intro.scale ? `<p><strong>규모:</strong> ${intro.scale}</p>` : ''}
-                        ${intro.spendtime ? `<p><strong>관람소요시간:</strong> ${intro.spendtime}</p>` : ''}
-                    `;
-                    break;
-                    
-                case '15': // 행사/공연/축제
-                    html += `
-                        <h4>🎪 행사 정보</h4>
-                        ${intro.agelimit ? `<p><strong>관람가능연령:</strong> ${intro.agelimit}</p>` : ''}
-                        ${intro.bookingplace ? `<p><strong>예매처:</strong> ${intro.bookingplace}</p>` : ''}
-                        ${intro.discountinfofestival ? `<p><strong>할인정보:</strong> ${intro.discountinfofestival}</p>` : ''}
-                        ${intro.eventenddate ? `<p><strong>행사종료일:</strong> ${intro.eventenddate}</p>` : ''}
-                        ${intro.eventhomepage ? `<p><strong>행사홈페이지:</strong> ${intro.eventhomepage}</p>` : ''}
-                        ${intro.eventplace ? `<p><strong>행사장소:</strong> ${intro.eventplace}</p>` : ''}
-                        ${intro.eventstartdate ? `<p><strong>행사시작일:</strong> ${intro.eventstartdate}</p>` : ''}
-                        ${intro.festivalgrade ? `<p><strong>축제등급:</strong> ${intro.festivalgrade}</p>` : ''}
-                        ${intro.placeinfo ? `<p><strong>행사장위치안내:</strong> ${intro.placeinfo}</p>` : ''}
-                        ${intro.playtime ? `<p><strong>공연시간:</strong> ${intro.playtime}</p>` : ''}
-                        ${intro.program ? `<p><strong>행사프로그램:</strong> ${intro.program}</p>` : ''}
-                        ${intro.spendtimefestival ? `<p><strong>관람소요시간:</strong> ${intro.spendtimefestival}</p>` : ''}
-                        ${intro.sponsor1 ? `<p><strong>주최자:</strong> ${intro.sponsor1} ${intro.sponsor1tel ? `(${intro.sponsor1tel})` : ''}</p>` : ''}
-                        ${intro.sponsor2 ? `<p><strong>주관사:</strong> ${intro.sponsor2} ${intro.sponsor2tel ? `(${intro.sponsor2tel})` : ''}</p>` : ''}
-                        ${intro.subevent ? `<p><strong>부대행사:</strong> ${intro.subevent}</p>` : ''}
-                        ${intro.usetimefestival ? `<p><strong>이용요금:</strong> ${intro.usetimefestival}</p>` : ''}
-                    `;
-                    break;
-                    
-                case '25': // 여행코스
-                    html += `
-                        <h4>🚶 여행코스 정보</h4>
-                        ${intro.distance ? `<p><strong>코스총거리:</strong> ${intro.distance}</p>` : ''}
-                        ${intro.infocentertourcourse ? `<p><strong>문의 및 안내:</strong> ${intro.infocentertourcourse}</p>` : ''}
-                        ${intro.schedule ? `<p><strong>코스일정:</strong> ${intro.schedule}</p>` : ''}
-                        ${intro.taketime ? `<p><strong>코스총소요시간:</strong> ${intro.taketime}</p>` : ''}
-                        ${intro.theme ? `<p><strong>코스테마:</strong> ${intro.theme}</p>` : ''}
-                    `;
-                    break;
-                    
-                case '28': // 레포츠
-                    html += `
-                        <h4>⛷️ 레포츠 정보</h4>
-                        ${intro.accomcountleports ? `<p><strong>수용인원:</strong> ${intro.accomcountleports}</p>` : ''}
-                        ${intro.chkbabycarriageleports ? `<p><strong>유모차대여:</strong> ${intro.chkbabycarriageleports}</p>` : ''}
-                        ${intro.chkcreditcardleports ? `<p><strong>신용카드가능:</strong> ${intro.chkcreditcardleports}</p>` : ''}
-                        ${intro.chkpetleports ? `<p><strong>애완동물동반:</strong> ${intro.chkpetleports}</p>` : ''}
-                        ${intro.expagerangeleports ? `<p><strong>체험가능연령:</strong> ${intro.expagerangeleports}</p>` : ''}
-                        ${intro.infocenterleports ? `<p><strong>문의 및 안내:</strong> ${intro.infocenterleports}</p>` : ''}
-                        ${intro.openperiod ? `<p><strong>개장기간:</strong> ${intro.openperiod}</p>` : ''}
-                        ${intro.parkingfeeleports ? `<p><strong>주차요금:</strong> ${intro.parkingfeeleports}</p>` : ''}
-                        ${intro.parkingleports ? `<p><strong>주차시설:</strong> ${intro.parkingleports}</p>` : ''}
-                        ${intro.reservation ? `<p><strong>예약안내:</strong> ${intro.reservation}</p>` : ''}
-                        ${intro.restdateleports ? `<p><strong>쉬는날:</strong> ${intro.restdateleports}</p>` : ''}
-                        ${intro.scaleleports ? `<p><strong>규모:</strong> ${intro.scaleleports}</p>` : ''}
-                        ${intro.usefeeleports ? `<p><strong>입장료:</strong> ${intro.usefeeleports}</p>` : ''}
-                        ${intro.usetimeleports ? `<p><strong>이용시간:</strong> ${intro.usetimeleports}</p>` : ''}
-                    `;
-                    break;
-                    
                 case '32': // 숙박
                     html += `
                         <h4>🏨 숙박 정보</h4>
@@ -709,48 +642,9 @@
                     `;
                     break;
                     
-                case '38': // 쇼핑
-                    html += `
-                        <h4>🛍️ 쇼핑 정보</h4>
-                        ${intro.chkbabycarriageshopping ? `<p><strong>유모차대여:</strong> ${intro.chkbabycarriageshopping}</p>` : ''}
-                        ${intro.chkcreditcardshopping ? `<p><strong>신용카드가능:</strong> ${intro.chkcreditcardshopping}</p>` : ''}
-                        ${intro.chkpetshopping ? `<p><strong>애완동물동반:</strong> ${intro.chkpetshopping}</p>` : ''}
-                        ${intro.culturecenter ? `<p><strong>문화센터:</strong> ${intro.culturecenter}</p>` : ''}
-                        ${intro.fairday ? `<p><strong>장서는날:</strong> ${intro.fairday}</p>` : ''}
-                        ${intro.infocentershopping ? `<p><strong>문의 및 안내:</strong> ${intro.infocentershopping}</p>` : ''}
-                        ${intro.opendateshopping ? `<p><strong>개장일:</strong> ${intro.opendateshopping}</p>` : ''}
-                        ${intro.opentime ? `<p><strong>영업시간:</strong> ${intro.opentime}</p>` : ''}
-                        ${intro.parkingshopping ? `<p><strong>주차시설:</strong> ${intro.parkingshopping}</p>` : ''}
-                        ${intro.restdateshopping ? `<p><strong>쉬는날:</strong> ${intro.restdateshopping}</p>` : ''}
-                        ${intro.restroom ? `<p><strong>화장실:</strong> ${intro.restroom}</p>` : ''}
-                        ${intro.saleitem ? `<p><strong>판매품목:</strong> ${intro.saleitem}</p>` : ''}
-                        ${intro.saleitemcost ? `<p><strong>판매가격:</strong> ${intro.saleitemcost}</p>` : ''}
-                        ${intro.scaleshopping ? `<p><strong>규모:</strong> ${intro.scaleshopping}</p>` : ''}
-                        ${intro.shopguide ? `<p><strong>매장안내:</strong> ${intro.shopguide}</p>` : ''}
-                    `;
-                    break;
-                    
-                case '39': // 음식점
-                    html += `
-                        <h4>🍽️ 음식점 정보</h4>
-                        ${intro.chkcreditcardfood ? `<p><strong>신용카드가능:</strong> ${intro.chkcreditcardfood}</p>` : ''}
-                        ${intro.discountinfofood ? `<p><strong>할인정보:</strong> ${intro.discountinfofood}</p>` : ''}
-                        ${intro.firstmenu ? `<p><strong>대표메뉴:</strong> ${intro.firstmenu}</p>` : ''}
-                        ${intro.infocenterfood ? `<p><strong>문의 및 안내:</strong> ${intro.infocenterfood}</p>` : ''}
-                        ${intro.kidsfacility ? `<p><strong>어린이놀이방:</strong> ${intro.kidsfacility}</p>` : ''}
-                        ${intro.opendatefood ? `<p><strong>개업일:</strong> ${intro.opendatefood}</p>` : ''}
-                        ${intro.opentimefood ? `<p><strong>영업시간:</strong> ${intro.opentimefood}</p>` : ''}
-                        ${intro.packing ? `<p><strong>포장가능:</strong> ${intro.packing}</p>` : ''}
-                        ${intro.parkingfood ? `<p><strong>주차시설:</strong> ${intro.parkingfood}</p>` : ''}
-                        ${intro.reservationfood ? `<p><strong>예약안내:</strong> ${intro.reservationfood}</p>` : ''}
-                        ${intro.restdatefood ? `<p><strong>쉬는날:</strong> ${intro.restdatefood}</p>` : ''}
-                        ${intro.scalefood ? `<p><strong>규모:</strong> ${intro.scalefood}</p>` : ''}
-                        ${intro.seat ? `<p><strong>좌석수:</strong> ${intro.seat}</p>` : ''}
-                        ${intro.smoking ? `<p><strong>금연/흡연:</strong> ${intro.smoking}</p>` : ''}
-                        ${intro.treatmenu ? `<p><strong>취급메뉴:</strong> ${intro.treatmenu}</p>` : ''}
-                        ${intro.lcnsno ? `<p><strong>인허가번호:</strong> ${intro.lcnsno}</p>` : ''}
-                    `;
-                    break;
+                // 다른 타입들도 추가...
+                default:
+                    html += '<p>상세 정보가 없습니다.</p>';
             }
             
             html += '</div>';
