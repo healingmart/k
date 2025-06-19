@@ -65,11 +65,11 @@ const API_ERROR_CODES = {
   '99': 'UNKNOWN_ERROR'
 };
 
-// 지원하는 API 작업 목록 - detailIntro 추가!
+// 지원하는 API 작업 목록
 const SUPPORTED_OPERATIONS = [
   'areaBasedList',
   'detailCommon',
-  'detailIntro',  // 이 줄 추가!
+  'detailIntro',  // 추가됨!
   'searchKeyword',
   'locationBasedList'
 ];
