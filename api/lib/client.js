@@ -215,11 +215,14 @@ class TourismApiClient {
         
         const validatedParams = {
             contentId: String(params.contentId),
-            // 문제가 되는 파라미터들을 제거하고 필수 파라미터만 사용
-            overviewYN: 'Y',
+            // API가 defaultYN을 필수로 요구함
+            defaultYN: 'Y',
             firstImageYN: 'Y',
+            areacodeYN: 'Y',
+            catcodeYN: 'Y',
             addrinfoYN: 'Y',
-            mapinfoYN: 'Y'
+            mapinfoYN: 'Y',
+            overviewYN: 'Y'
         };
         
         return this.makeRequest('/detailCommon2', validatedParams, 'detailCommon');
@@ -236,7 +239,6 @@ class TourismApiClient {
         const validatedParams = {
             contentId: String(params.contentId),
             contentTypeId: String(params.contentTypeId)
-            // numOfRows와 pageNo 제거! - detailIntro2는 이 파라미터를 지원하지 않음
         };
         
         console.log('[detailIntro] Validated params:', validatedParams);
