@@ -3,6 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Tourism API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        div {
+            margin-bottom: 20px;
+        }
+        input {
+            padding: 5px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 5px 15px;
+            cursor: pointer;
+        }
+        #result {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
 </head>
 <body>
     <h1>관광 API 테스트</h1>
@@ -20,22 +46,49 @@
         <button onclick="searchLocation()">검색</button>
     </div>
     
-    <pre id="result"></pre>
+    <div>
+        <h2>지역 기반 검색</h2>
+        <select id="areaCode">
+            <option value="1">서울</option>
+            <option value="2">인천</option>
+            <option value="3">대전</option>
+            <option value="4">대구</option>
+            <option value="5">광주</option>
+            <option value="6">부산</option>
+            <option value="7">울산</option>
+            <option value="8">세종</option>
+            <option value="31">경기</option>
+            <option value="32">강원</option>
+            <option value="33">충북</option>
+            <option value="34">충남</option>
+            <option value="35">경북</option>
+            <option value="36">경남</option>
+            <option value="37">전북</option>
+            <option value="38">전남</option>
+            <option value="39">제주</option>
+        </select>
+        <button onclick="searchArea()">검색</button>
+    </div>
+    
+    <pre id="result">결과가 여기에 표시됩니다...</pre>
     
     <script>
-        // API 엔드포인트 (배포 후 실제 URL로 변경)
+        // API 엔드포인트
         const API_URL = 'https://k-ivory.vercel.app/api/tourism';
-        const API_KEY = 'tXbO20526GJdtz87o80a2iuLIdPeIzBGT74mNa3egwJM82gRrXSe4g0fO91Vgm2a95czrqpeuCfU2Rsely2ClQ=='; // 실제 API 키로 변경 (선택사항)
         
+        // 키워드 검색
         async function searchKeyword() {
             const keyword = document.getElementById('keyword').value;
             
+            if (!keyword) {
+                alert('검색어를 입력하세요');
+                return;
+            }
+            
+            document.getElementById('result').textContent = '검색 중...';
+            
             try {
-                const response = await fetch(`${API_URL}?operation=searchKeyword&keyword=${keyword}&numOfRows=5`, {
-                    headers: {
-                        'X-API-Key': API_KEY
-                    }
-                });
+                const response = await fetch(`${API_URL}?operation=searchKeyword&keyword=${encodeURIComponent(keyword)}&numOfRows=5`);
                 
                 const data = await response.json();
                 document.getElementById('result').textContent = JSON.stringify(data, null, 2);
@@ -44,16 +97,20 @@
             }
         }
         
+        // 위치 기반 검색
         async function searchLocation() {
             const mapX = document.getElementById('mapX').value;
             const mapY = document.getElementById('mapY').value;
             
+            if (!mapX || !mapY) {
+                alert('경도와 위도를 입력하세요');
+                return;
+            }
+            
+            document.getElementById('result').textContent = '검색 중...';
+            
             try {
-                const response = await fetch(`${API_URL}?operation=locationBasedList&mapX=${mapX}&mapY=${mapY}&radius=1000&numOfRows=5`, {
-                    headers: {
-                        'X-API-Key': API_KEY
-                    }
-                });
+                const response = await fetch(`${API_URL}?operation=locationBasedList&mapX=${mapX}&mapY=${mapY}&radius=1000&numOfRows=5`);
                 
                 const data = await response.json();
                 document.getElementById('result').textContent = JSON.stringify(data, null, 2);
@@ -61,6 +118,27 @@
                 document.getElementById('result').textContent = 'Error: ' + error.message;
             }
         }
+        
+        // 지역 기반 검색
+        async function searchArea() {
+            const areaCode = document.getElementById('areaCode').value;
+            
+            document.getElementById('result').textContent = '검색 중...';
+            
+            try {
+                const response = await fetch(`${API_URL}?operation=areaBasedList&areaCode=${areaCode}&numOfRows=5`);
+                
+                const data = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        // 엔터키 이벤트
+        document.getElementById('keyword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchKeyword();
+        });
     </script>
 </body>
 </html>
