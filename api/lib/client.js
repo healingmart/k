@@ -2,8 +2,8 @@
  * 관광 API 클라이언트
  */
 
-import { CONFIG, API_ERROR_CODES } from './config.js';
-import { sanitizeInput, safeParseFloat, safeParseInt } from './security.js';
+const { CONFIG, API_ERROR_CODES } = require('./config');
+const { sanitizeInput, safeParseFloat, safeParseInt } = require('./security');
 
 // 간단한 메모리 캐시
 const cache = new Map();
@@ -29,7 +29,7 @@ function cleanupCache() {
 /**
  * API 에러 클래스
  */
-export class ApiError extends Error {
+class ApiError extends Error {
   constructor(message, code = 'API_ERROR', statusCode = 500, details = {}) {
     super(message);
     this.name = 'ApiError';
@@ -57,7 +57,7 @@ export class ApiError extends Error {
 /**
  * 관광 API 클라이언트
  */
-export class TourismApiClient {
+class TourismApiClient {
   constructor() {
     this.apiKey = CONFIG.API_KEY;
     if (!this.apiKey) {
@@ -299,7 +299,7 @@ export class TourismApiClient {
  */
 const rateLimitMap = new Map();
 
-export function checkRateLimit(identifier) {
+function checkRateLimit(identifier) {
   const now = Date.now();
   const windowStart = now - CONFIG.RATE_LIMIT_WINDOW;
   
@@ -331,3 +331,9 @@ export function checkRateLimit(identifier) {
     remaining: CONFIG.RATE_LIMIT_MAX - validRequests.length
   };
 }
+
+module.exports = {
+  TourismApiClient,
+  ApiError,
+  checkRateLimit
+};
