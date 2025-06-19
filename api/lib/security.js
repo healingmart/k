@@ -2,12 +2,12 @@
  * 보안 모듈 - 최소한의 보안 기능
  */
 
-import { CONFIG } from './config.js';
+const { CONFIG } = require('./config');
 
 /**
  * 간단한 입력값 새니타이즈
  */
-export function sanitizeInput(input, maxLength = CONFIG.MAX_INPUT_LENGTH) {
+function sanitizeInput(input, maxLength = CONFIG.MAX_INPUT_LENGTH) {
   if (typeof input !== 'string') return input;
   
   // 길이 제한
@@ -30,7 +30,7 @@ export function sanitizeInput(input, maxLength = CONFIG.MAX_INPUT_LENGTH) {
 /**
  * API 키 검증
  */
-export function validateApiKey(headers) {
+function validateApiKey(headers) {
   // 설정된 API 키가 없으면 검증 스킵
   if (CONFIG.ALLOWED_API_KEYS.length === 0) {
     return { valid: true, reason: 'no_keys_configured' };
@@ -62,7 +62,7 @@ export function validateApiKey(headers) {
 /**
  * Origin 검증
  */
-export function validateOrigin(headers) {
+function validateOrigin(headers) {
   const origin = headers.origin || headers.referer;
   
   if (!origin) {
@@ -113,7 +113,7 @@ export function validateOrigin(headers) {
 /**
  * CORS 헤더 생성
  */
-export function generateCorsHeaders(originValidation) {
+function generateCorsHeaders(originValidation) {
   const headers = {
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': `Content-Type, Authorization, ${CONFIG.API_KEY_HEADER}`,
@@ -133,7 +133,7 @@ export function generateCorsHeaders(originValidation) {
 /**
  * 파라미터 검증 및 새니타이즈
  */
-export function validateAndSanitizeParams(params) {
+function validateAndSanitizeParams(params) {
   const sanitized = {};
   
   for (const [key, value] of Object.entries(params)) {
@@ -152,12 +152,22 @@ export function validateAndSanitizeParams(params) {
 /**
  * 숫자 파싱 헬퍼
  */
-export function safeParseInt(value, defaultValue = NaN) {
+function safeParseInt(value, defaultValue = NaN) {
   const num = parseInt(value, 10);
   return isNaN(num) ? defaultValue : num;
 }
 
-export function safeParseFloat(value, defaultValue = NaN) {
+function safeParseFloat(value, defaultValue = NaN) {
   const num = parseFloat(value);
   return isNaN(num) || !isFinite(num) ? defaultValue : num;
 }
+
+module.exports = {
+  sanitizeInput,
+  validateApiKey,
+  validateOrigin,
+  generateCorsHeaders,
+  validateAndSanitizeParams,
+  safeParseInt,
+  safeParseFloat
+};
