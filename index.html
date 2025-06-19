@@ -112,7 +112,6 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
-            position: relative;
         }
         
         .card:hover {
@@ -163,32 +162,6 @@
             font-weight: bold;
         }
         
-        .card-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .card-btn {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            text-align: center;
-            text-decoration: none;
-            color: white;
-        }
-        
-        .btn-map {
-            background: #4CAF50;
-        }
-        
-        .btn-detail {
-            background: #2196F3;
-        }
-        
         /* 로딩 상태 */
         .loading {
             text-align: center;
@@ -208,6 +181,60 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        
+        /* 상세 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            position: relative;
+            background: white;
+            margin: 50px auto;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 10px;
+            padding: 30px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        .modal-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
         }
         
         /* 수동 입력 영역 */
@@ -246,10 +273,46 @@
             margin-top: 10px;
         }
         
+        /* 버튼 스타일 */
+        .btn-kakao {
+            padding: 12px 24px;
+            background: #fee500;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .btn-route {
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-web {
+            padding: 12px 24px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
         /* 반응형 */
         @media (max-width: 768px) {
             .card-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .modal-content {
+                margin: 20px;
+                padding: 20px;
             }
         }
     </style>
@@ -335,6 +398,14 @@
         </div>
         
         <div id="results" class="card-grid"></div>
+    </div>
+    
+    <!-- 상세 정보 모달 -->
+    <div id="modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
     </div>
     
     <script>
@@ -591,7 +662,7 @@
             }
         }
         
-        // 결과 표시 (상세 정보 없이)
+        // 결과 표시
         function displayResults(items, showDistance = false) {
             const resultsDiv = document.getElementById('results');
             
@@ -606,7 +677,7 @@
             }
             
             resultsDiv.innerHTML = items.map((item, index) => `
-                <div class="card" data-index="${index}">
+                <div class="card" onclick="showDetail(${index})">
                     ${item.firstimage ? 
                         `<img src="${item.firstimage}" alt="${item.title}" class="card-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                          <div class="no-image" style="display:none;">📷</div>` : 
@@ -619,20 +690,6 @@
                         ${showDistance && item.distance ? 
                             `<span class="card-distance">${formatDistance(item.distance)}</span>` : ''
                         }
-                        <div class="card-actions">
-                            <a href="https://map.kakao.com/link/map/${item.title},${item.mapy},${item.mapx}" 
-                               target="_blank" 
-                               class="card-btn btn-map"
-                               onclick="event.stopPropagation()">
-                                지도보기
-                            </a>
-                            <a href="https://map.kakao.com/link/to/${item.title},${item.mapy},${item.mapx}" 
-                               target="_blank" 
-                               class="card-btn btn-detail"
-                               onclick="event.stopPropagation()">
-                                길찾기
-                            </a>
-                        </div>
                     </div>
                 </div>
             `).join('');
@@ -644,6 +701,168 @@
                 return `${meters}m`;
             }
             return `${(meters / 1000).toFixed(1)}km`;
+        }
+        
+        // 상세 정보 보기 (현재 데이터 사용)
+        async function showDetail(index) {
+            const item = currentItems[index];
+            if (!item) return;
+            
+            // 현재 가지고 있는 정보로 모달 표시
+            displayDetailFromCurrent(item);
+            
+            // 추가 정보 시도 (실패해도 무시)
+            try {
+                showLoading(true);
+                const commonUrl = `${API_URL}?operation=detailCommon&contentId=${item.contentid}`;
+                console.log('상세 정보 요청 시도:', commonUrl);
+                
+                const response = await fetch(commonUrl);
+                const data = await response.json();
+                
+                if (data.success && data.data.items?.item) {
+                    const detailItem = Array.isArray(data.data.items.item) ? data.data.items.item[0] : data.data.items.item;
+                    // 추가 정보가 있으면 업데이트
+                    displayDetailFromCurrent({...item, ...detailItem});
+                }
+            } catch (error) {
+                console.log('상세 정보 추가 로드 실패 (무시):', error);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // 현재 정보로 상세 표시
+        function displayDetailFromCurrent(item) {
+            const modalBody = document.getElementById('modal-body');
+            
+            // HTML 태그 제거 및 디코딩
+            const decodeHtml = (html) => {
+                if (!html) return '';
+                const txt = document.createElement('textarea');
+                txt.innerHTML = html;
+                return txt.value.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+            };
+            
+            // 콘텐츠 타입별 아이콘
+            const getContentTypeIcon = (typeId) => {
+                const types = {
+                    '12': '🏛️', // 관광지
+                    '14': '🎭', // 문화시설
+                    '15': '🎪', // 축제/공연
+                    '25': '🚶', // 여행코스
+                    '28': '⛷️', // 레포츠
+                    '32': '🏨', // 숙박
+                    '38': '🛍️', // 쇼핑
+                    '39': '🍽️'  // 음식점
+                };
+                return types[typeId] || '📍';
+            };
+            
+            modalBody.innerHTML = `
+                ${item.firstimage ? 
+                    `<img src="${item.firstimage}" alt="${item.title}" class="modal-image" onerror="this.style.display='none'">` : 
+                    '<div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 72px; border-radius: 10px; margin-bottom: 20px;">📷</div>'
+                }
+                
+                <h2 style="margin-bottom: 20px;">
+                    ${getContentTypeIcon(item.contenttypeid)} ${item.title}
+                </h2>
+                
+                <div style="display: grid; gap: 15px;">
+                    ${item.addr1 ? `
+                        <div>
+                            <strong>📍 주소:</strong><br>
+                            ${item.addr1} ${item.addr2 || ''}
+                            ${item.zipcode ? `(우편번호: ${item.zipcode})` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    ${item.tel ? `
+                        <div>
+                            <strong>📞 전화:</strong><br>
+                            <a href="tel:${item.tel}" style="color: #007bff; text-decoration: none;">${item.tel}</a>
+                        </div>
+                    ` : ''}
+                    
+                    ${item.homepage ? `
+                        <div>
+                            <strong>🌐 홈페이지:</strong><br>
+                            ${decodeHtml(item.homepage)}
+                        </div>
+                    ` : ''}
+                    
+                    ${item.overview ? `
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <strong>📝 상세 정보:</strong><br>
+                            <p style="margin-top: 10px; line-height: 1.6;">
+                                ${decodeHtml(item.overview)}
+                            </p>
+                        </div>
+                    ` : ''}
+                    
+                    <!-- 추가 정보들 -->
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <strong>📊 기본 정보:</strong><br>
+                        <div style="margin-top: 10px; display: grid; gap: 5px; font-size: 14px;">
+                            <div>• 콘텐츠 ID: ${item.contentid}</div>
+                            <div>• 콘텐츠 타입: ${getContentTypeName(item.contenttypeid)}</div>
+                            ${item.cat1 || item.cat2 || item.cat3 ? `<div>• 분류: ${item.cat1 || ''} ${item.cat2 || ''} ${item.cat3 || ''}</div>` : ''}
+                            ${item.sigungucode ? `<div>• 시군구: ${item.sigungucode}</div>` : ''}
+                            ${item.createdtime ? `<div>• 등록일: ${formatDate(item.createdtime)}</div>` : ''}
+                            ${item.modifiedtime ? `<div>• 수정일: ${formatDate(item.modifiedtime)}</div>` : ''}
+                            ${item.distance ? `<div>• 거리: ${formatDistance(item.distance)}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="window.open('https://map.kakao.com/link/map/${item.title},${item.mapy},${item.mapx}', '_blank')" 
+                                class="btn-kakao">
+                            🗺️ 카카오맵에서 보기
+                        </button>
+                        
+                        <button onclick="window.open('https://map.kakao.com/link/to/${item.title},${item.mapy},${item.mapx}', '_blank')" 
+                                class="btn-route">
+                            🚗 길찾기
+                        </button>
+                        
+                        <button onclick="window.open('https://search.naver.com/search.naver?query=${encodeURIComponent(item.title)}', '_blank')" 
+                                class="btn-web">
+                            🔍 네이버 검색
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('modal').style.display = 'block';
+        }
+        
+        // 콘텐츠 타입 이름 가져오기
+        function getContentTypeName(typeId) {
+            const types = {
+                '12': '관광지',
+                '14': '문화시설',
+                '15': '축제/공연',
+                '25': '여행코스',
+                '28': '레포츠',
+                '32': '숙박',
+                '38': '쇼핑',
+                '39': '음식점'
+            };
+            return types[typeId] || '기타';
+        }
+        
+        // 날짜 포맷
+        function formatDate(dateStr) {
+            if (!dateStr || dateStr.length < 8) return dateStr;
+            return `${dateStr.substr(0,4)}-${dateStr.substr(4,2)}-${dateStr.substr(6,2)}`;
+        }
+        
+        // 모달 닫기
+        function closeModal(event) {
+            if (!event || event.target.id === 'modal' || event.target.className === 'close-modal') {
+                document.getElementById('modal').style.display = 'none';
+            }
         }
         
         // 엔터키 이벤트
