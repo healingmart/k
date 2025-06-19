@@ -548,13 +548,13 @@
             console.log('검색 파라미터:', {
                 mapX: userLocation.lng,
                 mapY: userLocation.lat,
-                radius: radius
+                radius: radiust(keyword)}&numOfRows=100
             });
             
             showLoading(true);
             
             try {
-                const url = `${API_URL}?operation=locationBasedList&mapX=${userLocation.lng}&mapY=${userLocation.lat}&radius=${radius}&numOfRows=20`;
+                const url = `${API_URL}?operation=locationBasedList&mapX=${userLocation.lng}&mapY=${userLocation.lat}&radius=${radius}&numOfRows=100`;
                 console.log('요청 URL:', url);
                 
                 const response = await fetch(url);
@@ -667,7 +667,7 @@
             showLoading(true);
             
             try {
-                let url = `${API_URL}?operation=areaBasedList&areaCode=${areaCode}&numOfRows=20`;
+                let url = `${API_URL}?operation=areaBasedList&areaCode=${areaCode}&numOfRows=100`;
                 if (contentType) {
                     url += `&contentTypeId=${contentType}`;
                 }
