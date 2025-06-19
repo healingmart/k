@@ -119,6 +119,8 @@ class TourismApiClient {
     const queryString = new URLSearchParams(fullParams).toString();
     const url = `${this.baseURL}${endpoint}?${queryString}`;
     
+    console.log(`[${operation}] Request URL:`, url);
+    
     try {
       // API 호출
       const controller = new AbortController();
@@ -140,6 +142,8 @@ class TourismApiClient {
       }
       
       const data = await response.json();
+      
+      console.log(`[${operation}] Response:`, data);
       
       // API 응답 검증
       if (data.response?.header?.resultCode !== '0000') {
@@ -205,15 +209,15 @@ class TourismApiClient {
     }
     
     const validatedParams = {
-      contentId: params.contentId,
-      contentTypeId: params.contentTypeId,
-      defaultYN: params.defaultYN || 'Y',
-      firstImageYN: params.firstImageYN || 'Y',
-      areacodeYN: params.areacodeYN || 'Y',
-      catcodeYN: params.catcodeYN || 'Y',
-      addrinfoYN: params.addrinfoYN || 'Y',
-      mapinfoYN: params.mapinfoYN || 'Y',
-      overviewYN: params.overviewYN || 'Y'
+      contentId: String(params.contentId),
+      contentTypeId: params.contentTypeId ? String(params.contentTypeId) : '',
+      defaultYN: 'Y',
+      firstImageYN: 'Y',
+      areacodeYN: 'Y',
+      catcodeYN: 'Y',
+      addrinfoYN: 'Y',
+      mapinfoYN: 'Y',
+      overviewYN: 'Y'
     };
     
     return this.makeRequest('/detailCommon2', validatedParams, 'detailCommon');
@@ -228,9 +232,13 @@ class TourismApiClient {
     }
     
     const validatedParams = {
-      contentId: params.contentId,
-      contentTypeId: params.contentTypeId
+      contentId: String(params.contentId),
+      contentTypeId: String(params.contentTypeId),
+      numOfRows: 10,
+      pageNo: 1
     };
+    
+    console.log('[detailIntro] Validated params:', validatedParams);
     
     return this.makeRequest('/detailIntro2', validatedParams, 'detailIntro');
   }
