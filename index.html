@@ -1,3 +1,16 @@
+맞습니다! `detailIntro` API가 400 에러를 내고 있네요. 서버를 재배포하셨나요? `detailIntro`를 추가한 서버 코드를 배포해야 합니다.
+
+## **서버 재배포 필요**
+
+```bash
+vercel --prod --force
+```
+
+그동안 기본 정보만이라도 제대로 보이도록 HTML을 수정하겠습니다.
+
+## **전체 HTML 코드 (에러 처리 개선)**
+
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -736,26 +749,28 @@
             // 현재 가지고 있는 정보로 모달 표시
             displayDetailFromCurrent(item);
             
-            // detailIntro 추가 정보 가져오기
+            // detailIntro 추가 정보 가져오기 (실패해도 무시)
             if (item.contenttypeid) {
                 try {
-                    showLoading(true);
                     const introUrl = `${API_URL}?operation=detailIntro&contentId=${item.contentid}&contentTypeId=${item.contenttypeid}`;
                     console.log('추가 정보 요청:', introUrl);
                     
                     const response = await fetch(introUrl);
-                    const data = await response.json();
                     
-                    if (data.success && data.data.items?.item) {
-                        const introItem = Array.isArray(data.data.items.item) ? data.data.items.item[0] : data.data.items.item;
-                        console.log('추가 정보:', introItem);
-                        // 추가 정보로 모달 업데이트
-                        displayDetailWithIntro(item, introItem);
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        if (data.success && data.data.items?.item) {
+                            const introItem = Array.isArray(data.data.items.item) ? data.data.items.item[0] : data.data.items.item;
+                            console.log('추가 정보:', introItem);
+                            // 추가 정보로 모달 업데이트
+                            displayDetailWithIntro(item, introItem);
+                        }
+                    } else {
+                        console.log('추가 정보 API 미지원 또는 오류');
                     }
                 } catch (error) {
-                    console.log('추가 정보 로드 실패:', error);
-                } finally {
-                    showLoading(false);
+                    console.log('추가 정보 로드 실패 (무시):', error);
                 }
             }
         }
@@ -813,6 +828,10 @@
                                 <span class="info-label">홈페이지:</span>
                                 <span>${decodeHtml(item.homepage)}</span>
                             ` : ''}
+                            ${item.distance ? `
+                                <span class="info-label">거리:</span>
+                                <span>${formatDistance(item.distance)}</span>
+                            ` : ''}
                         </div>
                     </div>
                     
@@ -824,6 +843,24 @@
                             </p>
                         </div>
                     ` : ''}
+                    
+                    <div class="info-section">
+                        <h3>📊 추가 정보</h3>
+                        <div class="info-grid">
+                            <span class="info-label">콘텐츠 ID:</span>
+                            <span>${item.contentid}</span>
+                            <span class="info-label">콘텐츠 타입:</span>
+                            <span>${getContentTypeName(item.contenttypeid)}</span>
+                            ${item.createdtime ? `
+                                <span class="info-label">등록일:</span>
+                                <span>${formatDate(item.createdtime)}</span>
+                            ` : ''}
+                            ${item.modifiedtime ? `
+                                <span class="info-label">수정일:</span>
+                                <span>${formatDate(item.modifiedtime)}</span>
+                            ` : ''}
+                        </div>
+                    </div>
                     
                     <div id="additional-info">
                         <!-- 추가 정보가 여기에 들어갑니다 -->
@@ -856,95 +893,65 @@
             const additionalInfoDiv = document.getElementById('additional-info');
             if (!additionalInfoDiv) return;
             
-            let additionalHtml = '';
+            let additionalHtml = '<div class="info-section"><h3>📋 상세 정보</h3><div class="info-grid">';
             
-            // 콘텐츠 타입별 추가 정보 표시
-            switch(item.contenttypeid) {
-                case '12': // 관광지
-                    additionalHtml = `
-                        <div class="info-section">
-                            <h3>🕐 이용 정보</h3>
-                            <div class="info-grid">
-                                ${introData.usetime ? `<span class="info-label">이용시간:</span><span>${introData.usetime}</span>` : ''}
-                                ${introData.restdate ? `<span class="info-label">휴무일:</span><span>${introData.restdate}</span>` : ''}
-                                ${introData.parking ? `<span class="info-label">주차:</span><span>${introData.parking}</span>` : ''}
-                                ${introData.chkbabycarriage ? `<span class="info-label">유모차:</span><span>${introData.chkbabycarriage}</span>` : ''}
-                                ${introData.chkpet ? `<span class="info-label">애완동물:</span><span>${introData.chkpet}</span>` : ''}
-                                ${introData.chkcreditcard ? `<span class="info-label">신용카드:</span><span>${introData.chkcreditcard}</span>` : ''}
-                            </div>
-                        </div>
-                    `;
-                    break;
-                    
-                case '14': // 문화시설
-                    additionalHtml = `
-                        <div class="info-section">
-                            <h3>🎭 시설 정보</h3>
-                            <div class="info-grid">
-                                ${introData.usetime ? `<span class="info-label">이용시간:</span><span>${introData.usetime}</span>` : ''}
-                                ${introData.restdate ? `<span class="info-label">휴무일:</span><span>${introData.restdate}</span>` : ''}
-                                ${introData.usetimefestival ? `<span class="info-label">관람시간:</span><span>${introData.usetimefestival}</span>` : ''}
-                                ${introData.usefee ? `<span class="info-label">이용요금:</span><span>${introData.usefee}</span>` : ''}
-                                ${introData.parking ? `<span class="info-label">주차:</span><span>${introData.parking}</span>` : ''}
-                                ${introData.parkingfee ? `<span class="info-label">주차요금:</span><span>${introData.parkingfee}</span>` : ''}
-                            </div>
-                        </div>
-                    `;
-                    break;
-                    
-                case '15': // 축제/공연
-                    additionalHtml = `
-                        <div class="info-section">
-                            <h3>🎪 행사 정보</h3>
-                            <div class="info-grid">
-                                ${introData.eventstartdate ? `<span class="info-label">시작일:</span><span>${formatDate(introData.eventstartdate)}</span>` : ''}
-                                ${introData.eventenddate ? `<span class="info-label">종료일:</span><span>${formatDate(introData.eventenddate)}</span>` : ''}
-                                ${introData.playtime ? `<span class="info-label">공연시간:</span><span>${introData.playtime}</span>` : ''}
-                                ${introData.eventplace ? `<span class="info-label">행사장소:</span><span>${introData.eventplace}</span>` : ''}
-                                ${introData.usetimefestival ? `<span class="info-label">이용시간:</span><span>${introData.usetimefestival}</span>` : ''}
-                                ${introData.sponsor1 ? `<span class="info-label">주최:</span><span>${introData.sponsor1}</span>` : ''}
-                                ${introData.sponsor2 ? `<span class="info-label">주관:</span><span>${introData.sponsor2}</span>` : ''}
-                                ${introData.agelimit ? `<span class="info-label">연령제한:</span><span>${introData.agelimit}</span>` : ''}
-                                ${introData.bookingplace ? `<span class="info-label">예매처:</span><span>${introData.bookingplace}</span>` : ''}
-                            </div>
-                        </div>
-                    `;
-                    break;
-                    
-                case '32': // 숙박
-                    additionalHtml = `
-                        <div class="info-section">
-                            <h3>🏨 숙박 정보</h3>
-                            <div class="info-grid">
-                                ${introData.checkintime ? `<span class="info-label">체크인:</span><span>${introData.checkintime}</span>` : ''}
-                                ${introData.checkouttime ? `<span class="info-label">체크아웃:</span><span>${introData.checkouttime}</span>` : ''}
-                                ${introData.roomcount ? `<span class="info-label">객실수:</span><span>${introData.roomcount}</span>` : ''}
-                                ${introData.roomtype ? `<span class="info-label">객실유형:</span><span>${introData.roomtype}</span>` : ''}
-                                ${introData.parking ? `<span class="info-label">주차:</span><span>${introData.parking}</span>` : ''}
-                                ${introData.reservationurl ? `<span class="info-label">예약:</span><span><a href="${introData.reservationurl}" target="_blank">예약하기</a></span>` : ''}
-                            </div>
-                        </div>
-                    `;
-                    break;
-                    
-                case '39': // 음식점
-                    additionalHtml = `
-                        <div class="info-section">
-                            <h3>🍽️ 음식점 정보</h3>
-                            <div class="info-grid">
-                                ${introData.firstmenu ? `<span class="info-label">대표메뉴:</span><span>${introData.firstmenu}</span>` : ''}
-                                ${introData.treatmenu ? `<span class="info-label">취급메뉴:</span><span>${introData.treatmenu}</span>` : ''}
-                                ${introData.opentimefood ? `<span class="info-label">영업시간:</span><span>${introData.opentimefood}</span>` : ''}
-                                ${introData.restdatefood ? `<span class="info-label">휴무일:</span><span>${introData.restdatefood}</span>` : ''}
-                                ${introData.seat ? `<span class="info-label">좌석수:</span><span>${introData.seat}</span>` : ''}
-                                ${introData.parking ? `<span class="info-label">주차:</span><span>${introData.parking}</span>` : ''}
-                            </div>
-                        </div>
-                    `;
-                    break;
-            }
+            // 모든 필드를 동적으로 표시
+            Object.entries(introData).forEach(([key, value]) => {
+                if (value && typeof value === 'string' && value.trim()) {
+                    const label = getFieldLabel(key);
+                    if (label) {
+                        additionalHtml += `<span class="info-label">${label}:</span><span>${value}</span>`;
+                    }
+                }
+            });
             
+            additionalHtml += '</div></div>';
             additionalInfoDiv.innerHTML = additionalHtml;
+        }
+        
+        // 필드 레이블 매핑
+        function getFieldLabel(key) {
+            const labels = {
+                // 공통
+                'usetime': '이용시간',
+                'restdate': '휴무일',
+                'parking': '주차',
+                'chkbabycarriage': '유모차',
+                'chkpet': '애완동물',
+                'chkcreditcard': '신용카드',
+                
+                // 문화시설
+                'usefee': '이용요금',
+                'usetimefestival': '관람시간',
+                'parkingfee': '주차요금',
+                'infocenterculture': '문의처',
+                
+                // 축제
+                'eventstartdate': '시작일',
+                'eventenddate': '종료일',
+                'playtime': '공연시간',
+                'eventplace': '행사장소',
+                'sponsor1': '주최',
+                'sponsor2': '주관',
+                'agelimit': '연령제한',
+                'bookingplace': '예매처',
+                
+                // 숙박
+                'checkintime': '체크인',
+                'checkouttime': '체크아웃',
+                'roomcount': '객실수',
+                'roomtype': '객실유형',
+                'reservationurl': '예약URL',
+                
+                // 음식점
+                'firstmenu': '대표메뉴',
+                'treatmenu': '취급메뉴',
+                'opentimefood': '영업시간',
+                'restdatefood': '휴무일',
+                'seat': '좌석수'
+            };
+            
+            return labels[key] || null;
         }
         
         // 콘텐츠 타입 이름 가져오기
@@ -987,3 +994,6 @@
     </script>
 </body>
 </html>
+```
+
+이제 서버 재배포 전까지는 기본 정보만 보여주고, `detailIntro` API가 실패해도 에러 없이 작동합니다!
