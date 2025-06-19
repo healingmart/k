@@ -71,6 +71,10 @@
         .success {
             color: #28a745;
         }
+        .ready {
+            color: #28a745;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -120,7 +124,7 @@
         
         <div class="section">
             <h2>📋 결과</h2>
-            <pre id="result">결과가 여기에 표시됩니다...</pre>
+            <pre id="result">API 준비 완료! 검색을 시작하세요.</pre>
         </div>
     </div>
     
@@ -208,20 +212,11 @@
             if (e.key === 'Enter') searchKeyword();
         });
         
-        // 페이지 로드 시 API 상태 확인
-        window.addEventListener('load', async function() {
-            showLoading('API 연결 확인 중...');
-            try {
-                const response = await fetch(API_URL);
-                if (response.ok) {
-                    showResult({ message: 'API 연결 성공! 검색을 시작하세요.' });
-                } else {
-                    const data = await response.json();
-                    showResult(data, true);
-                }
-            } catch (error) {
-                showResult({ error: 'API 연결 실패: ' + error.message }, true);
-            }
+        // 페이지 로드 시 준비 메시지 표시
+        window.addEventListener('load', function() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = '✅ API 준비 완료! 위의 검색 옵션을 사용해 관광 정보를 검색하세요.';
+            resultEl.className = 'ready';
         });
     </script>
 </body>
