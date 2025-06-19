@@ -1,16 +1,4 @@
-맞습니다! `detailIntro` API가 400 에러를 내고 있네요. 서버를 재배포하셨나요? `detailIntro`를 추가한 서버 코드를 배포해야 합니다.
 
-## **서버 재배포 필요**
-
-```bash
-vercel --prod --force
-```
-
-그동안 기본 정보만이라도 제대로 보이도록 HTML을 수정하겠습니다.
-
-## **전체 HTML 코드 (에러 처리 개선)**
-
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -480,7 +468,7 @@ vercel --prod --force
             showLoading(true);
             
             try {
-                const response = await fetch(`${API_URL}?operation=searchKeyword&keyword=${encodeURIComponent(keyword)}&numOfRows=20`);
+                const response = await fetch(`${API_URL}?operation=searchKeyword&keyword=${encodeURIComponent(keyword)}&numOfRows=100`);
                 const data = await response.json();
                 
                 if (data.success) {
