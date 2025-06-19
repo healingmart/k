@@ -3,6 +3,14 @@
  * Vercel 배포용 핸들러
  */
 
+// 환경변수 디버깅 (배포 후 제거)
+console.log('Tourism API Handler - Environment Check:', {
+  TOURISM_API_KEY: process.env.TOURISM_API_KEY ? 'EXISTS' : 'NOT EXISTS',
+  NODE_ENV: process.env.NODE_ENV,
+  VERCEL_ENV: process.env.VERCEL_ENV,
+  ENV_KEYS: Object.keys(process.env).filter(k => k.includes('TOURISM') || k.includes('API')).join(', ')
+});
+
 const { CONFIG, SUPPORTED_OPERATIONS } = require('./lib/config');
 const { 
   validateApiKey, 
@@ -47,9 +55,9 @@ module.exports = async function handler(req, res) {
       return res.status(200).end();
     }
     
-    // 2. API 키 검증
+    // 2. API 키 검증 (ALLOWED_API_KEYS가 설정된 경우만)
     const apiKeyValidation = validateApiKey(req.headers);
-    if (!apiKeyValidation.valid) {
+    if (!apiKeyValidation.valid && apiKeyValidation.reason !== 'no_keys_configured') {
       return res.status(401).json({
         success: false,
         error: {
@@ -127,6 +135,7 @@ module.exports = async function handler(req, res) {
     
     // 7. API 클라이언트 초기화
     if (!apiClient) {
+      console.log('Initializing API client...');
       apiClient = new TourismApiClient();
     }
     
@@ -171,6 +180,10 @@ module.exports = async function handler(req, res) {
       error: {
         code: 'INTERNAL_ERROR',
         message: '서버 오류가 발생했습니다.',
+        details: {
+          message: error.message,
+          stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        },
         timestamp: new Date().toISOString(),
         requestId
       }
@@ -193,7 +206,4 @@ module.exports = async function handler(req, res) {
  *   "keyword": "서울",
  *   "numOfRows": 10
  * }
- * 
- * 필수 헤더:
- * X-API-Key: your-api-key (ALLOWED_API_KEYS 환경변수 설정 시)
  */
