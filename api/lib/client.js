@@ -59,14 +59,30 @@ class ApiError extends Error {
  */
 class TourismApiClient {
   constructor() {
-    this.apiKey = CONFIG.API_KEY;
+    // 임시 하드코딩 - 환경변수 문제 해결 후 반드시 제거!
+    this.apiKey = process.env.TOURISM_API_KEY || 'tXbO20526GJdtz87o80a2iuLIdPeIzBGT74mNa3egwJM82gRrXSe4g0fO91Vgm2a95czrqpeuCfU2Rsely2ClQ==';
+    
+    // 디버깅 정보
+    console.log('TourismApiClient initialization:', {
+      apiKeyExists: !!this.apiKey,
+      apiKeyLength: this.apiKey ? this.apiKey.length : 0,
+      nodeEnv: process.env.NODE_ENV,
+      vercelEnv: process.env.VERCEL_ENV,
+      usingHardcoded: !process.env.TOURISM_API_KEY
+    });
+    
     if (!this.apiKey) {
       throw new ApiError(
         'TOURISM_API_KEY 환경변수가 설정되지 않았습니다.',
         'MISSING_API_KEY',
-        500
+        500,
+        {
+          hint: 'Vercel Dashboard > Settings > Environment Variables에서 TOURISM_API_KEY를 확인하세요',
+          env: process.env.NODE_ENV || 'unknown'
+        }
       );
     }
+    
     this.baseURL = CONFIG.API_BASE_URL;
   }
   
