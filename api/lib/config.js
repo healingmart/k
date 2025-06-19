@@ -68,6 +68,7 @@ const API_ERROR_CODES = {
 const SUPPORTED_OPERATIONS = [
   'areaBasedList',
   'detailCommon',
+  'detailIntro',  // 추가!
   'searchKeyword',
   'locationBasedList'
 ];
