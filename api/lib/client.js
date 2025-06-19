@@ -235,9 +235,8 @@ class TourismApiClient {
         
         const validatedParams = {
             contentId: String(params.contentId),
-            contentTypeId: String(params.contentTypeId),
-            numOfRows: 10,
-            pageNo: 1
+            contentTypeId: String(params.contentTypeId)
+            // numOfRows와 pageNo 제거! - detailIntro2는 이 파라미터를 지원하지 않음
         };
         
         console.log('[detailIntro] Validated params:', validatedParams);
