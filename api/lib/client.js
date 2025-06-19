@@ -202,7 +202,7 @@ class TourismApiClient {
       throw new ApiError('contentId는 필수 파라미터입니다.', 'VALIDATION_ERROR', 400);
     }
     
-    // 파라미터 정리 - 불필요한 파라미터 제거
+    // 파라미터 정리
     const validatedParams = {
       contentId: params.contentId,
       contentTypeId: params.contentTypeId,
@@ -216,6 +216,22 @@ class TourismApiClient {
     };
     
     return this.makeRequest('/detailCommon2', validatedParams, 'detailCommon');
+  }
+  
+  /**
+   * 소개 정보 조회 (타입별 상세 정보)
+   */
+  async detailIntro(params = {}) {
+    if (!params.contentId || !params.contentTypeId) {
+      throw new ApiError('contentId와 contentTypeId는 필수 파라미터입니다.', 'VALIDATION_ERROR', 400);
+    }
+    
+    const validatedParams = {
+      contentId: params.contentId,
+      contentTypeId: params.contentTypeId
+    };
+    
+    return this.makeRequest('/detailIntro2', validatedParams, 'detailIntro');
   }
   
   /**
