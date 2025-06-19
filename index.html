@@ -1,202 +1,186 @@
-맞습니다! `detailIntro` API가 400 에러를 내고 있네요. 서버를 재배포하셨나요? `detailIntro`를 추가한 서버 코드를 배포해야 합니다.
-
-## **서버 재배포 필요**
-
-```bash
-vercel --prod --force
-```
-
-그동안 기본 정보만이라도 제대로 보이도록 HTML을 수정하겠습니다.
-
-## **전체 HTML 코드 (에러 처리 개선)**
-
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관광지 탐색기</title>
+    <title>대한민국 관광지 탐색기</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
-        }
-        
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
-        
-        /* 검색 영역 */
-        .search-section {
-            background: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .search-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             margin-bottom: 30px;
         }
-        
-        .search-group {
+
+        .search-form {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 15px;
             flex-wrap: wrap;
             align-items: center;
         }
-        
-        .search-group input, .search-group select {
+
+        .search-group {
             flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
             font-size: 16px;
-            min-width: 150px;
-        }
-        
-        .search-group button {
-            padding: 12px 30px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-        
-        .search-group button:hover {
-            background: #0056b3;
-        }
-        
-        .search-group button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        /* 탭 메뉴 */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            color: #666;
             transition: all 0.3s;
         }
-        
-        .tab.active {
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-        
-        /* 카드 그리드 */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: white;
+
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
             border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            align-self: flex-end;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .place-card {
+            background: white;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
             cursor: pointer;
         }
-        
-        .card:hover {
+
+        .place-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        
-        .card-image {
+
+        .place-image {
             width: 100%;
-            height: 200px;
+            height: 250px;
             object-fit: cover;
             background: #f0f0f0;
         }
-        
+
         .no-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             font-size: 48px;
         }
-        
-        .card-content {
-            padding: 15px;
+
+        .place-content {
+            padding: 20px;
         }
-        
-        .card-title {
-            font-size: 18px;
-            font-weight: bold;
+
+        .place-title {
+            font-size: 1.3rem;
+            font-weight: 700;
             margin-bottom: 10px;
             color: #333;
         }
-        
-        .card-info {
-            font-size: 14px;
+
+        .place-info {
             color: #666;
-            margin-bottom: 5px;
+            line-height: 1.6;
         }
-        
-        .card-distance {
-            display: inline-block;
-            background: #e3f2fd;
-            color: #1976d2;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
+
+        .place-address {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            color: #888;
+            font-size: 0.9rem;
         }
-        
-        /* 로딩 상태 */
+
         .loading {
             text-align: center;
             padding: 40px;
+            color: white;
         }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* 상세 모달 */
+
         .modal {
             display: none;
             position: fixed;
@@ -204,30 +188,48 @@ vercel --prod --force
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.8);
             z-index: 1000;
             overflow-y: auto;
         }
-        
+
         .modal-content {
-            position: relative;
             background: white;
+            max-width: 900px;
             margin: 50px auto;
-            width: 90%;
-            max-width: 800px;
+            border-radius: 20px;
+            position: relative;
             max-height: 90vh;
             overflow-y: auto;
-            border-radius: 10px;
-            padding: 30px;
         }
-        
-        .close-modal {
+
+        .modal-header {
+            position: relative;
+            height: 300px;
+            background: #f0f0f0;
+        }
+
+        .modal-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-no-image {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 72px;
+        }
+
+        .close-button {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 30px;
-            cursor: pointer;
-            color: #999;
+            top: 20px;
+            right: 20px;
             background: white;
             border-radius: 50%;
             width: 40px;
@@ -235,765 +237,611 @@ vercel --prod --force
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 24px;
+            transition: all 0.3s;
         }
-        
-        .close-modal:hover {
+
+        .close-button:hover {
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .detail-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
             color: #333;
         }
-        
-        .modal-image {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 20px;
+
+        .detail-section {
+            margin-bottom: 30px;
         }
-        
-        /* 수동 입력 영역 */
-        details {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
+
+        .detail-section h3 {
+            font-size: 1.2rem;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
         }
-        
-        summary {
-            cursor: pointer;
-            font-weight: bold;
-            color: #666;
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
         }
-        
-        .manual-input {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .manual-input input {
-            flex: 1;
-            min-width: 120px;
-        }
-        
-        /* 디버그 정보 */
-        .debug-info {
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-family: monospace;
-            margin-top: 10px;
-        }
-        
-        /* 버튼 스타일 */
-        .btn-kakao {
-            padding: 12px 24px;
-            background: #fee500;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #000;
-        }
-        
-        .btn-route {
-            padding: 12px 24px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .btn-web {
-            padding: 12px 24px;
-            background: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        /* 정보 섹션 */
-        .info-section {
+
+        .detail-item {
             background: #f8f9fa;
             padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            border-radius: 10px;
         }
-        
-        .info-section h3 {
-            margin-bottom: 10px;
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
             color: #333;
+            line-height: 1.5;
         }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: auto 1fr;
+
+        .tag {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             gap: 10px;
-            font-size: 14px;
+            margin-top: 40px;
+            padding: 20px;
         }
-        
-        .info-label {
-            font-weight: bold;
-            color: #666;
+
+        .pagination button {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        
-        /* 반응형 */
+
+        .pagination button:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            color: white;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
-            .card-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            .container {
+                padding: 10px;
             }
-            
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-group {
+                width: 100%;
+            }
+
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+
             .modal-content {
                 margin: 20px;
-                padding: 20px;
+                max-height: calc(100vh - 40px);
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🗺️ 대한민국 관광지 탐색기</h1>
-        
-        <div class="search-section">
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('keyword')">키워드 검색</button>
-                <button class="tab" onclick="switchTab('location')">내 주변</button>
-                <button class="tab" onclick="switchTab('area')">지역별</button>
-            </div>
-            
-            <!-- 키워드 검색 -->
-            <div id="keyword-search" class="search-group">
-                <input type="text" id="keyword" placeholder="관광지 검색 (예: 경복궁, 해수욕장)" value="제주">
-                <button onclick="searchByKeyword()">검색</button>
-            </div>
-            
-            <!-- 위치 기반 검색 -->
-            <div id="location-search" class="search-group" style="display:none;">
-                <button onclick="getMyLocation()">📍 내 위치 찾기</button>
-                <input type="number" id="radius" placeholder="반경(m)" value="5000" min="1000" max="20000">
-                <button onclick="searchNearby()">주변 검색</button>
+        <header>
+            <h1>🗺️ 대한민국 관광지 탐색기</h1>
+            <p>전국의 아름다운 관광지를 검색하고 탐색해보세요</p>
+        </header>
+
+        <div class="search-container">
+            <form id="searchForm" class="search-form">
+                <div class="search-group">
+                    <label for="keyword">검색어</label>
+                    <input type="text" id="keyword" placeholder="관광지명, 주소 등">
+                </div>
                 
-                <details style="width: 100%;">
-                    <summary>수동 좌표 입력 / 테스트 위치</summary>
-                    <div class="manual-input">
-                        <input type="text" id="manual-lat" placeholder="위도 (예: 37.5665)">
-                        <input type="text" id="manual-lng" placeholder="경도 (예: 126.9780)">
-                        <button onclick="setManualLocation()">좌표 설정</button>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <button onclick="setTestLocation('서울')">📍 서울시청</button>
-                        <button onclick="setTestLocation('부산')">📍 부산역</button>
-                        <button onclick="setTestLocation('제주')">📍 제주공항</button>
-                    </div>
-                    <div id="location-debug" class="debug-info" style="display:none;"></div>
-                </details>
-            </div>
-            
-            <!-- 지역별 검색 -->
-            <div id="area-search" class="search-group" style="display:none;">
-                <select id="areaCode">
-                    <option value="1">서울</option>
-                    <option value="6">부산</option>
-                    <option value="4">대구</option>
-                    <option value="2">인천</option>
-                    <option value="5">광주</option>
-                    <option value="3">대전</option>
-                    <option value="7">울산</option>
-                    <option value="8">세종</option>
-                    <option value="31">경기</option>
-                    <option value="32">강원</option>
-                    <option value="33">충북</option>
-                    <option value="34">충남</option>
-                    <option value="35">경북</option>
-                    <option value="36">경남</option>
-                    <option value="37">전북</option>
-                    <option value="38">전남</option>
-                    <option value="39" selected>제주</option>
-                </select>
-                <select id="contentType">
-                    <option value="">전체</option>
-                    <option value="12">관광지</option>
-                    <option value="14">문화시설</option>
-                    <option value="15">축제/공연</option>
-                    <option value="25">여행코스</option>
-                    <option value="28">레포츠</option>
-                    <option value="32">숙박</option>
-                    <option value="38">쇼핑</option>
-                    <option value="39">음식점</option>
-                </select>
-                <button onclick="searchByArea()">검색</button>
-            </div>
+                <div class="search-group">
+                    <label for="areaCode">지역</label>
+                    <select id="areaCode">
+                        <option value="">전체</option>
+                        <option value="1">서울</option>
+                        <option value="2">인천</option>
+                        <option value="3">대전</option>
+                        <option value="4">대구</option>
+                        <option value="5">광주</option>
+                        <option value="6">부산</option>
+                        <option value="7">울산</option>
+                        <option value="8">세종</option>
+                        <option value="31">경기</option>
+                        <option value="32">강원</option>
+                        <option value="33">충북</option>
+                        <option value="34">충남</option>
+                        <option value="35">경북</option>
+                        <option value="36">경남</option>
+                        <option value="37">전북</option>
+                        <option value="38">전남</option>
+                        <option value="39">제주</option>
+                    </select>
+                </div>
+
+                <div class="search-group">
+                    <label for="contentType">관광타입</label>
+                    <select id="contentType">
+                        <option value="">전체</option>
+                        <option value="12">관광지</option>
+                        <option value="14">문화시설</option>
+                        <option value="15">축제공연행사</option>
+                        <option value="25">여행코스</option>
+                        <option value="28">레포츠</option>
+                        <option value="32">숙박</option>
+                        <option value="38">쇼핑</option>
+                        <option value="39">음식점</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="searchButton">검색</button>
+            </form>
         </div>
-        
-        <div id="loading" class="loading" style="display:none;">
-            <div class="spinner"></div>
-            <p>검색 중...</p>
-        </div>
-        
-        <div id="results" class="card-grid"></div>
+
+        <div id="results" class="results-container"></div>
+        <div id="pagination" class="pagination"></div>
     </div>
-    
-    <!-- 상세 정보 모달 -->
-    <div id="modal" class="modal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <div id="modal-body"></div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalHeader">
+                <span class="close-button" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="loading">상세 정보를 불러오는 중...</div>
+            </div>
         </div>
     </div>
-    
+
     <script>
         const API_URL = 'https://k-ivory.vercel.app/api/tourism';
-        let currentTab = 'keyword';
-        let userLocation = null;
-        let currentItems = []; // 현재 검색 결과 저장
-        
-        // 탭 전환
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.getElementById('keyword-search').style.display = tab === 'keyword' ? 'flex' : 'none';
-            document.getElementById('location-search').style.display = tab === 'location' ? 'flex' : 'none';
-            document.getElementById('area-search').style.display = tab === 'area' ? 'flex' : 'none';
-        }
-        
-        // 로딩 표시
-        function showLoading(show = true) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
-            document.getElementById('results').style.display = show ? 'none' : 'grid';
-        }
-        
-        // 키워드 검색
-        async function searchByKeyword() {
+        let currentPage = 1;
+        let totalCount = 0;
+        let currentSearchParams = {};
+
+        // 검색 폼 제출
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            currentPage = 1;
+            await search();
+        });
+
+        // 검색 함수
+        async function search() {
             const keyword = document.getElementById('keyword').value;
-            if (!keyword) {
-                alert('검색어를 입력하세요');
-                return;
-            }
-            
-            showLoading(true);
-            
-            try {
-                const response = await fetch(`${API_URL}?operation=searchKeyword&keyword=${encodeURIComponent(keyword)}&numOfRows=20`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    currentItems = data.data.items?.item || [];
-                    displayResults(currentItems);
-                } else {
-                    alert('검색 실패: ' + data.error.message);
-                }
-            } catch (error) {
-                alert('오류 발생: ' + error.message);
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // 내 위치 가져오기
-        function getMyLocation() {
-            if (!navigator.geolocation) {
-                alert('위치 서비스를 지원하지 않는 브라우저입니다.');
-                return;
-            }
-            
-            const button = event.target;
-            button.textContent = '📍 위치 찾는 중...';
-            button.disabled = true;
-            
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    userLocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    
-                    updateLocationDebug();
-                    alert(`위치를 찾았습니다!\n위도: ${userLocation.lat.toFixed(6)}\n경도: ${userLocation.lng.toFixed(6)}`);
-                    
-                    button.textContent = '📍 내 위치 찾기';
-                    button.disabled = false;
-                },
-                (error) => {
-                    let errorMessage = '위치를 찾을 수 없습니다: ';
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMessage += '위치 권한이 거부되었습니다.';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMessage += '위치 정보를 사용할 수 없습니다.';
-                            break;
-                        case error.TIMEOUT:
-                            errorMessage += '위치 요청 시간이 초과되었습니다.';
-                            break;
-                        default:
-                            errorMessage += error.message;
-                    }
-                    alert(errorMessage);
-                    
-                    button.textContent = '📍 내 위치 찾기';
-                    button.disabled = false;
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
-        }
-        
-        // 주변 검색
-        async function searchNearby() {
-            if (!userLocation) {
-                alert('먼저 내 위치 찾기를 클릭하거나 수동으로 좌표를 입력하세요');
-                return;
-            }
-            
-            const radius = document.getElementById('radius').value;
-            
-            console.log('검색 파라미터:', {
-                mapX: userLocation.lng,
-                mapY: userLocation.lat,
-                radius: radius
-            });
-            
-            showLoading(true);
-            
-            try {
-                const url = `${API_URL}?operation=locationBasedList&mapX=${userLocation.lng}&mapY=${userLocation.lat}&radius=${radius}&numOfRows=20`;
-                console.log('요청 URL:', url);
-                
-                const response = await fetch(url);
-                const data = await response.json();
-                console.log('응답 데이터:', data);
-                
-                if (data.success) {
-                    const items = data.data.items?.item || [];
-                    if (items.length === 0) {
-                        alert(`반경 ${radius}m 내에 관광지가 없습니다.\n반경을 늘려보세요.`);
-                    } else {
-                        // 거리 계산 추가
-                        const itemsWithDistance = items.map(item => {
-                            const itemLat = parseFloat(item.mapy);
-                            const itemLng = parseFloat(item.mapx);
-                            if (!isNaN(itemLat) && !isNaN(itemLng)) {
-                                item.distance = calculateDistance(userLocation.lat, userLocation.lng, itemLat, itemLng);
-                            }
-                            return item;
-                        }).sort((a, b) => (a.distance || 999999) - (b.distance || 999999));
-                        
-                        currentItems = itemsWithDistance;
-                        displayResults(itemsWithDistance, true);
-                    }
-                } else {
-                    alert('검색 실패: ' + (data.error?.message || '알 수 없는 오류'));
-                    console.error('API 오류:', data.error);
-                }
-            } catch (error) {
-                alert('오류 발생: ' + error.message);
-                console.error('네트워크 오류:', error);
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // 수동 좌표 설정
-        function setManualLocation() {
-            const lat = parseFloat(document.getElementById('manual-lat').value);
-            const lng = parseFloat(document.getElementById('manual-lng').value);
-            
-            if (isNaN(lat) || isNaN(lng)) {
-                alert('올바른 좌표를 입력하세요');
-                return;
-            }
-            
-            if (lat < 33 || lat > 43 || lng < 124 || lng > 132) {
-                alert('한국 범위를 벗어난 좌표입니다\n위도: 33~43\n경도: 124~132');
-                return;
-            }
-            
-            userLocation = { lat, lng };
-            updateLocationDebug();
-            alert(`좌표가 설정되었습니다!\n위도: ${lat}\n경도: ${lng}`);
-        }
-        
-        // 테스트 위치 설정
-        function setTestLocation(city) {
-            const locations = {
-                '서울': { lat: 37.5665, lng: 126.9780, name: '서울시청' },
-                '부산': { lat: 35.1153, lng: 129.0413, name: '부산역' },
-                '제주': { lat: 33.5066, lng: 126.4926, name: '제주공항' }
-            };
-            
-            const loc = locations[city];
-            userLocation = { lat: loc.lat, lng: loc.lng };
-            
-            document.getElementById('manual-lat').value = loc.lat;
-            document.getElementById('manual-lng').value = loc.lng;
-            
-            updateLocationDebug();
-            alert(`${loc.name} 좌표가 설정되었습니다!`);
-        }
-        
-        // 위치 디버그 정보 업데이트
-        function updateLocationDebug() {
-            if (userLocation) {
-                const debugDiv = document.getElementById('location-debug');
-                debugDiv.style.display = 'block';
-                debugDiv.innerHTML = `
-                    <strong>현재 설정된 위치:</strong><br>
-                    위도(lat/mapY): ${userLocation.lat}<br>
-                    경도(lng/mapX): ${userLocation.lng}<br>
-                    <a href="https://map.kakao.com/link/map/내위치,${userLocation.lat},${userLocation.lng}" target="_blank">카카오맵에서 확인</a>
-                `;
-            }
-        }
-        
-        // 거리 계산 함수
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371e3; // 지구 반지름 (미터)
-            const φ1 = lat1 * Math.PI / 180;
-            const φ2 = lat2 * Math.PI / 180;
-            const Δφ = (lat2 - lat1) * Math.PI / 180;
-            const Δλ = (lon2 - lon1) * Math.PI / 180;
-            
-            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                      Math.cos(φ1) * Math.cos(φ2) *
-                      Math.sin(Δλ/2) * Math.sin(Δλ/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            
-            return Math.round(R * c); // 미터 단위
-        }
-        
-        // 지역별 검색
-        async function searchByArea() {
             const areaCode = document.getElementById('areaCode').value;
             const contentType = document.getElementById('contentType').value;
+
+            currentSearchParams = {
+                keyword,
+                areaCode,
+                contentTypeId: contentType
+            };
+
+            await loadPlaces();
+        }
+
+        // 장소 목록 로드
+        async function loadPlaces() {
+            const resultsDiv = document.getElementById('results');
+            const searchButton = document.getElementById('searchButton');
             
-            showLoading(true);
-            
+            resultsDiv.innerHTML = '<div class="loading">검색 중...</div>';
+            searchButton.disabled = true;
+
             try {
-                let url = `${API_URL}?operation=areaBasedList&areaCode=${areaCode}&numOfRows=20`;
-                if (contentType) {
-                    url += `&contentTypeId=${contentType}`;
-                }
+                const params = {
+                    ...currentSearchParams,
+                    numOfRows: 12,
+                    pageNo: currentPage
+                };
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        operation: currentSearchParams.keyword ? 'searchKeyword' : 'areaBasedList',
+                        params
+                    })
+                });
+
+                if (!response.ok) throw new Error('검색 실패');
+
+                const result = await response.json();
                 
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                if (data.success) {
-                    currentItems = data.data.items?.item || [];
-                    displayResults(currentItems);
+                if (result.success && result.data) {
+                    displayResults(result.data);
                 } else {
-                    alert('검색 실패: ' + data.error.message);
+                    throw new Error(result.error?.message || '검색 실패');
                 }
             } catch (error) {
-                alert('오류 발생: ' + error.message);
+                resultsDiv.innerHTML = '<div class="error">오류: ' + error.message + '</div>';
             } finally {
-                showLoading(false);
+                searchButton.disabled = false;
             }
         }
-        
-        // 결과 표시
-        function displayResults(items, showDistance = false) {
+
+        // 검색 결과 표시
+        function displayResults(data) {
             const resultsDiv = document.getElementById('results');
-            
-            if (!items || items.length === 0) {
-                resultsDiv.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">검색 결과가 없습니다.</p>';
+            const items = data.items?.item || [];
+            totalCount = parseInt(data.totalCount) || 0;
+
+            if (!items.length) {
+                resultsDiv.innerHTML = '<div class="no-results">검색 결과가 없습니다.</div>';
+                updatePagination();
                 return;
             }
+
+            const itemsArray = Array.isArray(items) ? items : [items];
             
-            // 배열이 아닌 경우 배열로 변환
-            if (!Array.isArray(items)) {
-                items = [items];
-            }
-            
-            resultsDiv.innerHTML = items.map((item, index) => `
-                <div class="card" onclick="showDetail(${index})">
-                    ${item.firstimage ? 
-                        `<img src="${item.firstimage}" alt="${item.title}" class="card-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                         <div class="no-image" style="display:none;">📷</div>` : 
-                        `<div class="card-image no-image">📷</div>`
-                    }
-                    <div class="card-content">
-                        <h3 class="card-title">${item.title}</h3>
-                        <p class="card-info">📍 ${item.addr1 || '주소 정보 없음'}</p>
-                        ${item.tel ? `<p class="card-info">📞 ${item.tel}</p>` : ''}
-                        ${showDistance && item.distance ? 
-                            `<span class="card-distance">${formatDistance(item.distance)}</span>` : ''
-                        }
-                    </div>
-                </div>
-            `).join('');
+            resultsDiv.innerHTML = itemsArray.map(item => {
+                const contentId = item.contentid || '';
+                const contentTypeId = item.contenttypeid || '';
+                const title = item.title || '제목 없음';
+                const addr = item.addr1 || '주소 정보 없음';
+                const tel = item.tel || '';
+                
+                if (item.firstimage) {
+                    return '<div class="place-card" onclick="showDetail(\'' + contentId + '\', \'' + contentTypeId + '\')">' +
+                        '<img class="place-image" src="' + item.firstimage + '" alt="' + title + '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\'">' +
+                        '<div class="no-image" style="display:none">📷</div>' +
+                        '<div class="place-content">' +
+                        '<h2 class="place-title">' + title + '</h2>' +
+                        '<div class="place-address">📍 ' + addr + '</div>' +
+                        (tel ? '<div class="place-info">📞 ' + tel + '</div>' : '') +
+                        '</div></div>';
+                } else {
+                    return '<div class="place-card" onclick="showDetail(\'' + contentId + '\', \'' + contentTypeId + '\')">' +
+                        '<div class="no-image">📷</div>' +
+                        '<div class="place-content">' +
+                        '<h2 class="place-title">' + title + '</h2>' +
+                        '<div class="place-address">📍 ' + addr + '</div>' +
+                        (tel ? '<div class="place-info">📞 ' + tel + '</div>' : '') +
+                        '</div></div>';
+                }
+            }).join('');
+
+            updatePagination();
         }
-        
-        // 거리 포맷
-        function formatDistance(meters) {
-            if (meters < 1000) {
-                return `${meters}m`;
+
+        // 페이지네이션 업데이트
+        function updatePagination() {
+            const paginationDiv = document.getElementById('pagination');
+            const totalPages = Math.ceil(totalCount / 12);
+
+            if (totalPages <= 1) {
+                paginationDiv.innerHTML = '';
+                return;
             }
-            return `${(meters / 1000).toFixed(1)}km`;
+
+            paginationDiv.innerHTML = 
+                '<button onclick="changePage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>이전</button>' +
+                '<span class="page-info">' + currentPage + ' / ' + totalPages + '</span>' +
+                '<button onclick="changePage(' + (currentPage + 1) + ')" ' + (currentPage >= totalPages ? 'disabled' : '') + '>다음</button>';
         }
-        
-        // 상세 정보 보기
-        async function showDetail(index) {
-            const item = currentItems[index];
-            if (!item) return;
+
+        // 페이지 변경
+        async function changePage(page) {
+            currentPage = page;
+            await loadPlaces();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 상세 정보 표시
+        async function showDetail(contentId, contentTypeId) {
+            const modal = document.getElementById('modal');
+            const modalBody = document.getElementById('modalBody');
+            const modalHeader = document.getElementById('modalHeader');
             
-            // 현재 가지고 있는 정보로 모달 표시
-            displayDetailFromCurrent(item);
-            
-            // detailIntro 추가 정보 가져오기 (실패해도 무시)
-            if (item.contenttypeid) {
+            modal.style.display = 'block';
+            modalBody.innerHTML = '<div class="loading">상세 정보를 불러오는 중...</div>';
+
+            try {
+                // 공통 정보 조회
+                const commonResponse = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        operation: 'detailCommon',
+                        params: { contentId }
+                    })
+                });
+
+                if (!commonResponse.ok) throw new Error('상세 정보 조회 실패');
+
+                const commonResult = await commonResponse.json();
+                
+                if (!commonResult.success) {
+                    throw new Error(commonResult.error?.message || '상세 정보 조회 실패');
+                }
+
+                const commonData = commonResult.data.items?.item?.[0] || commonResult.data.items?.item || {};
+
+                // 소개 정보 조회 (실패해도 계속 진행)
+                let introData = {};
                 try {
-                    const introUrl = `${API_URL}?operation=detailIntro&contentId=${item.contentid}&contentTypeId=${item.contenttypeid}`;
-                    console.log('추가 정보 요청:', introUrl);
+                    console.log('detailIntro 요청:', { contentId, contentTypeId });
                     
-                    const response = await fetch(introUrl);
-                    
-                    if (response.ok) {
-                        const data = await response.json();
+                    const introResponse = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            operation: 'detailIntro',
+                            params: { contentId, contentTypeId }
+                        })
+                    });
+
+                    if (introResponse.ok) {
+                        const introResult = await introResponse.json();
+                        console.log('detailIntro 응답:', introResult);
                         
-                        if (data.success && data.data.items?.item) {
-                            const introItem = Array.isArray(data.data.items.item) ? data.data.items.item[0] : data.data.items.item;
-                            console.log('추가 정보:', introItem);
-                            // 추가 정보로 모달 업데이트
-                            displayDetailWithIntro(item, introItem);
+                        if (introResult.success) {
+                            introData = introResult.data.items?.item?.[0] || introResult.data.items?.item || {};
+                            console.log('detailIntro 데이터:', introData);
                         }
-                    } else {
-                        console.log('추가 정보 API 미지원 또는 오류');
                     }
-                } catch (error) {
-                    console.log('추가 정보 로드 실패 (무시):', error);
+                } catch (introError) {
+                    console.error('소개 정보 조회 실패:', introError);
                 }
+
+                // 모달 헤더 이미지 설정
+                if (commonData.firstimage) {
+                    modalHeader.innerHTML = '<img src="' + commonData.firstimage + '" alt="' + commonData.title + 
+                        '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\'">' +
+                        '<div class="modal-no-image" style="display:none">📷</div>' +
+                        '<span class="close-button" onclick="closeModal()">&times;</span>';
+                } else {
+                    modalHeader.innerHTML = '<div class="modal-no-image">📷</div>' +
+                        '<span class="close-button" onclick="closeModal()">&times;</span>';
+                }
+
+                // 상세 정보 표시
+                displayDetailInfo(commonData, introData);
+
+            } catch (error) {
+                modalBody.innerHTML = '<div class="error">오류: ' + error.message + '</div>';
             }
         }
-        
-        // 현재 정보로 상세 표시
-        function displayDetailFromCurrent(item) {
-            const modalBody = document.getElementById('modal-body');
+
+        // 상세 정보 표시
+        function displayDetailInfo(commonData, introData) {
+            const modalBody = document.getElementById('modalBody');
             
-            // HTML 태그 제거 및 디코딩
-            const decodeHtml = (html) => {
-                if (!html) return '';
-                const txt = document.createElement('textarea');
-                txt.innerHTML = html;
-                return txt.value.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
-            };
+            let detailHTML = '<h2 class="detail-title">' + (commonData.title || '제목 없음') + '</h2>';
             
-            // 콘텐츠 타입별 아이콘
-            const getContentTypeIcon = (typeId) => {
-                const types = {
-                    '12': '🏛️', // 관광지
-                    '14': '🎭', // 문화시설
-                    '15': '🎪', // 축제/공연
-                    '25': '🚶', // 여행코스
-                    '28': '⛷️', // 레포츠
-                    '32': '🏨', // 숙박
-                    '38': '🛍️', // 쇼핑
-                    '39': '🍽️'  // 음식점
-                };
-                return types[typeId] || '📍';
-            };
+            // 기본 정보
+            detailHTML += '<div class="detail-section"><h3>기본 정보</h3><div class="detail-grid">';
             
-            modalBody.innerHTML = `
-                ${item.firstimage ? 
-                    `<img src="${item.firstimage}" alt="${item.title}" class="modal-image" onerror="this.style.display='none'">` : 
-                    '<div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 72px; border-radius: 10px; margin-bottom: 20px;">📷</div>'
+            if (commonData.addr1) {
+                detailHTML += '<div class="detail-item"><div class="detail-label">주소</div><div class="detail-value">' + 
+                              commonData.addr1 + (commonData.addr2 ? ' ' + commonData.addr2 : '') + '</div></div>';
+            }
+            
+            if (commonData.tel) {
+                detailHTML += '<div class="detail-item"><div class="detail-label">전화번호</div><div class="detail-value">' + 
+                              commonData.tel + '</div></div>';
+            }
+            
+            if (commonData.homepage) {
+                detailHTML += '<div class="detail-item"><div class="detail-label">홈페이지</div><div class="detail-value">' + 
+                              commonData.homepage + '</div></div>';
+            }
+            
+            if (commonData.zipcode) {
+                detailHTML += '<div class="detail-item"><div class="detail-label">우편번호</div><div class="detail-value">' + 
+                              commonData.zipcode + '</div></div>';
+            }
+            
+            detailHTML += '</div></div>';
+
+            // 개요 정보
+            if (commonData.overview) {
+                detailHTML += '<div class="detail-section"><h3>상세 설명</h3><div class="detail-value">' + 
+                              commonData.overview + '</div></div>';
+            }
+
+            // 타입별 추가 정보
+            if (Object.keys(introData).length > 0) {
+                detailHTML += getTypeSpecificInfo(commonData.contenttypeid, introData);
+            }
+
+            // 지도 정보
+            if (commonData.mapx && commonData.mapy) {
+                detailHTML += '<div class="detail-section"><h3>위치 정보</h3><div class="detail-grid">' +
+                              '<div class="detail-item"><div class="detail-label">위도</div><div class="detail-value">' + 
+                              commonData.mapy + '</div></div>' +
+                              '<div class="detail-item"><div class="detail-label">경도</div><div class="detail-value">' + 
+                              commonData.mapx + '</div></div></div></div>';
+            }
+
+            modalBody.innerHTML = detailHTML;
+        }
+
+        // 타입별 상세 정보
+        function getTypeSpecificInfo(contentTypeId, introData) {
+            let html = '<div class="detail-section"><h3>추가 정보</h3><div class="detail-grid">';
+
+            // 관광지 (12)
+            if (contentTypeId === '12') {
+                if (introData.infocenter) html += createDetailItem('문의처', introData.infocenter);
+                if (introData.restdate) html += createDetailItem('쉬는날', introData.restdate);
+                if (introData.usetime) html += createDetailItem('이용시간', introData.usetime);
+                if (introData.parking) html += createDetailItem('주차시설', introData.parking);
+                if (introData.chkbabycarriage) html += createDetailItem('유모차대여', introData.chkbabycarriage);
+                if (introData.chkpet) html += createDetailItem('애완동물', introData.chkpet);
+                if (introData.chkcreditcard) html += createDetailItem('신용카드', introData.chkcreditcard);
+            }
+            // 문화시설 (14)
+            else if (contentTypeId === '14') {
+                if (introData.infocenterculture) html += createDetailItem('문의처', introData.infocenterculture);
+                if (introData.restdateculture) html += createDetailItem('쉬는날', introData.restdateculture);
+                if (introData.usefee) html += createDetailItem('이용요금', introData.usefee);
+                if (introData.usetimeculture) html += createDetailItem('이용시간', introData.usetimeculture);
+                if (introData.parkingculture) html += createDetailItem('주차시설', introData.parkingculture);
+                if (introData.parkingfee) html += createDetailItem('주차요금', introData.parkingfee);
+                if (introData.chkbabycarriageculture) html += createDetailItem('유모차대여', introData.chkbabycarriageculture);
+                if (introData.chkpetculture) html += createDetailItem('애완동물', introData.chkpetculture);
+                if (introData.chkcreditcardculture) html += createDetailItem('신용카드', introData.chkcreditcardculture);
+            }
+            // 축제/공연/행사 (15)
+            else if (contentTypeId === '15') {
+                if (introData.sponsor1) html += createDetailItem('주최자', introData.sponsor1);
+                if (introData.sponsor1tel) html += createDetailItem('주최자 연락처', introData.sponsor1tel);
+                if (introData.eventplace) html += createDetailItem('행사장소', introData.eventplace);
+                if (introData.eventstartdate) html += createDetailItem('시작일', formatDate(introData.eventstartdate));
+                if (introData.eventenddate) html += createDetailItem('종료일', formatDate(introData.eventenddate));
+                if (introData.playtime) html += createDetailItem('공연시간', introData.playtime);
+                if (introData.usetimefestival) html += createDetailItem('이용요금', introData.usetimefestival);
+                if (introData.agelimit) html += createDetailItem('연령제한', introData.agelimit);
+            }
+            // 여행코스 (25)
+            else if (contentTypeId === '25') {
+                if (introData.distance) html += createDetailItem('총거리', introData.distance);
+                if (introData.taketime) html += createDetailItem('소요시간', introData.taketime);
+                if (introData.theme) html += createDetailItem('코스테마', introData.theme);
+                if (introData.infocentertourcourse) html += createDetailItem('문의처', introData.infocentertourcourse);
+            }
+            // 레포츠 (28)
+            else if (contentTypeId === '28') {
+                if (introData.infocenterleports) html += createDetailItem('문의처', introData.infocenterleports);
+                if (introData.restdateleports) html += createDetailItem('쉬는날', introData.restdateleports);
+                if (introData.usefeeleports) html += createDetailItem('이용요금', introData.usefeeleports);
+                if (introData.usetimeleports) html += createDetailItem('이용시간', introData.usetimeleports);
+                if (introData.parkingleports) html += createDetailItem('주차시설', introData.parkingleports);
+                if (introData.reservation) html += createDetailItem('예약안내', introData.reservation);
+                if (introData.chkbabycarriageleports) html += createDetailItem('유모차대여', introData.chkbabycarriageleports);
+                if (introData.chkpetleports) html += createDetailItem('애완동물', introData.chkpetleports);
+                if (introData.chkcreditcardleports) html += createDetailItem('신용카드', introData.chkcreditcardleports);
+            }
+            // 숙박 (32)
+            else if (contentTypeId === '32') {
+                if (introData.checkintime) html += createDetailItem('체크인', introData.checkintime);
+                if (introData.checkouttime) html += createDetailItem('체크아웃', introData.checkouttime);
+                if (introData.roomcount) html += createDetailItem('객실수', introData.roomcount);
+                if (introData.roomtype) html += createDetailItem('객실유형', introData.roomtype);
+                if (introData.reservationurl) {
+                    html += '<div class="detail-item"><div class="detail-label">예약안내</div><div class="detail-value">' +
+                            '<a href="' + introData.reservationurl + '" target="_blank">예약하기</a></div></div>';
                 }
-                
-                <h2 style="margin-bottom: 20px;">
-                    ${getContentTypeIcon(item.contenttypeid)} ${item.title}
-                </h2>
-                
-                <div id="detail-content">
-                    <div class="info-section">
-                        <h3>📍 기본 정보</h3>
-                        <div class="info-grid">
-                            ${item.addr1 ? `
-                                <span class="info-label">주소:</span>
-                                <span>${item.addr1} ${item.addr2 || ''} ${item.zipcode ? `(${item.zipcode})` : ''}</span>
-                            ` : ''}
-                            ${item.tel ? `
-                                <span class="info-label">전화:</span>
-                                <span><a href="tel:${item.tel}" style="color: #007bff; text-decoration: none;">${item.tel}</a></span>
-                            ` : ''}
-                            ${item.homepage ? `
-                                <span class="info-label">홈페이지:</span>
-                                <span>${decodeHtml(item.homepage)}</span>
-                            ` : ''}
-                            ${item.distance ? `
-                                <span class="info-label">거리:</span>
-                                <span>${formatDistance(item.distance)}</span>
-                            ` : ''}
-                        </div>
-                    </div>
-                    
-                    ${item.overview ? `
-                        <div class="info-section">
-                            <h3>📝 상세 설명</h3>
-                            <p style="line-height: 1.6;">
-                                ${decodeHtml(item.overview)}
-                            </p>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="info-section">
-                        <h3>📊 추가 정보</h3>
-                        <div class="info-grid">
-                            <span class="info-label">콘텐츠 ID:</span>
-                            <span>${item.contentid}</span>
-                            <span class="info-label">콘텐츠 타입:</span>
-                            <span>${getContentTypeName(item.contenttypeid)}</span>
-                            ${item.createdtime ? `
-                                <span class="info-label">등록일:</span>
-                                <span>${formatDate(item.createdtime)}</span>
-                            ` : ''}
-                            ${item.modifiedtime ? `
-                                <span class="info-label">수정일:</span>
-                                <span>${formatDate(item.modifiedtime)}</span>
-                            ` : ''}
-                        </div>
-                    </div>
-                    
-                    <div id="additional-info">
-                        <!-- 추가 정보가 여기에 들어갑니다 -->
-                    </div>
-                </div>
-                
-                <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button onclick="window.open('https://map.kakao.com/link/map/${item.title},${item.mapy},${item.mapx}', '_blank')" 
-                            class="btn-kakao">
-                        🗺️ 카카오맵에서 보기
-                    </button>
-                    
-                    <button onclick="window.open('https://map.kakao.com/link/to/${item.title},${item.mapy},${item.mapx}', '_blank')" 
-                            class="btn-route">
-                        🚗 길찾기
-                    </button>
-                    
-                    <button onclick="window.open('https://search.naver.com/search.naver?query=${encodeURIComponent(item.title)}', '_blank')" 
-                            class="btn-web">
-                        🔍 네이버 검색
-                    </button>
-                </div>
-            `;
-            
-            document.getElementById('modal').style.display = 'block';
+                if (introData.reservationlodging) html += createDetailItem('예약안내', introData.reservationlodging);
+                if (introData.parkinglodging) html += createDetailItem('주차시설', introData.parkinglodging);
+                if (introData.foodplace) html += createDetailItem('식음료장', introData.foodplace);
+                if (introData.chkcooking) html += createDetailItem('객실내취사', introData.chkcooking);
+            }
+            // 쇼핑 (38)
+            else if (contentTypeId === '38') {
+                if (introData.infocentershopping) html += createDetailItem('문의처', introData.infocentershopping);
+                if (introData.restdateshopping) html += createDetailItem('쉬는날', introData.restdateshopping);
+                if (introData.opentime) html += createDetailItem('영업시간', introData.opentime);
+                if (introData.parkingshopping) html += createDetailItem('주차시설', introData.parkingshopping);
+                if (introData.chkbabycarriageshopping) html += createDetailItem('유모차대여', introData.chkbabycarriageshopping);
+                if (introData.chkpetshopping) html += createDetailItem('애완동물', introData.chkpetshopping);
+                if (introData.chkcreditcardshopping) html += createDetailItem('신용카드', introData.chkcreditcardshopping);
+                if (introData.saleitem) html += createDetailItem('판매품목', introData.saleitem);
+                if (introData.shopguide) html += createDetailItem('매장안내', introData.shopguide);
+            }
+            // 음식점 (39)
+            else if (contentTypeId === '39') {
+                if (introData.infocenterfood) html += createDetailItem('문의처', introData.infocenterfood);
+                if (introData.restdatefood) html += createDetailItem('쉬는날', introData.restdatefood);
+                if (introData.opentimefood) html += createDetailItem('영업시간', introData.opentimefood);
+                if (introData.parkingfood) html += createDetailItem('주차시설', introData.parkingfood);
+                if (introData.firstmenu) html += createDetailItem('대표메뉴', introData.firstmenu);
+                if (introData.treatmenu) html += createDetailItem('취급메뉴', introData.treatmenu);
+                if (introData.smoking) html += createDetailItem('금연/흡연', introData.smoking);
+                if (introData.seat) html += createDetailItem('좌석수', introData.seat);
+                if (introData.kidsfacility) html += createDetailItem('어린이시설', introData.kidsfacility);
+                if (introData.chkcreditcardfood) html += createDetailItem('신용카드', introData.chkcreditcardfood);
+            }
+
+            html += '</div></div>';
+            return html;
         }
-        
-        // 추가 정보와 함께 상세 표시
-        function displayDetailWithIntro(item, introData) {
-            const additionalInfoDiv = document.getElementById('additional-info');
-            if (!additionalInfoDiv) return;
-            
-            let additionalHtml = '<div class="info-section"><h3>📋 상세 정보</h3><div class="info-grid">';
-            
-            // 모든 필드를 동적으로 표시
-            Object.entries(introData).forEach(([key, value]) => {
-                if (value && typeof value === 'string' && value.trim()) {
-                    const label = getFieldLabel(key);
-                    if (label) {
-                        additionalHtml += `<span class="info-label">${label}:</span><span>${value}</span>`;
-                    }
-                }
-            });
-            
-            additionalHtml += '</div></div>';
-            additionalInfoDiv.innerHTML = additionalHtml;
+
+        // 상세 정보 아이템 생성
+        function createDetailItem(label, value) {
+            if (!value || value === 'null') return '';
+            return '<div class="detail-item"><div class="detail-label">' + label + 
+                   '</div><div class="detail-value">' + value + '</div></div>';
         }
-        
-        // 필드 레이블 매핑
-        function getFieldLabel(key) {
-            const labels = {
-                // 공통
-                'usetime': '이용시간',
-                'restdate': '휴무일',
-                'parking': '주차',
-                'chkbabycarriage': '유모차',
-                'chkpet': '애완동물',
-                'chkcreditcard': '신용카드',
-                
-                // 문화시설
-                'usefee': '이용요금',
-                'usetimefestival': '관람시간',
-                'parkingfee': '주차요금',
-                'infocenterculture': '문의처',
-                
-                // 축제
-                'eventstartdate': '시작일',
-                'eventenddate': '종료일',
-                'playtime': '공연시간',
-                'eventplace': '행사장소',
-                'sponsor1': '주최',
-                'sponsor2': '주관',
-                'agelimit': '연령제한',
-                'bookingplace': '예매처',
-                
-                // 숙박
-                'checkintime': '체크인',
-                'checkouttime': '체크아웃',
-                'roomcount': '객실수',
-                'roomtype': '객실유형',
-                'reservationurl': '예약URL',
-                
-                // 음식점
-                'firstmenu': '대표메뉴',
-                'treatmenu': '취급메뉴',
-                'opentimefood': '영업시간',
-                'restdatefood': '휴무일',
-                'seat': '좌석수'
-            };
-            
-            return labels[key] || null;
-        }
-        
-        // 콘텐츠 타입 이름 가져오기
-        function getContentTypeName(typeId) {
-            const types = {
-                '12': '관광지',
-                '14': '문화시설',
-                '15': '축제/공연',
-                '25': '여행코스',
-                '28': '레포츠',
-                '32': '숙박',
-                '38': '쇼핑',
-                '39': '음식점'
-            };
-            return types[typeId] || '기타';
-        }
-        
+
         // 날짜 포맷
         function formatDate(dateStr) {
-            if (!dateStr || dateStr.length < 8) return dateStr;
-            return `${dateStr.substr(0,4)}-${dateStr.substr(4,2)}-${dateStr.substr(6,2)}`;
+            if (!dateStr || dateStr.length !== 8) return dateStr;
+            return dateStr.substr(0, 4) + '-' + dateStr.substr(4, 2) + '-' + dateStr.substr(6, 2);
         }
-        
+
         // 모달 닫기
-        function closeModal(event) {
-            if (!event || event.target.id === 'modal' || event.target.className === 'close-modal') {
-                document.getElementById('modal').style.display = 'none';
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // 모달 외부 클릭시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
             }
         }
-        
-        // 엔터키 이벤트
-        document.getElementById('keyword').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') searchByKeyword();
-        });
-        
-        // 페이지 로드 시 제주 검색
-        window.addEventListener('load', function() {
-            searchByKeyword();
-        });
+
+        // 초기 로드
+        window.onload = () => {
+            loadPlaces();
+        };
     </script>
 </body>
 </html>
-```
-
-이제 서버 재배포 전까지는 기본 정보만 보여주고, `detailIntro` API가 실패해도 에러 없이 작동합니다!
