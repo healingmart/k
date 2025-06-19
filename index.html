@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Tourism API Test</title>
+</head>
+<body>
+    <h1>관광 API 테스트</h1>
+    
+    <div>
+        <h2>키워드 검색</h2>
+        <input type="text" id="keyword" placeholder="검색어" value="서울">
+        <button onclick="searchKeyword()">검색</button>
+    </div>
+    
+    <div>
+        <h2>위치 기반 검색</h2>
+        <input type="text" id="mapX" placeholder="경도" value="126.981611">
+        <input type="text" id="mapY" placeholder="위도" value="37.568477">
+        <button onclick="searchLocation()">검색</button>
+    </div>
+    
+    <pre id="result"></pre>
+    
+    <script>
+        // API 엔드포인트 (배포 후 실제 URL로 변경)
+        const API_URL = 'https://your-app.vercel.app/api/tourism';
+        const API_KEY = 'your-api-key'; // 실제 API 키로 변경 (선택사항)
+        
+        async function searchKeyword() {
+            const keyword = document.getElementById('keyword').value;
+            
+            try {
+                const response = await fetch(`${API_URL}?operation=searchKeyword&keyword=${keyword}&numOfRows=5`, {
+                    headers: {
+                        'X-API-Key': API_KEY
+                    }
+                });
+                
+                const data = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        async function searchLocation() {
+            const mapX = document.getElementById('mapX').value;
+            const mapY = document.getElementById('mapY').value;
+            
+            try {
+                const response = await fetch(`${API_URL}?operation=locationBasedList&mapX=${mapX}&mapY=${mapY}&radius=1000&numOfRows=5`, {
+                    headers: {
+                        'X-API-Key': API_KEY
+                    }
+                });
+                
+                const data = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
