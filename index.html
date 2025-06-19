@@ -14,7 +14,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         :root {
             --primary-color: #667eea;
             --secondary-color: #764ba2;
@@ -29,14 +29,14 @@
             --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-        
+
         body {
             font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background-color: var(--light-bg);
             color: var(--dark-text);
             line-height: 1.6;
         }
-        
+
         /* 로딩 스피너 */
         .spinner {
             display: inline-block;
@@ -47,11 +47,11 @@
             border-top-color: var(--primary-color);
             animation: spin 1s ease-in-out infinite;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
+
         /* 헤더 */
         header {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -61,7 +61,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         header::before {
             content: '';
             position: absolute;
@@ -72,12 +72,12 @@
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             animation: pulse 4s ease-in-out infinite;
         }
-        
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); opacity: 0.5; }
             50% { transform: scale(1.1); opacity: 0.3; }
         }
-        
+
         .header-content {
             position: relative;
             z-index: 1;
@@ -86,27 +86,27 @@
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
         h1 {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
-        
+
         .header-subtitle {
             font-size: 1.1rem;
             opacity: 0.9;
             font-weight: 300;
         }
-        
+
         /* 컨테이너 */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 1rem;
         }
-        
+
         /* 검색 섹션 */
         .search-section {
             background: white;
@@ -116,11 +116,11 @@
             margin-bottom: 2rem;
             transition: transform 0.3s ease;
         }
-        
+
         .search-section:hover {
             transform: translateY(-2px);
         }
-        
+
         /* 탭 스타일 */
         .search-tabs {
             display: flex;
@@ -130,7 +130,7 @@
             padding-bottom: 1rem;
             flex-wrap: wrap;
         }
-        
+
         .tab-button {
             background: none;
             border: none;
@@ -143,17 +143,17 @@
             transition: all 0.3s ease;
             border-radius: 8px 8px 0 0;
         }
-        
+
         .tab-button:hover {
             color: var(--primary-color);
             background: rgba(102, 126, 234, 0.1);
         }
-        
+
         .tab-button.active {
             color: var(--primary-color);
             background: rgba(102, 126, 234, 0.1);
         }
-        
+
         .tab-button.active::after {
             content: '';
             position: absolute;
@@ -163,26 +163,26 @@
             height: 2px;
             background: var(--primary-color);
         }
-        
+
         /* 폼 스타일 */
         .search-form {
             display: none;
             animation: fadeIn 0.3s ease;
         }
-        
+
         .search-form.active {
             display: block;
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .form-group {
             margin-bottom: 1.5rem;
         }
-        
+
         label {
             display: block;
             margin-bottom: 0.5rem;
@@ -190,7 +190,7 @@
             color: var(--dark-text);
             font-size: 0.95rem;
         }
-        
+
         input, select {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -200,19 +200,19 @@
             transition: all 0.3s ease;
             background: white;
         }
-        
+
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-        
+
         .location-inputs {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
-        
+
         /* 버튼 스타일 */
         .btn {
             padding: 0.75rem 2rem;
@@ -227,24 +227,24 @@
             justify-content: center;
             gap: 0.5rem;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             box-shadow: var(--shadow);
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
-        
+
         .btn-primary:disabled {
             background: #cbd5e0;
             cursor: not-allowed;
             transform: none;
         }
-        
+
         /* 결과 그리드 */
         .results-grid {
             display: grid;
@@ -252,7 +252,7 @@
             gap: 1.5rem;
             margin-top: 2rem;
         }
-        
+
         /* 카드 스타일 */
         .card {
             background: white;
@@ -263,30 +263,30 @@
             cursor: pointer;
             position: relative;
         }
-        
+
         .card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-lg);
         }
-        
+
         .card-image {
             position: relative;
             height: 200px;
             overflow: hidden;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
-        
+
         .card-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
-        
+
         .card:hover .card-image img {
             transform: scale(1.05);
         }
-        
+
         .card-image-placeholder {
             width: 100%;
             height: 100%;
@@ -297,7 +297,7 @@
             color: white;
             font-size: 3rem;
         }
-        
+
         .card-badge {
             position: absolute;
             top: 10px;
@@ -309,11 +309,11 @@
             font-weight: 500;
             backdrop-filter: blur(10px);
         }
-        
+
         .card-content {
             padding: 1.5rem;
         }
-        
+
         .card-title {
             font-size: 1.25rem;
             font-weight: 600;
@@ -323,7 +323,7 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .card-info {
             color: var(--gray-text);
             font-size: 0.95rem;
@@ -331,25 +331,25 @@
             flex-direction: column;
             gap: 0.5rem;
         }
-        
+
         .card-info-item {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         /* 로딩 상태 */
         .loading-container {
             text-align: center;
             padding: 4rem 2rem;
         }
-        
+
         .loading-text {
             margin-top: 1rem;
             font-size: 1.1rem;
             color: var(--gray-text);
         }
-        
+
         /* 에러 상태 */
         .error-container {
             background: #fff5f5;
@@ -362,24 +362,24 @@
             align-items: center;
             gap: 1rem;
         }
-        
+
         .error-icon {
             font-size: 1.5rem;
         }
-        
+
         /* 빈 상태 */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
             color: var(--gray-text);
         }
-        
+
         .empty-state-icon {
             font-size: 4rem;
             margin-bottom: 1rem;
             opacity: 0.5;
         }
-        
+
         /* 모달 */
         .modal {
             display: none;
@@ -393,7 +393,7 @@
             overflow-y: auto;
             animation: fadeIn 0.3s ease;
         }
-        
+
         .modal-content {
             background: white;
             margin: 2rem auto;
@@ -408,19 +408,19 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         @keyframes slideUp {
             from { transform: translateY(50px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        
+
         .modal-header {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             padding: 2rem;
             position: relative;
         }
-        
+
         .modal-title {
             font-size: 1.75rem;
             font-weight: 600;
@@ -428,7 +428,7 @@
             align-items: center;
             gap: 0.75rem;
         }
-        
+
         .modal-close {
             position: absolute;
             top: 1rem;
@@ -446,30 +446,30 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .modal-close:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: rotate(90deg);
         }
-        
+
         .modal-body {
             padding: 2rem;
             overflow-y: auto;
             flex: 1;
         }
-        
+
         .detail-section {
             margin-bottom: 2rem;
             padding-bottom: 2rem;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .detail-section:last-child {
             border-bottom: none;
             margin-bottom: 0;
             padding-bottom: 0;
         }
-        
+
         .detail-section-title {
             font-size: 1.25rem;
             font-weight: 600;
@@ -479,58 +479,102 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .detail-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
         }
-        
+
         .detail-item {
             padding: 0.75rem;
             background: var(--light-bg);
             border-radius: 8px;
             border-left: 3px solid var(--primary-color);
         }
-        
+
         .detail-label {
             font-weight: 600;
             color: var(--dark-text);
             margin-bottom: 0.25rem;
             font-size: 0.9rem;
         }
-        
+
         .detail-value {
             color: var(--gray-text);
             font-size: 0.95rem;
             line-height: 1.5;
         }
-        
+
         .detail-value a {
             color: var(--primary-color);
             text-decoration: none;
             transition: color 0.3s ease;
         }
-        
+
         .detail-value a:hover {
             color: var(--secondary-color);
             text-decoration: underline;
         }
-        
+
+        /* Pagination button styling */
+        .load-more-container {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .btn-load-more {
+            background: #f0f4f8; /* Light gray background */
+            color: var(--dark-text);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 2.5rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn-load-more:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-load-more:disabled {
+            background: #e2e8f0;
+            color: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            border-color: #e2e8f0;
+        }
+
+        /* Full width for detail item overview */
+        .detail-item.full-width {
+            grid-column: 1 / -1;
+        }
+
         /* 반응형 */
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
             }
-            
+
             .location-inputs {
                 grid-template-columns: 1fr;
             }
-            
+
             .results-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .modal-content {
                 margin: 0;
                 border-radius: 0;
@@ -538,12 +582,12 @@
                 height: 100%;
                 max-height: 100vh;
             }
-            
+
             .detail-grid {
                 grid-template-columns: 1fr;
             }
         }
-        
+
         /* 유틸리티 클래스 */
         .text-center { text-align: center; }
         .mt-1 { margin-top: 0.5rem; }
@@ -559,7 +603,7 @@
             <p class="header-subtitle">한국의 아름다운 관광지, 맛집, 숙박, 문화시설을 한눈에</p>
         </div>
     </header>
-    
+
     <div class="container">
         <div class="search-section">
             <div class="search-tabs">
@@ -573,7 +617,7 @@
                     📌 내 주변 검색
                 </button>
             </div>
-            
+
             <!-- 지역별 검색 -->
             <form id="areaSearchForm" class="search-form active">
                 <div class="form-group">
@@ -595,7 +639,7 @@
                     <span>→</span>
                 </button>
             </form>
-            
+
             <!-- 키워드 검색 -->
             <form id="keywordSearchForm" class="search-form">
                 <div class="form-group">
@@ -607,7 +651,7 @@
                     <span>→</span>
                 </button>
             </form>
-            
+
             <!-- 내 주변 검색 -->
             <form id="locationSearchForm" class="search-form">
                 <div class="form-group">
@@ -634,20 +678,27 @@
                 </button>
             </form>
         </div>
-        
+
         <div id="loading" class="loading-container" style="display: none;">
             <div class="spinner"></div>
             <p class="loading-text">관광지 정보를 불러오는 중...</p>
         </div>
-        
+
         <div id="error" class="error-container" style="display: none;">
             <span class="error-icon">⚠️</span>
             <span id="errorMessage"></span>
         </div>
-        
+
         <div id="results" class="results-grid"></div>
+
+        <div id="loadMoreContainer" class="load-more-container" style="display: none;">
+            <button id="loadMoreBtn" class="btn btn-load-more">
+                <span>더 많은 정보 불러오기</span>
+                <span>↓</span>
+            </button>
+        </div>
     </div>
-    
+
     <!-- 상세 정보 모달 -->
     <div id="detailModal" class="modal">
         <div class="modal-content">
@@ -658,132 +709,212 @@
             <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
-    
+
     <script>
         // API 설정
         const API_BASE_URL = 'https://k-ivory.vercel.app/api/tourism'; // <-- API URL 확인
-        
+
         // 전역 변수
-        let currentSearchParams = null;
-        
-        // 탭 전환
+        let currentSearchParams = null; // 현재 검색 파라미터를 저장
+        let currentPage = 1; // 현재 페이지 번호
+        let totalCount = 0; // 전체 검색 결과 수
+        const itemsPerPage = 30; // 한 번에 표시할 항목 수 (사용자 요청)
+
+        // 탭 전환 이벤트 리스너
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', (e) => {
-                // 모든 탭과 폼 비활성화
+                // 모든 탭과 폼의 'active' 클래스 제거
                 document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
                 document.querySelectorAll('.search-form').forEach(form => form.classList.remove('active'));
-                
-                // 선택한 탭과 폼 활성화
+
+                // 클릭된 탭과 해당 폼에 'active' 클래스 추가
                 e.target.classList.add('active');
                 const tabName = e.target.dataset.tab;
                 document.getElementById(`${tabName}SearchForm`).classList.add('active');
+
+                // 탭 변경 시 기존 검색 결과 및 "더 보기" 버튼 초기화, 에러 메시지 초기화
+                clearResults();
+                document.getElementById('loadMoreContainer').style.display = 'none';
+                showError('');
             });
         });
-        
-        // 지역별 검색
+
+        // 지역별 검색 폼 제출 이벤트 리스너
         document.getElementById('areaSearchForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+            e.preventDefault(); // 폼 기본 제출 동작 방지
             const params = {
-                operation: 'areaBasedList',
-                numOfRows: 100, // <-- 여기를 100으로 변경
-                pageNo: 1
+                operation: 'areaBasedList' // 지역 기반 목록 조회
             };
-            
+
             const contentType = document.getElementById('contentType').value;
-            if (contentType) params.contentTypeId = contentType;
-            
-            await performSearch(params);
+            if (contentType) params.contentTypeId = contentType; // 선택된 콘텐츠 타입 추가
+
+            await performSearch(params, false); // 새로운 검색 (append = false)
         });
-        
-        // 키워드 검색
+
+        // 키워드 검색 폼 제출 이벤트 리스너
         document.getElementById('keywordSearchForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+            e.preventDefault(); // 폼 기본 제출 동작 방지
             const params = {
-                operation: 'searchKeyword',
-                keyword: document.getElementById('keyword').value.trim(),
-                numOfRows: 100, // <-- 여기를 100으로 변경
-                pageNo: 1
+                operation: 'searchKeyword', // 키워드 검색
+                keyword: document.getElementById('keyword').value.trim() // 입력된 키워드
             };
-            
-            await performSearch(params);
+
+            // 키워드가 비어있는 경우 경고 메시지 표시
+            if (!params.keyword) {
+                showError('검색어를 입력해주세요.');
+                return;
+            }
+
+            await performSearch(params, false); // 새로운 검색 (append = false)
         });
-        
-        // 내 주변 검색
+
+        // 내 주변 검색 폼 제출 이벤트 리스너
         document.getElementById('locationSearchForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+            e.preventDefault(); // 폼 기본 제출 동작 방지
+            const mapX = document.getElementById('mapX').value;
+            const mapY = document.getElementById('mapY').value;
+
+            // 경도와 위도 값이 모두 입력되지 않은 경우 경고 메시지 표시
+            if (!mapX || !mapY) {
+                showError('경도와 위도 값을 모두 입력해주세요.');
+                return;
+            }
+
             const params = {
-                operation: 'locationBasedList',
-                mapX: document.getElementById('mapX').value,
-                mapY: document.getElementById('mapY').value,
-                radius: document.getElementById('radius').value,
-                numOfRows: 100, // <-- 여기를 100으로 변경
-                pageNo: 1
+                operation: 'locationBasedList', // 위치 기반 목록 조회
+                mapX: mapX, // 경도
+                mapY: mapY, // 위도
+                radius: document.getElementById('radius').value // 검색 반경
             };
-            
-            await performSearch(params);
+
+            await performSearch(params, false); // 새로운 검색 (append = false)
         });
-        
-        // 검색 수행
-        async function performSearch(params) {
-            currentSearchParams = params;
-            showLoading(true);
-            showError('');
-            clearResults();
-            
+
+        // "더 보기" 버튼 클릭 이벤트 리스너
+        document.getElementById('loadMoreBtn').addEventListener('click', async () => {
+            if (currentSearchParams) {
+                await performSearch(currentSearchParams, true); // 기존 검색에 결과 추가 (append = true)
+            }
+        });
+
+        /**
+         * 검색을 수행하는 비동기 함수
+         * @param {Object} params - API 요청에 필요한 파라미터
+         * @param {boolean} append - 기존 결과에 추가할지 (true), 아니면 새로 검색할지 (false) 여부
+         */
+        async function performSearch(params, append = false) {
+            currentSearchParams = { ...params }; // 현재 검색 파라미터를 저장 (나중에 "더 보기"에서 사용)
+
+            if (!append) {
+                // 새로운 검색인 경우 페이지 및 전체 카운트 초기화
+                currentPage = 1;
+                totalCount = 0;
+                clearResults(); // 기존 결과 삭제
+                document.getElementById('loadMoreContainer').style.display = 'none'; // "더 보기" 버튼 숨김
+            } else {
+                currentPage++; // "더 보기"인 경우 페이지 증가
+            }
+
+            // API 요청 파라미터에 numOfRows (항목 수)와 pageNo (페이지 번호) 설정
+            currentSearchParams.numOfRows = itemsPerPage;
+            currentSearchParams.pageNo = currentPage;
+
+            showLoading(true); // 로딩 스피너 표시
+            showError(''); // 이전 에러 메시지 초기화
+
             try {
                 const response = await fetch(API_BASE_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(params)
+                    body: JSON.stringify(currentSearchParams)
                 });
-                
+
                 if (!response.ok) {
-                    throw new Error(`서버 오류 (${response.status})`);
+                    throw new Error(`서버 오류 (${response.status})`); // HTTP 에러 처리
                 }
-                
+
                 const data = await response.json();
-                
-                if (data.success && data.data?.items?.item) {
-                    const items = Array.isArray(data.data.items.item) 
-                        ? data.data.items.item 
-                        : [data.data.items.item];
-                    displayResults(items);
+
+                if (data.success && data.data) {
+                    // API 응답에서 totalCount (전체 결과 수) 파싱
+                    totalCount = parseInt(data.data.totalCount || 0);
+                    // 검색 결과 아이템 배열로 변환 (단일 객체일 경우 배열로 감쌈)
+                    const items = Array.isArray(data.data.items?.item)
+                        ? data.data.items.item
+                        : (data.data.items?.item ? [data.data.items.item] : []);
+
+                    displayResults(items, append); // 결과 표시
+
+                    // 현재 페이지 * 페이지당 항목 수가 전체 항목 수보다 작으면 "더 보기" 버튼 표시
+                    if ((currentPage * itemsPerPage) < totalCount) {
+                        document.getElementById('loadMoreContainer').style.display = 'block';
+                    } else {
+                        document.getElementById('loadMoreContainer').style.display = 'none';
+                    }
+
+                    // 첫 페이지에 결과가 없고, 추가 검색이 아닌 경우 (즉, 아무 결과도 없는 경우) 빈 상태 표시
+                    if (items.length === 0 && !append) {
+                        displayEmptyState();
+                    }
+
                 } else if (data.error) {
+                    // API에서 에러 응답을 보낸 경우
                     showError(data.error.message || '알 수 없는 오류가 발생했습니다.');
+                    displayEmptyState(true); // 에러와 함께 빈 상태 표시
                 } else {
+                    // API 응답은 성공했지만, 데이터가 없는 경우
                     displayEmptyState();
                 }
             } catch (error) {
+                // 네트워크 오류 또는 JSON 파싱 오류 등 예외 처리
                 console.error('Search error:', error);
                 showError('검색 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                displayEmptyState(true); // 에러와 함께 빈 상태 표시
             } finally {
-                showLoading(false);
+                showLoading(false); // 로딩 스피너 숨김
             }
         }
-        
-        // 결과 표시
-        function displayResults(items) {
+
+        /**
+         * 검색 결과를 화면에 표시하는 함수
+         * @param {Array} items - 표시할 항목 배열
+         * @param {boolean} append - 기존 결과에 추가할지 여부
+         */
+        function displayResults(items, append) {
             const resultsContainer = document.getElementById('results');
-            
-            if (items.length === 0) {
+
+            if (!append) {
+                resultsContainer.innerHTML = ''; // 새로운 검색인 경우 기존 결과 모두 지움
+            }
+
+            // 첫 검색인데 항목이 없으면 빈 상태 표시 (이후 append 시에는 기존 empty state를 유지)
+            if (items.length === 0 && !append) {
                 displayEmptyState();
                 return;
             }
-            
-            resultsContainer.innerHTML = items.map(item => createCard(item)).join('');
+
+            // 각 항목에 대해 카드 생성 및 추가
+            items.forEach(item => {
+                resultsContainer.insertAdjacentHTML('beforeend', createCard(item));
+            });
         }
-        
-        // 카드 생성
+
+        /**
+         * 단일 항목에 대한 HTML 카드 생성
+         * @param {Object} item - 항목 데이터 객체
+         * @returns {string} - 생성된 HTML 카드 문자열
+         */
         function createCard(item) {
             const typeIcon = getContentTypeIcon(item.contenttypeid);
             const typeName = getContentTypeName(item.contenttypeid);
-            
+
             return `
                 <div class="card" onclick="showDetails('${item.contentid}', '${item.contenttypeid}')">
                     <div class="card-image">
-                        ${item.firstimage ? 
+                        ${item.firstimage ?
                             `<img src="${item.firstimage}" alt="${item.title}" onerror="this.parentElement.innerHTML='<div class=\\'card-image-placeholder\\'>${typeIcon}</div>'">` :
                             `<div class="card-image-placeholder">${typeIcon}</div>`
                         }
@@ -818,13 +949,17 @@
                 </div>
             `;
         }
-        
-        // 상세 정보 표시
+
+        /**
+         * 상세 정보 모달을 표시하는 비동기 함수
+         * @param {string} contentId - 콘텐츠 ID
+         * @param {string} contentTypeId - 콘텐츠 타입 ID
+         */
         async function showDetails(contentId, contentTypeId) {
             const modal = document.getElementById('detailModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
-            
+
             modalTitle.innerHTML = '정보를 불러오는 중...';
             modalBody.innerHTML = `
                 <div class="loading-container">
@@ -832,10 +967,10 @@
                     <p class="loading-text">상세 정보를 불러오는 중...</p>
                 </div>
             `;
-            modal.style.display = 'block';
-            
+            modal.style.display = 'block'; // 모달 표시
+
             try {
-                // 공통 정보 조회
+                // 공통 정보 (DetailCommon) 조회
                 const commonResponse = await fetch(API_BASE_URL, {
                     method: 'POST',
                     headers: {
@@ -843,26 +978,25 @@
                     },
                     body: JSON.stringify({
                         operation: 'detailCommon',
-                        contentId: contentId,
-                        contentTypeId: contentTypeId // detailCommon은 contentTypeId를 보내지 않아야 하지만, 혹시 몰라 보냅니다. 서버에서 제거됩니다.
+                        contentId: contentId
                     })
                 });
-                
+
                 if (!commonResponse.ok) {
                     throw new Error('상세 정보를 불러올 수 없습니다.');
                 }
-                
+
                 const commonData = await commonResponse.json();
-                
+
                 if (!commonData.success || !commonData.data?.items?.item) {
                     throw new Error('상세 정보가 없습니다.');
                 }
-                
-                const item = Array.isArray(commonData.data.items.item) 
-                    ? commonData.data.items.item[0] 
+
+                const item = Array.isArray(commonData.data.items.item)
+                    ? commonData.data.items.item[0]
                     : commonData.data.items.item;
-                
-                // 소개 정보 조회 (선택적)
+
+                // 소개 정보 (DetailIntro) 조회 (선택적)
                 let introData = null;
                 try {
                     const introResponse = await fetch(API_BASE_URL, {
@@ -873,15 +1007,15 @@
                         body: JSON.stringify({
                             operation: 'detailIntro',
                             contentId: contentId,
-                            contentTypeId: contentTypeId
+                            contentTypeId: contentTypeId // DetailIntro는 contentTypeId가 필요
                         })
                     });
-                    
+
                     if (introResponse.ok) {
                         const introResult = await introResponse.json();
                         if (introResult.success && introResult.data?.items?.item) {
-                            introData = Array.isArray(introResult.data.items.item) 
-                                ? introResult.data.items.item[0] 
+                            introData = Array.isArray(introResult.data.items.item)
+                                ? introResult.data.items.item[0]
                                 : introResult.data.items.item;
                         }
                     } else {
@@ -890,10 +1024,11 @@
                 } catch (error) {
                     console.warn('소개 정보 조회 실패 (선택적, 무시):', error);
                 }
-                
-                displayDetailModal(item, introData);
-                
+
+                displayDetailModal(item, introData); // 모달에 상세 정보 표시
+
             } catch (error) {
+                // 상세 정보 로딩 중 오류 발생 시 모달 내용 업데이트
                 modalBody.innerHTML = `
                     <div class="error-container">
                         <span class="error-icon">⚠️</span>
@@ -902,18 +1037,22 @@
                 `;
             }
         }
-        
-        // 상세 정보 모달 표시
+
+        /**
+         * 상세 정보 모달에 콘텐츠를 표시하는 함수
+         * @param {Object} item - 공통 정보 객체
+         * @param {Object} introData - 소개 정보 객체 (선택적)
+         */
         function displayDetailModal(item, introData) {
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
             const typeIcon = getContentTypeIcon(item.contenttypeid);
-            
-            modalTitle.innerHTML = `${typeIcon} ${item.title}`;
-            
+
+            modalTitle.innerHTML = `${typeIcon} ${item.title}`; // 모달 제목 설정
+
             let bodyHtml = '';
-            
-            // 기본 정보
+
+            // 기본 정보 섹션
             bodyHtml += `
                 <div class="detail-section">
                     <h3 class="detail-section-title">
@@ -928,19 +1067,24 @@
                     ${createDetailItem('개요', item.overview, false, true)}
                 </div>
             `;
-            
-            // 타입별 상세 정보
+
+            // 콘텐츠 타입별 상세 정보 섹션 (introData가 있을 경우)
             if (introData) {
                 bodyHtml += getDetailsByContentType(item.contenttypeid, introData);
             }
-            
-            modalBody.innerHTML = bodyHtml;
+
+            modalBody.innerHTML = bodyHtml; // 모달 본문 내용 설정
         }
-        
-        // 콘텐츠 타입별 상세 정보 생성 (매우 상세)
+
+        /**
+         * 콘텐츠 타입별로 상세 정보를 HTML로 구성하는 함수
+         * @param {string} contentTypeId - 콘텐츠 타입 ID
+         * @param {Object} intro - 소개 정보 객체
+         * @returns {string} - 타입별 상세 정보 HTML 문자열
+         */
         function getDetailsByContentType(contentTypeId, intro) {
             let html = '<div class="detail-section">';
-            
+
             switch(contentTypeId) {
                 case '12': // 관광지
                     html += `
@@ -967,7 +1111,7 @@
                         </div>
                     `;
                     break;
-                    
+
                 case '14': // 문화시설
                     html += `
                         <h3 class="detail-section-title">
@@ -991,7 +1135,7 @@
                         </div>
                     `;
                     break;
-                    
+
                 case '15': // 행사/공연/축제
                     html += `
                         <h3 class="detail-section-title">
@@ -1020,7 +1164,7 @@
                         </div>
                     `;
                     break;
-                    
+
                 case '25': // 여행코스
                     html += `
                         <h3 class="detail-section-title">
@@ -1036,7 +1180,7 @@
                         </div>
                     `;
                     break;
-                    
+
                 case '28': // 레포츠
                     html += `
                         <h3 class="detail-section-title">
@@ -1061,7 +1205,7 @@
                         </div>
                     `;
                     break;
-                    
+
                 case '32': // 숙박
                     html += `
                         <h3 class="detail-section-title">
@@ -1099,7 +1243,7 @@
                         </div>
                     `;
                     break;
-                    
+
                 case '38': // 쇼핑
                     html += `
                         <h3 class="detail-section-title">
@@ -1125,7 +1269,7 @@
                         </div>
                     `;
                     break;
-                    
+
                 case '39': // 음식점
                     html += `
                         <h3 class="detail-section-title">
@@ -1155,28 +1299,36 @@
                 default:
                     html += '<p>해당 콘텐츠 타입의 상세 정보는 없습니다.</p>';
             }
-            
+
             html += '</div>';
             return html;
         }
-        
-        // 상세 정보 아이템 생성 헬퍼
+
+        /**
+         * 상세 정보 항목 HTML을 생성하는 헬퍼 함수
+         * @param {string} label - 항목 라벨 (예: '주소')
+         * @param {string} value - 항목 값
+         * @param {boolean} isLink - 값이 URL인지 여부
+         * @param {boolean} isOverview - 개요(overview) 필드인지 여부 (개요는 HTML 태그 제거 로직을 다르게 적용)
+         * @returns {string} - 생성된 HTML 문자열 또는 빈 문자열
+         */
         function createDetailItem(label, value, isLink = false, isOverview = false) {
-            if (!value || String(value).trim() === '' || String(value).trim() === '0' || String(value).trim() === '아니오') return '';
-            
+            // 값이 없거나, 빈 문자열, '0', '아니오'인 경우 항목을 표시하지 않음
+            if (!value || String(value).trim() === '' || String(value).trim() === '0' || String(value).trim().toLowerCase() === '아니오') return '';
+
             let displayValue = String(value).trim();
-            
-            // HTML 태그 제거 및 디코딩 (개요가 아닌 일반 필드에만 적용)
+
+            // 개요 필드가 아닌 경우에만 HTML 태그 제거 및 디코딩 적용
             if (!isOverview) {
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = displayValue;
                 displayValue = tempDiv.textContent || tempDiv.innerText || '';
-                // 추가적인 HTML 엔티티 디코딩 및 불필요한 공백 제거
+                // HTML 엔티티 추가 디코딩 및 불필요한 공백 제거
                 displayValue = displayValue.replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
             }
-            
+
+            // 값이 URL인 경우 링크 태그로 변환
             if (isLink) {
-                // URL 정규식 (http/https로 시작하는 경우)
                 const urlRegex = /^(https?:\/\/[^\s]+)$/i;
                 if (urlRegex.test(displayValue)) {
                     displayValue = `<a href="${displayValue}" target="_blank">${displayValue}</a>`;
@@ -1185,7 +1337,7 @@
                     displayValue = `<span>${displayValue}</span>`;
                 }
             }
-            
+
             return `
                 <div class="detail-item ${isOverview ? 'full-width' : ''}">
                     <div class="detail-label">${label}</div>
@@ -1193,23 +1345,31 @@
                 </div>
             `;
         }
-        
-        // 콘텐츠 타입 아이콘
+
+        /**
+         * 콘텐츠 타입 ID에 따른 아이콘 반환
+         * @param {string} contentTypeId - 콘텐츠 타입 ID
+         * @returns {string} - 해당 아이콘 문자열
+         */
         function getContentTypeIcon(contentTypeId) {
             const icons = {
-                '12': '🏛️',
-                '14': '🎭',
-                '15': '🎪',
-                '25': '🚶',
-                '28': '⛷️',
-                '32': '🏨',
-                '38': '🛍️',
-                '39': '🍽️'
+                '12': '🏛️', // 관광지
+                '14': '🎭', // 문화시설
+                '15': '🎪', // 행사/공연/축제
+                '25': '🚶', // 여행코스
+                '28': '⛷️', // 레포츠
+                '32': '🏨', // 숙박
+                '38': '🛍️', // 쇼핑
+                '39': '🍽️'  // 음식점
             };
-            return icons[contentTypeId] || '📍';
+            return icons[contentTypeId] || '📍'; // 기본 아이콘
         }
-        
-        // 콘텐츠 타입 이름
+
+        /**
+         * 콘텐츠 타입 ID에 따른 이름 반환
+         * @param {string} contentTypeId - 콘텐츠 타입 ID
+         * @returns {string} - 해당 이름 문자열
+         */
         function getContentTypeName(contentTypeId) {
             const names = {
                 '12': '관광지',
@@ -1221,19 +1381,27 @@
                 '38': '쇼핑',
                 '39': '음식점'
             };
-            return names[contentTypeId] || '기타';
+            return names[contentTypeId] || '기타'; // 기본 이름
         }
-        
-        // 날짜 포맷 (YYYYMMDD -> YYYY-MM-DD)
+
+        /**
+         * YYYYMMDDHHmmss 또는 YYYYMMDD 형식의 날짜 문자열을 YYYY-MM-DD 형식으로 변환
+         * @param {string} dateStr - 날짜 문자열
+         * @returns {string} - 포맷된 날짜 문자열
+         */
         function formatDate(dateStr) {
-            if (!dateStr || String(dateStr).length !== 14) return dateStr; // YYYYMMDDHHmmss 형태
+            if (!dateStr || String(dateStr).length < 8) return dateStr;
             const year = dateStr.substring(0, 4);
             const month = dateStr.substring(4, 6);
             const day = dateStr.substring(6, 8);
             return `${year}-${month}-${day}`;
         }
-        
-        // 거리 포맷
+
+        /**
+         * 거리를 미터 또는 킬로미터 단위로 포맷
+         * @param {number} dist - 거리 (미터 단위)
+         * @returns {string} - 포맷된 거리 문자열
+         */
         function formatDistance(dist) {
             const distance = parseFloat(dist);
             if (isNaN(distance)) return '거리 정보 없음';
@@ -1243,17 +1411,24 @@
                 return `${(distance / 1000).toFixed(1)}km`;
             }
         }
-        
-        // 로딩 표시
+
+        /**
+         * 로딩 스피너 표시/숨김 및 "더 보기" 버튼 활성화/비활성화
+         * @param {boolean} show - 표시 여부
+         */
         function showLoading(show) {
             document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('loadMoreBtn').disabled = show; // 로딩 중에는 "더 보기" 버튼 비활성화
         }
-        
-        // 에러 표시
+
+        /**
+         * 에러 메시지 표시/숨김
+         * @param {string} message - 표시할 에러 메시지
+         */
         function showError(message) {
             const errorDiv = document.getElementById('error');
             const errorMessage = document.getElementById('errorMessage');
-            
+
             if (message) {
                 errorMessage.textContent = message;
                 errorDiv.style.display = 'flex';
@@ -1261,51 +1436,58 @@
                 errorDiv.style.display = 'none';
             }
         }
-        
-        // 결과 초기화
+
+        /**
+         * 검색 결과 컨테이너 비우기
+         */
         function clearResults() {
             document.getElementById('results').innerHTML = '';
         }
-        
-        // 빈 상태 표시
-        function displayEmptyState() {
-            document.getElementById('results').innerHTML = `
+
+        /**
+         * 빈 상태 메시지 표시
+         * @param {boolean} isError - 에러로 인해 빈 상태인지 여부
+         */
+        function displayEmptyState(isError = false) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = `
                 <div class="empty-state" style="grid-column: 1 / -1;">
-                    <div class="empty-state-icon">🔍</div>
-                    <h3>검색 결과가 없습니다</h3>
-                    <p class="mt-2">다른 검색어나 조건으로 다시 시도해보세요.</p>
+                    <div class="empty-state-icon">${isError ? '🚨' : '🔍'}</div>
+                    <h3>${isError ? '오류 발생 또는 검색 결과 없음' : '검색 결과가 없습니다'}</h3>
+                    <p class="mt-2">${isError ? '요청 처리 중 문제가 발생했거나, 해당하는 정보가 없습니다.' : '다른 검색어나 조건으로 다시 시도해보세요.'}</p>
                 </div>
             `;
+            document.getElementById('loadMoreContainer').style.display = 'none'; // 결과가 없으면 "더 보기" 버튼 숨김
         }
-        
-        // 모달 닫기
+
+        /**
+         * 상세 정보 모달 닫기
+         */
         function closeModal() {
             document.getElementById('detailModal').style.display = 'none';
         }
-        
-        // 모달 외부 클릭시 닫기
+
+        // 모달 외부 클릭 시 닫기 이벤트 리스너
         window.addEventListener('click', (e) => {
             const modal = document.getElementById('detailModal');
             if (e.target === modal) {
                 closeModal();
             }
         });
-        
-        // ESC 키로 모달 닫기
+
+        // ESC 키 입력 시 모달 닫기 이벤트 리스너
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
             }
         });
-        
-        // 초기 로드시 전체 관광지 검색
+
+        // 페이지 로드 시 초기 검색 수행 (전체 관광지 30개)
         window.addEventListener('load', () => {
-            // 기본값: 지역별 검색의 '전체' 관광지 30개
             performSearch({
                 operation: 'areaBasedList',
-                numOfRows: 30, // 초기 로드 개수
-                pageNo: 1
-            });
+                contentTypeId: '' // '전체' 관광 타입을 의미
+            }, false); // 초기 로드이므로 추가(append)하지 않음
         });
     </script>
 </body>
