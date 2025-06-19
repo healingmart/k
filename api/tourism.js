@@ -1,12 +1,12 @@
-/**
+/*
  * 관광 API 서버리스 함수
  * 메인 엔트리포인트
  * Vercel 배포용 핸들러
  */
 
-const { CONFIG, SUPPORTED_OPERATIONS } = require('./lib/config');
-const { validateApiKey, validateOrigin, generateCorsHeaders, validateAndSanitizeParams } = require('./lib/security');
-const { TourismApiClient, ApiError, checkRateLimit } = require('./lib/client');
+const { CONFIG, SUPPORTED_OPERATIONS } = require('./config');
+const { validateApiKey, validateOrigin, generateCorsHeaders, validateAndSanitizeParams } = require('./security');
+const { TourismApiClient, ApiError, checkRateLimit } = require('./client');
 
 // 전역 API 클라이언트 (재사용)
 let apiClient = null;
@@ -17,17 +17,17 @@ let apiClient = null;
 module.exports = async function handler(req, res) {
     const startTime = Date.now();
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-    
+
     try {
         // 1. Origin 검증 및 CORS 헤더 설정
         const originValidation = validateOrigin(req.headers);
         const corsHeaders = generateCorsHeaders(originValidation);
-        
+
         // CORS 헤더 설정
         Object.entries(corsHeaders).forEach(([key, value]) => {
             res.setHeader(key, value);
         });
-        
+
         // OPTIONS 요청 처리
         if (req.method === 'OPTIONS') {
             if (!originValidation.valid) {
@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
             }
             return res.status(200).end();
         }
-        
+
         // 2. API 키 검증 (ALLOWED_API_KEYS가 설정된 경우만)
         const apiKeyValidation = validateApiKey(req.headers);
         if (!apiKeyValidation.valid && apiKeyValidation.reason !== 'no_keys_configured') {
@@ -56,16 +56,16 @@ module.exports = async function handler(req, res) {
                 }
             });
         }
-        
+
         // 3. Rate Limit 확인
         const clientIp = req.headers['x-forwarded-for']?.split(',')[0] || req.connection?.remoteAddress || 'unknown';
         const rateLimit = checkRateLimit(clientIp);
-        
+
         if (!rateLimit.allowed) {
             res.setHeader('X-RateLimit-Limit', CONFIG.RATE_LIMIT_MAX);
             res.setHeader('X-RateLimit-Remaining', '0');
             res.setHeader('X-RateLimit-Reset', rateLimit.resetTime);
-            
+
             return res.status(429).json({
                 success: false,
                 error: {
@@ -76,36 +76,23 @@ module.exports = async function handler(req, res) {
                 }
             });
         }
-        
+
         // Rate Limit 헤더 설정
         res.setHeader('X-RateLimit-Limit', CONFIG.RATE_LIMIT_MAX);
         res.setHeader('X-RateLimit-Remaining', rateLimit.remaining);
-        
-        // 4. 요청 파싱 - 수정된 부분!
+
+        // 4. 요청 파싱
         let operation, params;
-        
+
         if (req.method === 'GET') {
             const { operation: op, ...rest } = req.query || {};
             operation = op;
             params = rest;
         } else if (req.method === 'POST') {
             const body = req.body || {};
-            
-            // POST body 구조에 따른 파싱
-            if (body.operation && body.params) {
-                // 새 HTML 형식: { operation: 'xxx', params: { ... } }
-                operation = body.operation;
-                params = body.params;
-            } else if (body.operation) {
-                // 기존 형식: { operation: 'xxx', ...params }
-                operation = body.operation;
-                params = { ...body };
-                delete params.operation;
-            } else {
-                // operation이 없는 경우
-                operation = body.operation;
-                params = body;
-            }
+            operation = body.operation;
+            params = body.params || body;
+            delete params.operation;
         } else {
             return res.status(405).json({
                 success: false,
@@ -116,7 +103,7 @@ module.exports = async function handler(req, res) {
                 }
             });
         }
-        
+
         // 5. Operation 검증
         if (!operation || !SUPPORTED_OPERATIONS.includes(operation)) {
             return res.status(400).json({
@@ -128,24 +115,25 @@ module.exports = async function handler(req, res) {
                 }
             });
         }
-        
+
         // 6. 파라미터 검증 및 새니타이즈
         const sanitizedParams = validateAndSanitizeParams(params);
-        
+
         // 7. API 클라이언트 초기화
         if (!apiClient) {
             apiClient = new TourismApiClient();
         }
-        
+
         // 8. API 호출
         const result = await apiClient[operation](sanitizedParams);
-        
+
         // 9. 성공 응답
         const responseTime = Date.now() - startTime;
+
         res.setHeader('X-Request-ID', requestId);
         res.setHeader('X-Response-Time', `${responseTime}ms`);
         res.setHeader('Content-Type', 'application/json');
-        
+
         return res.status(200).json({
             success: true,
             timestamp: new Date().toISOString(),
@@ -156,20 +144,21 @@ module.exports = async function handler(req, res) {
                 responseTime
             }
         });
-        
+
     } catch (error) {
         console.error(`[${requestId}] Error:`, error);
-        
+
         // 에러 응답
         const responseTime = Date.now() - startTime;
+
         res.setHeader('X-Request-ID', requestId);
         res.setHeader('X-Response-Time', `${responseTime}ms`);
         res.setHeader('Content-Type', 'application/json');
-        
+
         if (error instanceof ApiError) {
             return res.status(error.statusCode).json(error.toJSON());
         }
-        
+
         // 예상치 못한 에러
         return res.status(500).json({
             success: false,
