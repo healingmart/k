@@ -1,3 +1,6 @@
+## **전체 HTML 코드 (상세 정보 개선 버전)**
+
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -67,6 +70,11 @@
         
         .search-group button:hover {
             background: #0056b3;
+        }
+        
+        .search-group button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
         
         /* 탭 메뉴 */
@@ -188,6 +196,7 @@
             height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 1000;
+            overflow-y: auto;
         }
         
         .modal-content {
@@ -209,6 +218,18 @@
             font-size: 30px;
             cursor: pointer;
             color: #999;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .close-modal:hover {
+            color: #333;
         }
         
         .modal-image {
@@ -255,10 +276,46 @@
             margin-top: 10px;
         }
         
+        /* 버튼 스타일 */
+        .btn-kakao {
+            padding: 12px 24px;
+            background: #fee500;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .btn-route {
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-web {
+            padding: 12px 24px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
         /* 반응형 */
         @media (max-width: 768px) {
             .card-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .modal-content {
+                margin: 20px;
+                padding: 20px;
             }
         }
     </style>
@@ -650,14 +707,22 @@
             showLoading(true);
             
             try {
-                const response = await fetch(`${API_URL}?operation=detailCommon&contentId=${contentId}&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`);
+                // 공통 정보 조회
+                const commonUrl = `${API_URL}?operation=detailCommon&contentId=${contentId}&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`;
+                console.log('상세 정보 요청:', commonUrl);
+                
+                const response = await fetch(commonUrl);
                 const data = await response.json();
+                console.log('상세 정보 응답:', data);
                 
                 if (data.success && data.data.items?.item) {
                     const item = Array.isArray(data.data.items.item) ? data.data.items.item[0] : data.data.items.item;
                     displayDetail(item);
+                } else {
+                    alert('상세 정보를 불러올 수 없습니다.');
                 }
             } catch (error) {
+                console.error('상세 정보 오류:', error);
                 alert('상세 정보를 불러올 수 없습니다.');
             } finally {
                 showLoading(false);
@@ -667,33 +732,113 @@
         // 상세 정보 표시
         function displayDetail(item) {
             const modalBody = document.getElementById('modal-body');
+            console.log('상세 정보 아이템:', item);
             
-            // HTML 태그 제거 함수
-            const stripHtml = (html) => {
-                const tmp = document.createElement('div');
-                tmp.innerHTML = html;
-                return tmp.textContent || tmp.innerText || '';
+            // HTML 태그 제거 및 디코딩
+            const decodeHtml = (html) => {
+                if (!html) return '';
+                const txt = document.createElement('textarea');
+                txt.innerHTML = html;
+                return txt.value.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+            };
+            
+            // 콘텐츠 타입별 아이콘
+            const getContentTypeIcon = (typeId) => {
+                const types = {
+                    '12': '🏛️', // 관광지
+                    '14': '🎭', // 문화시설
+                    '15': '🎪', // 축제/공연
+                    '25': '🚶', // 여행코스
+                    '28': '⛷️', // 레포츠
+                    '32': '🏨', // 숙박
+                    '38': '🛍️', // 쇼핑
+                    '39': '🍽️'  // 음식점
+                };
+                return types[typeId] || '📍';
             };
             
             modalBody.innerHTML = `
-                ${item.firstimage ? `<img src="${item.firstimage}" alt="${item.title}" class="modal-image">` : ''}
-                <h2>${item.title}</h2>
-                <p><strong>주소:</strong> ${item.addr1} ${item.addr2 || ''}</p>
-                ${item.tel ? `<p><strong>전화:</strong> ${item.tel}</p>` : ''}
-                ${item.homepage ? `<p><strong>홈페이지:</strong> ${item.homepage}</p>` : ''}
-                ${item.overview ? `<div><strong>개요:</strong><br>${stripHtml(item.overview)}</div>` : ''}
-                <br>
-                <button onclick="window.open('https://map.kakao.com/link/map/${item.title},${item.mapy},${item.mapx}', '_blank')" 
-                        style="padding: 10px 20px; background: #fee500; border: none; border-radius: 5px; cursor: pointer;">
-                    카카오맵에서 보기
-                </button>
+                ${item.firstimage ? 
+                    `<img src="${item.firstimage}" alt="${item.title}" class="modal-image" onerror="this.style.display='none'">` : 
+                    '<div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 72px; border-radius: 10px; margin-bottom: 20px;">📷</div>'
+                }
+                
+                <h2 style="margin-bottom: 20px;">
+                    ${getContentTypeIcon(item.contenttypeid)} ${item.title}
+                </h2>
+                
+                <div style="display: grid; gap: 15px;">
+                    ${item.addr1 ? `
+                        <div>
+                            <strong>📍 주소:</strong><br>
+                            ${item.addr1} ${item.addr2 || ''}
+                            ${item.zipcode ? `(우편번호: ${item.zipcode})` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    ${item.tel ? `
+                        <div>
+                            <strong>📞 전화:</strong><br>
+                            <a href="tel:${item.tel}" style="color: #007bff; text-decoration: none;">${item.tel}</a>
+                        </div>
+                    ` : ''}
+                    
+                    ${item.homepage ? `
+                        <div>
+                            <strong>🌐 홈페이지:</strong><br>
+                            ${decodeHtml(item.homepage)}
+                        </div>
+                    ` : ''}
+                    
+                    ${item.overview ? `
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <strong>📝 상세 정보:</strong><br>
+                            <p style="margin-top: 10px; line-height: 1.6;">
+                                ${decodeHtml(item.overview)}
+                            </p>
+                        </div>
+                    ` : '<div style="background: #f8f9fa; padding: 15px; border-radius: 8px; color: #666;">상세 정보가 없습니다.</div>'}
+                    
+                    <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="window.open('https://map.kakao.com/link/map/${item.title},${item.mapy},${item.mapx}', '_blank')" 
+                                class="btn-kakao">
+                            🗺️ 카카오맵에서 보기
+                        </button>
+                        
+                        <button onclick="window.open('https://map.kakao.com/link/to/${item.title},${item.mapy},${item.mapx}', '_blank')" 
+                                class="btn-route">
+                            🚗 길찾기
+                        </button>
+                        
+                        ${item.homepage ? `
+                            <button onclick="window.open('${decodeHtml(item.homepage).match(/href="([^"]+)"/)?.[1] || '#'}', '_blank')" 
+                                    class="btn-web">
+                                🌐 홈페이지 방문
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+                
+                <!-- 디버그 정보 (개발용) -->
+                <details style="margin-top: 20px; font-size: 12px; color: #666;">
+                    <summary>디버그 정보</summary>
+                    <pre style="background: #f0f0f0; padding: 10px; border-radius: 5px; overflow-x: auto;">
+contentid: ${item.contentid}
+contenttypeid: ${item.contenttypeid}
+좌표: ${item.mapy}, ${item.mapx}
+생성일: ${item.createdtime}
+수정일: ${item.modifiedtime}
+overview 존재: ${item.overview ? 'YES' : 'NO'}
+                    </pre>
+                </details>
             `;
+            
             document.getElementById('modal').style.display = 'block';
         }
         
         // 모달 닫기
         function closeModal(event) {
-            if (!event || event.target.id === 'modal') {
+            if (!event || event.target.id === 'modal' || event.target.className === 'close-modal') {
                 document.getElementById('modal').style.display = 'none';
             }
         }
@@ -710,3 +855,6 @@
     </script>
 </body>
 </html>
+```
+
+이제 상세 정보가 제대로 표시되는지 확인해보세요. 콘솔(F12)을 열어서 어떤 데이터가 오는지도 확인할 수 있습니다!
