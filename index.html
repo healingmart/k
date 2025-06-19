@@ -131,6 +131,17 @@
             background: #f0f0f0;
         }
 
+        .no-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+
         .place-content {
             padding: 20px;
         }
@@ -202,6 +213,17 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .modal-no-image {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 72px;
         }
 
         .close-button {
@@ -415,8 +437,7 @@
 
     <div id="modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <img id="modalImage" src="" alt="">
+            <div class="modal-header" id="modalHeader">
                 <span class="close-button" onclick="closeModal()">&times;</span>
             </div>
             <div class="modal-body" id="modalBody">
@@ -426,7 +447,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://k-ivory.vercel.app/api/tourism'; // 올바른 URL로 수정!
+        const API_URL = 'https://k-ivory.vercel.app/api/tourism';
         let currentPage = 1;
         let totalCount = 0;
         let currentSearchParams = {};
@@ -513,15 +534,25 @@
                 const title = item.title || '제목 없음';
                 const addr = item.addr1 || '주소 정보 없음';
                 const tel = item.tel || '';
-                const image = item.firstimage || 'https://via.placeholder.com/400x250?text=No+Image';
                 
-                return '<div class="place-card" onclick="showDetail(\'' + contentId + '\', \'' + contentTypeId + '\')">' +
-                    '<img class="place-image" src="' + image + '" alt="' + title + '" onerror="this.src=\'https://via.placeholder.com/400x250?text=No+Image\'">' +
-                    '<div class="place-content">' +
-                    '<h2 class="place-title">' + title + '</h2>' +
-                    '<div class="place-address">📍 ' + addr + '</div>' +
-                    (tel ? '<div class="place-info">📞 ' + tel + '</div>' : '') +
-                    '</div></div>';
+                if (item.firstimage) {
+                    return '<div class="place-card" onclick="showDetail(\'' + contentId + '\', \'' + contentTypeId + '\')">' +
+                        '<img class="place-image" src="' + item.firstimage + '" alt="' + title + '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\'">' +
+                        '<div class="no-image" style="display:none">📷</div>' +
+                        '<div class="place-content">' +
+                        '<h2 class="place-title">' + title + '</h2>' +
+                        '<div class="place-address">📍 ' + addr + '</div>' +
+                        (tel ? '<div class="place-info">📞 ' + tel + '</div>' : '') +
+                        '</div></div>';
+                } else {
+                    return '<div class="place-card" onclick="showDetail(\'' + contentId + '\', \'' + contentTypeId + '\')">' +
+                        '<div class="no-image">📷</div>' +
+                        '<div class="place-content">' +
+                        '<h2 class="place-title">' + title + '</h2>' +
+                        '<div class="place-address">📍 ' + addr + '</div>' +
+                        (tel ? '<div class="place-info">📞 ' + tel + '</div>' : '') +
+                        '</div></div>';
+                }
             }).join('');
 
             updatePagination();
@@ -554,11 +585,10 @@
         async function showDetail(contentId, contentTypeId) {
             const modal = document.getElementById('modal');
             const modalBody = document.getElementById('modalBody');
-            const modalImage = document.getElementById('modalImage');
+            const modalHeader = document.getElementById('modalHeader');
             
             modal.style.display = 'block';
             modalBody.innerHTML = '<div class="loading">상세 정보를 불러오는 중...</div>';
-            modalImage.src = 'https://via.placeholder.com/900x300?text=Loading...';
 
             try {
                 // 공통 정보 조회
@@ -603,9 +633,16 @@
                     console.error('소개 정보 조회 실패:', introError);
                 }
 
-                // 이미지 설정
-                modalImage.src = commonData.firstimage || 'https://via.placeholder.com/900x300?text=No+Image';
-                modalImage.alt = commonData.title;
+                // 모달 헤더 이미지 설정
+                if (commonData.firstimage) {
+                    modalHeader.innerHTML = '<img src="' + commonData.firstimage + '" alt="' + commonData.title + 
+                        '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\'">' +
+                        '<div class="modal-no-image" style="display:none">📷</div>' +
+                        '<span class="close-button" onclick="closeModal()">&times;</span>';
+                } else {
+                    modalHeader.innerHTML = '<div class="modal-no-image">📷</div>' +
+                        '<span class="close-button" onclick="closeModal()">&times;</span>';
+                }
 
                 // 상세 정보 표시
                 displayDetailInfo(commonData, introData);
@@ -803,4 +840,3 @@
     </script>
 </body>
 </html>
-
