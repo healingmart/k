@@ -202,7 +202,20 @@ class TourismApiClient {
       throw new ApiError('contentId는 필수 파라미터입니다.', 'VALIDATION_ERROR', 400);
     }
     
-    return this.makeRequest('/detailCommon2', params, 'detailCommon');
+    // 파라미터 정리 - 불필요한 파라미터 제거
+    const validatedParams = {
+      contentId: params.contentId,
+      contentTypeId: params.contentTypeId,
+      defaultYN: params.defaultYN || 'Y',
+      firstImageYN: params.firstImageYN || 'Y',
+      areacodeYN: params.areacodeYN || 'Y',
+      catcodeYN: params.catcodeYN || 'Y',
+      addrinfoYN: params.addrinfoYN || 'Y',
+      mapinfoYN: params.mapinfoYN || 'Y',
+      overviewYN: params.overviewYN || 'Y'
+    };
+    
+    return this.makeRequest('/detailCommon2', validatedParams, 'detailCommon');
   }
   
   /**
