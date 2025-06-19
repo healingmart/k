@@ -3,14 +3,14 @@
  * Vercel 배포용 핸들러
  */
 
-import { CONFIG, SUPPORTED_OPERATIONS } from './lib/config.js';
-import { 
+const { CONFIG, SUPPORTED_OPERATIONS } = require('./lib/config');
+const { 
   validateApiKey, 
   validateOrigin, 
   generateCorsHeaders, 
   validateAndSanitizeParams 
-} from './lib/security.js';
-import { TourismApiClient, ApiError, checkRateLimit } from './lib/client.js';
+} = require('./lib/security');
+const { TourismApiClient, ApiError, checkRateLimit } = require('./lib/client');
 
 // 전역 API 클라이언트 (재사용)
 let apiClient = null;
@@ -18,7 +18,7 @@ let apiClient = null;
 /**
  * Vercel 서버리스 함수 핸들러
  */
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const startTime = Date.now();
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
   
@@ -176,7 +176,7 @@ export default async function handler(req, res) {
       }
     });
   }
-}
+};
 
 /**
  * 사용 예시:
