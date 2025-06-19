@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -427,7 +426,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://tourism-api-wheat.vercel.app/api/tourism';
+        const API_URL = 'https://k-ivory.vercel.app/api/tourism'; // 올바른 URL로 수정!
         let currentPage = 1;
         let totalCount = 0;
         let currentSearchParams = {};
@@ -516,19 +515,13 @@
                 const tel = item.tel || '';
                 const image = item.firstimage || 'https://via.placeholder.com/400x250?text=No+Image';
                 
-                return `
-                    <div class="place-card" onclick="showDetail('${contentId}', '${contentTypeId}')">
-                        <img class="place-image" 
-                             src="${image}" 
-                             alt="${title}"
-                             onerror="this.src='https://via.placeholder.com/400x250?text=No+Image'">
-                        <div class="place-content">
-                            <h2 class="place-title">${title}</h2>
-                            <div class="place-address">📍 ${addr}</div>
-                            ${tel ? '<div class="place-info">📞 ' + tel + '</div>' : ''}
-                        </div>
-                    </div>
-                `;
+                return '<div class="place-card" onclick="showDetail(\'' + contentId + '\', \'' + contentTypeId + '\')">' +
+                    '<img class="place-image" src="' + image + '" alt="' + title + '" onerror="this.src=\'https://via.placeholder.com/400x250?text=No+Image\'">' +
+                    '<div class="place-content">' +
+                    '<h2 class="place-title">' + title + '</h2>' +
+                    '<div class="place-address">📍 ' + addr + '</div>' +
+                    (tel ? '<div class="place-info">📞 ' + tel + '</div>' : '') +
+                    '</div></div>';
             }).join('');
 
             updatePagination();
@@ -544,15 +537,10 @@
                 return;
             }
 
-            paginationDiv.innerHTML = `
-                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-                    이전
-                </button>
-                <span class="page-info">${currentPage} / ${totalPages}</span>
-                <button onclick="changePage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>
-                    다음
-                </button>
-            `;
+            paginationDiv.innerHTML = 
+                '<button onclick="changePage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>이전</button>' +
+                '<span class="page-info">' + currentPage + ' / ' + totalPages + '</span>' +
+                '<button onclick="changePage(' + (currentPage + 1) + ')" ' + (currentPage >= totalPages ? 'disabled' : '') + '>다음</button>';
         }
 
         // 페이지 변경
