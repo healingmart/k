@@ -1,4 +1,4 @@
-/**
+/*
  * 관광 API 클라이언트
  */
 
@@ -38,7 +38,7 @@ class ApiError extends Error {
     this.details = details;
     this.timestamp = new Date().toISOString();
   }
-  
+
   toJSON() {
     return {
       success: false,
@@ -72,7 +72,7 @@ class TourismApiClient {
     
     this.baseURL = CONFIG.API_BASE_URL;
   }
-  
+
   /**
    * 기본 파라미터
    */
@@ -85,7 +85,7 @@ class TourismApiClient {
       ...params
     };
   }
-  
+
   /**
    * 캐시 키 생성
    */
@@ -96,7 +96,7 @@ class TourismApiClient {
     }, {});
     return `${operation}:${JSON.stringify(sortedParams)}`;
   }
-  
+
   /**
    * API 요청 실행
    */
@@ -149,7 +149,10 @@ class TourismApiClient {
           data.response?.header?.resultMsg || '알 수 없는 오류',
           errorCode,
           400,
-          { resultCode, resultMsg: data.response?.header?.resultMsg }
+          {
+            resultCode,
+            resultMsg: data.response?.header?.resultMsg
+          }
         );
       }
       
@@ -164,7 +167,6 @@ class TourismApiClient {
       });
       
       return result;
-      
     } catch (error) {
       if (error.name === 'AbortError') {
         throw new ApiError('API 요청 시간 초과', 'TIMEOUT', 504);
@@ -180,7 +182,7 @@ class TourismApiClient {
       );
     }
   }
-  
+
   /**
    * 지역 기반 관광정보 조회
    */
@@ -193,16 +195,15 @@ class TourismApiClient {
     
     return this.makeRequest('/areaBasedList2', validatedParams, 'areaBasedList');
   }
-  
+
   /**
-   * 상세 정보 조회
+   * 상세 정보 조회 (공통정보)
    */
   async detailCommon(params = {}) {
     if (!params.contentId) {
       throw new ApiError('contentId는 필수 파라미터입니다.', 'VALIDATION_ERROR', 400);
     }
     
-    // 파라미터 정리
     const validatedParams = {
       contentId: params.contentId,
       contentTypeId: params.contentTypeId,
@@ -217,7 +218,7 @@ class TourismApiClient {
     
     return this.makeRequest('/detailCommon2', validatedParams, 'detailCommon');
   }
-  
+
   /**
    * 소개 정보 조회 (타입별 상세 정보)
    */
@@ -233,7 +234,7 @@ class TourismApiClient {
     
     return this.makeRequest('/detailIntro2', validatedParams, 'detailIntro');
   }
-  
+
   /**
    * 키워드 검색
    */
@@ -251,7 +252,7 @@ class TourismApiClient {
     
     return this.makeRequest('/searchKeyword2', validatedParams, 'searchKeyword');
   }
-  
+
   /**
    * 위치 기반 관광정보 조회
    */
@@ -306,7 +307,7 @@ class TourismApiClient {
     
     return result;
   }
-  
+
   /**
    * 거리 계산 (미터 단위)
    */
@@ -317,9 +318,10 @@ class TourismApiClient {
     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
     const Δλ = ((lon2 - lon1) * Math.PI) / 180;
     
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const a = 
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     
     return Math.round(R * c);
