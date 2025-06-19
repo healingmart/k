@@ -1,4 +1,4 @@
-/**
+/*
  * 관광 API 클라이언트
  */
 
@@ -18,7 +18,7 @@ function cleanupCache() {
             cache.delete(key);
         }
     }
-    
+
     if (cache.size > CONFIG.MAX_CACHE_SIZE) {
         const entries = Array.from(cache.entries());
         entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
@@ -38,7 +38,7 @@ class ApiError extends Error {
         this.details = details;
         this.timestamp = new Date().toISOString();
     }
-    
+
     toJSON() {
         return {
             success: false,
@@ -61,7 +61,7 @@ class TourismApiClient {
     constructor() {
         // 환경변수에서 API 키 가져오기
         this.apiKey = process.env.TOURISM_API_KEY;
-        
+
         if (!this.apiKey) {
             throw new ApiError(
                 'TOURISM_API_KEY 환경변수가 설정되지 않았습니다.',
@@ -69,10 +69,9 @@ class TourismApiClient {
                 500
             );
         }
-        
         this.baseURL = CONFIG.API_BASE_URL;
     }
-    
+
     /**
      * 기본 파라미터
      */
@@ -85,7 +84,7 @@ class TourismApiClient {
             ...params
         };
     }
-    
+
     /**
      * 캐시 키 생성
      */
@@ -96,43 +95,40 @@ class TourismApiClient {
         }, {});
         return `${operation}:${JSON.stringify(sortedParams)}`;
     }
-    
+
     /**
      * API 요청 실행
      */
     async makeRequest(endpoint, params = {}, operation = 'unknown') {
         const fullParams = this.buildBaseParams(params);
         const cacheKey = this.generateCacheKey(operation, fullParams);
-        
+
         // 캐시 확인
         const cached = cache.get(cacheKey);
         if (cached && Date.now() < cached.expiry) {
             return cached.data;
         }
-        
+
         // 캐시 정리
         if (cache.size > CONFIG.MAX_CACHE_SIZE) {
             cleanupCache();
         }
-        
+
         // URL 생성
         const queryString = new URLSearchParams(fullParams).toString();
         const url = `${this.baseURL}${endpoint}?${queryString}`;
-        
+
         console.log(`[${operation}] Request URL:`, url);
-        
+
         try {
             // API 호출
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
-            
-            const response = await fetch(url, {
-                method: 'GET',
-                signal: controller.signal
-            });
-            
+
+            const response = await fetch(url, { method: 'GET', signal: controller.signal });
+
             clearTimeout(timeoutId);
-            
+
             if (!response.ok) {
                 throw new ApiError(
                     `API 호출 실패: ${response.status} ${response.statusText}`,
@@ -140,41 +136,37 @@ class TourismApiClient {
                     response.status
                 );
             }
-            
+
             const data = await response.json();
             console.log(`[${operation}] Response:`, data);
-            
+
             // API 응답 검증 (resultCode가 문자열로 오는 경우 처리)
             const responseHeader = data.response?.header;
             const resultCode = responseHeader?.resultCode?.toString() || data.resultCode?.toString() || '99';
-            
+
             if (resultCode !== '0000' && resultCode !== '00') {
                 // resultCode를 두 자리로 패딩
                 const paddedCode = resultCode.padStart(2, '0');
                 const errorCode = API_ERROR_CODES[paddedCode] || 'API_ERROR';
-                
+
                 throw new ApiError(
                     responseHeader?.resultMsg || data.resultMsg || '알 수 없는 오류',
                     errorCode,
                     400,
-                    { 
-                        resultCode: paddedCode, 
-                        resultMsg: responseHeader?.resultMsg || data.resultMsg,
-                        originalCode: resultCode
-                    }
+                    { resultCode: paddedCode, resultMsg: responseHeader?.resultMsg || data.resultMsg, originalCode: resultCode }
                 );
             }
-            
+
             // 성공 응답 처리
             const result = data.response?.body || data;
-            
+
             // 캐시 저장
             cache.set(cacheKey, {
                 data: result,
                 expiry: Date.now() + CONFIG.CACHE_TTL,
                 timestamp: Date.now()
             });
-            
+
             return result;
         } catch (error) {
             if (error.name === 'AbortError') {
@@ -191,7 +183,7 @@ class TourismApiClient {
             );
         }
     }
-    
+
     /**
      * 지역 기반 관광정보 조회
      */
@@ -201,10 +193,10 @@ class TourismApiClient {
             pageNo: safeParseInt(params.pageNo, 1),
             ...params
         };
-        
+
         return this.makeRequest('/areaBasedList2', validatedParams, 'areaBasedList');
     }
-    
+
     /**
      * 상세 정보 조회 (공통정보)
      */
@@ -212,22 +204,19 @@ class TourismApiClient {
         if (!params.contentId) {
             throw new ApiError('contentId는 필수 파라미터입니다.', 'VALIDATION_ERROR', 400);
         }
-        
+
         const validatedParams = {
             contentId: String(params.contentId),
-            // API가 defaultYN을 필수로 요구함
-            defaultYN: 'Y',
+            // 문제가 되는 파라미터들을 제거하고 필수 파라미터만 사용
+            overviewYN: 'Y',
             firstImageYN: 'Y',
-            areacodeYN: 'Y',
-            catcodeYN: 'Y',
             addrinfoYN: 'Y',
-            mapinfoYN: 'Y',
-            overviewYN: 'Y'
+            mapinfoYN: 'Y'
         };
-        
+
         return this.makeRequest('/detailCommon2', validatedParams, 'detailCommon');
     }
-    
+
     /**
      * 소개 정보 조회 (타입별 상세 정보)
      */
@@ -235,17 +224,19 @@ class TourismApiClient {
         if (!params.contentId || !params.contentTypeId) {
             throw new ApiError('contentId와 contentTypeId는 필수 파라미터입니다.', 'VALIDATION_ERROR', 400);
         }
-        
+
         const validatedParams = {
             contentId: String(params.contentId),
-            contentTypeId: String(params.contentTypeId)
+            contentTypeId: String(params.contentTypeId),
+            numOfRows: 10,
+            pageNo: 1
         };
-        
+
         console.log('[detailIntro] Validated params:', validatedParams);
-        
+
         return this.makeRequest('/detailIntro2', validatedParams, 'detailIntro');
     }
-    
+
     /**
      * 키워드 검색
      */
@@ -253,17 +244,17 @@ class TourismApiClient {
         if (!params.keyword) {
             throw new ApiError('keyword는 필수 파라미터입니다.', 'VALIDATION_ERROR', 400);
         }
-        
+
         const validatedParams = {
             numOfRows: safeParseInt(params.numOfRows, 10),
             pageNo: safeParseInt(params.pageNo, 1),
             keyword: sanitizeInput(params.keyword, 100),
             ...params
         };
-        
+
         return this.makeRequest('/searchKeyword2', validatedParams, 'searchKeyword');
     }
-    
+
     /**
      * 위치 기반 관광정보 조회
      */
@@ -271,14 +262,14 @@ class TourismApiClient {
         if (!params.mapX || !params.mapY) {
             throw new ApiError('mapX와 mapY는 필수 파라미터입니다.', 'VALIDATION_ERROR', 400);
         }
-        
+
         const lat = safeParseFloat(params.mapY);
         const lng = safeParseFloat(params.mapX);
-        
+
         if (isNaN(lat) || isNaN(lng)) {
             throw new ApiError('유효하지 않은 좌표값입니다.', 'VALIDATION_ERROR', 400);
         }
-        
+
         // 한국 좌표 범위 검증
         if (lat < 33 || lat > 43 || lng < 124 || lng > 132) {
             throw new ApiError(
@@ -287,7 +278,7 @@ class TourismApiClient {
                 400
             );
         }
-        
+
         const validatedParams = {
             numOfRows: safeParseInt(params.numOfRows, 10),
             pageNo: safeParseInt(params.pageNo, 1),
@@ -296,29 +287,29 @@ class TourismApiClient {
             radius: safeParseInt(params.radius, 1000),
             ...params
         };
-        
+
         const result = await this.makeRequest('/locationBasedList2', validatedParams, 'locationBasedList');
-        
+
         // 거리 정보 추가 (선택사항)
         if (params.addDistance === 'Y' && result.items?.item) {
             const items = Array.isArray(result.items.item) ? result.items.item : [result.items.item];
-            
+
             result.items.item = items.map(item => {
                 const itemLat = safeParseFloat(item.mapy);
                 const itemLng = safeParseFloat(item.mapx);
-                
+
                 if (!isNaN(itemLat) && !isNaN(itemLng)) {
                     const distance = this.calculateDistance(lat, lng, itemLat, itemLng);
                     return { ...item, distance };
                 }
-                
+
                 return item;
             }).sort((a, b) => (a.distance || 999999) - (b.distance || 999999));
         }
-        
+
         return result;
     }
-    
+
     /**
      * 거리 계산 (미터 단위)
      */
@@ -328,13 +319,14 @@ class TourismApiClient {
         const φ2 = (lat2 * Math.PI) / 180;
         const Δφ = ((lat2 - lat1) * Math.PI) / 180;
         const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-        
+
         const a =
             Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
             Math.cos(φ1) * Math.cos(φ2) *
             Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        
+
         return Math.round(R * c);
     }
 }
@@ -347,21 +339,17 @@ const rateLimitMap = new Map();
 function checkRateLimit(identifier) {
     const now = Date.now();
     const windowStart = now - CONFIG.RATE_LIMIT_WINDOW;
-    
+
     const requests = rateLimitMap.get(identifier) || [];
     const validRequests = requests.filter(time => time > windowStart);
-    
+
     if (validRequests.length >= CONFIG.RATE_LIMIT_MAX) {
-        return {
-            allowed: false,
-            remaining: 0,
-            resetTime: new Date(validRequests[0] + CONFIG.RATE_LIMIT_WINDOW).toISOString()
-        };
+        return { allowed: false, remaining: 0, resetTime: new Date(validRequests[0] + CONFIG.RATE_LIMIT_WINDOW).toISOString() };
     }
-    
+
     validRequests.push(now);
     rateLimitMap.set(identifier, validRequests);
-    
+
     // 메모리 정리
     if (rateLimitMap.size > 1000) {
         for (const [key, reqs] of rateLimitMap.entries()) {
@@ -370,7 +358,7 @@ function checkRateLimit(identifier) {
             }
         }
     }
-    
+
     return {
         allowed: true,
         remaining: CONFIG.RATE_LIMIT_MAX - validRequests.length
