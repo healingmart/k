@@ -1,22 +1,9 @@
-맞습니다! `detailIntro` API가 400 에러를 내고 있네요. 서버를 재배포하셨나요? `detailIntro`를 추가한 서버 코드를 배포해야 합니다.
-
-## **서버 재배포 필요**
-
-```bash
-vercel --prod --force
-```
-
-그동안 기본 정보만이라도 제대로 보이도록 HTML을 수정하겠습니다.
-
-## **전체 HTML 코드 (에러 처리 개선)**
-
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관광지 탐색기</title>
+    <title>🗺️ 대한민국 관광지 탐색기</title>
     <style>
         * {
             margin: 0;
@@ -26,169 +13,138 @@ vercel --prod --force
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
         
-        /* 검색 영역 */
-        .search-section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+        .search-container {
+            margin: 30px auto;
+            max-width: 600px;
         }
         
-        .search-group {
+        .search-box {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            align-items: center;
+            background: white;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
-        .search-group input, .search-group select {
+        .search-box input {
             flex: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 15px 25px;
+            border: none;
             font-size: 16px;
-            min-width: 150px;
+            outline: none;
         }
         
-        .search-group button {
-            padding: 12px 30px;
-            background: #007bff;
+        .search-box button {
+            background: #667eea;
             color: white;
             border: none;
-            border-radius: 5px;
+            padding: 15px 30px;
             cursor: pointer;
             font-size: 16px;
             transition: background 0.3s;
         }
         
-        .search-group button:hover {
-            background: #0056b3;
+        .search-box button:hover {
+            background: #5a67d8;
         }
         
-        .search-group button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        /* 탭 메뉴 */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            color: #666;
-            transition: all 0.3s;
-        }
-        
-        .tab.active {
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-        }
-        
-        /* 카드 그리드 */
-        .card-grid {
+        .places-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 25px;
+            margin-top: 30px;
         }
         
-        .card {
+        .place-card {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
         }
         
-        .card:hover {
+        .place-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 20px rgba(0,0,0,0.15);
         }
         
-        .card-image {
+        .place-image {
             width: 100%;
             height: 200px;
             object-fit: cover;
             background: #f0f0f0;
         }
         
-        .no-image {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-size: 48px;
+        .place-content {
+            padding: 20px;
         }
         
-        .card-content {
-            padding: 15px;
-        }
-        
-        .card-title {
-            font-size: 18px;
-            font-weight: bold;
+        .place-title {
+            font-size: 1.2rem;
+            font-weight: 600;
             margin-bottom: 10px;
             color: #333;
         }
         
-        .card-info {
-            font-size: 14px;
+        .place-address {
             color: #666;
-            margin-bottom: 5px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
         }
         
-        .card-distance {
-            display: inline-block;
-            background: #e3f2fd;
-            color: #1976d2;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
+        .place-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         
-        /* 로딩 상태 */
-        .loading {
+        .tag {
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        #loading {
             text-align: center;
-            padding: 40px;
+            padding: 50px;
+            color: #666;
         }
         
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 20px;
         }
         
         @keyframes spin {
@@ -196,7 +152,6 @@ vercel --prod --force
             100% { transform: rotate(360deg); }
         }
         
-        /* 상세 모달 */
         .modal {
             display: none;
             position: fixed;
@@ -204,796 +159,507 @@ vercel --prod --force
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.7);
             z-index: 1000;
             overflow-y: auto;
         }
         
         .modal-content {
-            position: relative;
             background: white;
             margin: 50px auto;
-            width: 90%;
             max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            border-radius: 10px;
+            border-radius: 12px;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #666;
+            z-index: 1;
+        }
+        
+        .close-btn:hover {
+            color: #333;
+        }
+        
+        .detail-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        
+        .detail-content {
             padding: 30px;
         }
         
-        .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 30px;
-            cursor: pointer;
-            color: #999;
-            background: white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        
-        .close-modal:hover {
-            color: #333;
-        }
-        
-        .modal-image {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            border-radius: 10px;
+        .detail-title {
+            font-size: 2rem;
             margin-bottom: 20px;
-        }
-        
-        /* 수동 입력 영역 */
-        details {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        
-        summary {
-            cursor: pointer;
-            font-weight: bold;
-            color: #666;
-        }
-        
-        .manual-input {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .manual-input input {
-            flex: 1;
-            min-width: 120px;
-        }
-        
-        /* 디버그 정보 */
-        .debug-info {
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-family: monospace;
-            margin-top: 10px;
-        }
-        
-        /* 버튼 스타일 */
-        .btn-kakao {
-            padding: 12px 24px;
-            background: #fee500;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #000;
-        }
-        
-        .btn-route {
-            padding: 12px 24px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .btn-web {
-            padding: 12px 24px;
-            background: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        /* 정보 섹션 */
-        .info-section {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .info-section h3 {
-            margin-bottom: 10px;
             color: #333;
+        }
+        
+        .detail-section {
+            margin-bottom: 25px;
+        }
+        
+        .detail-section h3 {
+            color: #667eea;
+            margin-bottom: 10px;
         }
         
         .info-grid {
             display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 10px;
-            font-size: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
         }
         
         .info-label {
-            font-weight: bold;
+            font-weight: 600;
             color: #666;
+            font-size: 0.9rem;
         }
         
-        /* 반응형 */
+        .info-value {
+            color: #333;
+            margin-top: 5px;
+        }
+        
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .thumbnail {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .thumbnail:hover {
+            transform: scale(1.05);
+        }
+        
         @media (max-width: 768px) {
-            .card-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .places-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
             
             .modal-content {
-                margin: 20px;
-                padding: 20px;
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            .detail-image {
+                height: 300px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <header>
         <h1>🗺️ 대한민국 관광지 탐색기</h1>
-        
-        <div class="search-section">
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('keyword')">키워드 검색</button>
-                <button class="tab" onclick="switchTab('location')">내 주변</button>
-                <button class="tab" onclick="switchTab('area')">지역별</button>
-            </div>
-            
-            <!-- 키워드 검색 -->
-            <div id="keyword-search" class="search-group">
-                <input type="text" id="keyword" placeholder="관광지 검색 (예: 경복궁, 해수욕장)" value="제주">
-                <button onclick="searchByKeyword()">검색</button>
-            </div>
-            
-            <!-- 위치 기반 검색 -->
-            <div id="location-search" class="search-group" style="display:none;">
-                <button onclick="getMyLocation()">📍 내 위치 찾기</button>
-                <input type="number" id="radius" placeholder="반경(m)" value="5000" min="1000" max="20000">
-                <button onclick="searchNearby()">주변 검색</button>
-                
-                <details style="width: 100%;">
-                    <summary>수동 좌표 입력 / 테스트 위치</summary>
-                    <div class="manual-input">
-                        <input type="text" id="manual-lat" placeholder="위도 (예: 37.5665)">
-                        <input type="text" id="manual-lng" placeholder="경도 (예: 126.9780)">
-                        <button onclick="setManualLocation()">좌표 설정</button>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <button onclick="setTestLocation('서울')">📍 서울시청</button>
-                        <button onclick="setTestLocation('부산')">📍 부산역</button>
-                        <button onclick="setTestLocation('제주')">📍 제주공항</button>
-                    </div>
-                    <div id="location-debug" class="debug-info" style="display:none;"></div>
-                </details>
-            </div>
-            
-            <!-- 지역별 검색 -->
-            <div id="area-search" class="search-group" style="display:none;">
-                <select id="areaCode">
-                    <option value="1">서울</option>
-                    <option value="6">부산</option>
-                    <option value="4">대구</option>
-                    <option value="2">인천</option>
-                    <option value="5">광주</option>
-                    <option value="3">대전</option>
-                    <option value="7">울산</option>
-                    <option value="8">세종</option>
-                    <option value="31">경기</option>
-                    <option value="32">강원</option>
-                    <option value="33">충북</option>
-                    <option value="34">충남</option>
-                    <option value="35">경북</option>
-                    <option value="36">경남</option>
-                    <option value="37">전북</option>
-                    <option value="38">전남</option>
-                    <option value="39" selected>제주</option>
-                </select>
-                <select id="contentType">
-                    <option value="">전체</option>
-                    <option value="12">관광지</option>
-                    <option value="14">문화시설</option>
-                    <option value="15">축제/공연</option>
-                    <option value="25">여행코스</option>
-                    <option value="28">레포츠</option>
-                    <option value="32">숙박</option>
-                    <option value="38">쇼핑</option>
-                    <option value="39">음식점</option>
-                </select>
-                <button onclick="searchByArea()">검색</button>
+        <p>전국의 아름다운 관광지를 찾아보세요</p>
+    </header>
+    
+    <div class="container">
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="지역이나 관광지를 검색하세요...">
+                <button onclick="searchPlaces()">검색</button>
             </div>
         </div>
         
-        <div id="loading" class="loading" style="display:none;">
+        <div id="loading">
             <div class="spinner"></div>
             <p>검색 중...</p>
         </div>
         
-        <div id="results" class="card-grid"></div>
+        <div id="results" class="places-grid"></div>
     </div>
     
-    <!-- 상세 정보 모달 -->
-    <div id="modal" class="modal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <div id="modal-body"></div>
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
         </div>
     </div>
     
     <script>
-        const API_URL = 'https://healingk.vercel.app/api/tourism';
-        let currentTab = 'keyword';
-        let userLocation = null;
-        let currentItems = []; // 현재 검색 결과 저장
+        // API 설정
+        const API_BASE_URL = 'https://k-ivory.vercel.app/api/tourism';
         
-        // 탭 전환
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+        // API 호출 함수
+        async function apiCall(operation, params) {
+            try {
+                const response = await fetch(`${API_BASE_URL}?operation=${operation}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ operation, params })
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error?.message || 'API 호출 실패');
+                }
+                
+                return data.data;
+            } catch (error) {
+                console.error(`API Error (${operation}):`, error);
+                throw error;
+            }
+        }
+        
+        // 검색 함수
+        async function searchPlaces() {
+            const keyword = document.getElementById('searchInput').value.trim();
             
-            document.getElementById('keyword-search').style.display = tab === 'keyword' ? 'flex' : 'none';
-            document.getElementById('location-search').style.display = tab === 'location' ? 'flex' : 'none';
-            document.getElementById('area-search').style.display = tab === 'area' ? 'flex' : 'none';
-        }
-        
-        // 로딩 표시
-        function showLoading(show = true) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
-            document.getElementById('results').style.display = show ? 'none' : 'grid';
-        }
-        
-        // 키워드 검색
-        async function searchByKeyword() {
-            const keyword = document.getElementById('keyword').value;
             if (!keyword) {
-                alert('검색어를 입력하세요');
+                alert('검색어를 입력해주세요.');
                 return;
             }
             
-            showLoading(true);
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').innerHTML = '';
             
             try {
-                const response = await fetch(`${API_URL}?operation=searchKeyword&keyword=${encodeURIComponent(keyword)}&numOfRows=20`);
-                const data = await response.json();
+                const data = await apiCall('searchKeyword', {
+                    keyword: keyword,
+                    numOfRows: 20,
+                    pageNo: 1
+                });
                 
-                if (data.success) {
-                    currentItems = data.data.items?.item || [];
-                    displayResults(currentItems);
-                } else {
-                    alert('검색 실패: ' + data.error.message);
-                }
+                displayResults(data);
             } catch (error) {
-                alert('오류 발생: ' + error.message);
+                console.error('Search error:', error);
+                document.getElementById('results').innerHTML = 
+                    '<p style="text-align: center; color: #666;">검색 결과를 불러올 수 없습니다.</p>';
             } finally {
-                showLoading(false);
+                document.getElementById('loading').style.display = 'none';
             }
         }
         
-        // 내 위치 가져오기
-        function getMyLocation() {
-            if (!navigator.geolocation) {
-                alert('위치 서비스를 지원하지 않는 브라우저입니다.');
-                return;
-            }
-            
-            const button = event.target;
-            button.textContent = '📍 위치 찾는 중...';
-            button.disabled = true;
-            
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    userLocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    
-                    updateLocationDebug();
-                    alert(`위치를 찾았습니다!\n위도: ${userLocation.lat.toFixed(6)}\n경도: ${userLocation.lng.toFixed(6)}`);
-                    
-                    button.textContent = '📍 내 위치 찾기';
-                    button.disabled = false;
-                },
-                (error) => {
-                    let errorMessage = '위치를 찾을 수 없습니다: ';
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMessage += '위치 권한이 거부되었습니다.';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMessage += '위치 정보를 사용할 수 없습니다.';
-                            break;
-                        case error.TIMEOUT:
-                            errorMessage += '위치 요청 시간이 초과되었습니다.';
-                            break;
-                        default:
-                            errorMessage += error.message;
-                    }
-                    alert(errorMessage);
-                    
-                    button.textContent = '📍 내 위치 찾기';
-                    button.disabled = false;
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
-        }
-        
-        // 주변 검색
-        async function searchNearby() {
-            if (!userLocation) {
-                alert('먼저 내 위치 찾기를 클릭하거나 수동으로 좌표를 입력하세요');
-                return;
-            }
-            
-            const radius = document.getElementById('radius').value;
-            
-            console.log('검색 파라미터:', {
-                mapX: userLocation.lng,
-                mapY: userLocation.lat,
-                radius: radius
-            });
-            
-            showLoading(true);
-            
-            try {
-                const url = `${API_URL}?operation=locationBasedList&mapX=${userLocation.lng}&mapY=${userLocation.lat}&radius=${radius}&numOfRows=20`;
-                console.log('요청 URL:', url);
-                
-                const response = await fetch(url);
-                const data = await response.json();
-                console.log('응답 데이터:', data);
-                
-                if (data.success) {
-                    const items = data.data.items?.item || [];
-                    if (items.length === 0) {
-                        alert(`반경 ${radius}m 내에 관광지가 없습니다.\n반경을 늘려보세요.`);
-                    } else {
-                        // 거리 계산 추가
-                        const itemsWithDistance = items.map(item => {
-                            const itemLat = parseFloat(item.mapy);
-                            const itemLng = parseFloat(item.mapx);
-                            if (!isNaN(itemLat) && !isNaN(itemLng)) {
-                                item.distance = calculateDistance(userLocation.lat, userLocation.lng, itemLat, itemLng);
-                            }
-                            return item;
-                        }).sort((a, b) => (a.distance || 999999) - (b.distance || 999999));
-                        
-                        currentItems = itemsWithDistance;
-                        displayResults(itemsWithDistance, true);
-                    }
-                } else {
-                    alert('검색 실패: ' + (data.error?.message || '알 수 없는 오류'));
-                    console.error('API 오류:', data.error);
-                }
-            } catch (error) {
-                alert('오류 발생: ' + error.message);
-                console.error('네트워크 오류:', error);
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // 수동 좌표 설정
-        function setManualLocation() {
-            const lat = parseFloat(document.getElementById('manual-lat').value);
-            const lng = parseFloat(document.getElementById('manual-lng').value);
-            
-            if (isNaN(lat) || isNaN(lng)) {
-                alert('올바른 좌표를 입력하세요');
-                return;
-            }
-            
-            if (lat < 33 || lat > 43 || lng < 124 || lng > 132) {
-                alert('한국 범위를 벗어난 좌표입니다\n위도: 33~43\n경도: 124~132');
-                return;
-            }
-            
-            userLocation = { lat, lng };
-            updateLocationDebug();
-            alert(`좌표가 설정되었습니다!\n위도: ${lat}\n경도: ${lng}`);
-        }
-        
-        // 테스트 위치 설정
-        function setTestLocation(city) {
-            const locations = {
-                '서울': { lat: 37.5665, lng: 126.9780, name: '서울시청' },
-                '부산': { lat: 35.1153, lng: 129.0413, name: '부산역' },
-                '제주': { lat: 33.5066, lng: 126.4926, name: '제주공항' }
-            };
-            
-            const loc = locations[city];
-            userLocation = { lat: loc.lat, lng: loc.lng };
-            
-            document.getElementById('manual-lat').value = loc.lat;
-            document.getElementById('manual-lng').value = loc.lng;
-            
-            updateLocationDebug();
-            alert(`${loc.name} 좌표가 설정되었습니다!`);
-        }
-        
-        // 위치 디버그 정보 업데이트
-        function updateLocationDebug() {
-            if (userLocation) {
-                const debugDiv = document.getElementById('location-debug');
-                debugDiv.style.display = 'block';
-                debugDiv.innerHTML = `
-                    <strong>현재 설정된 위치:</strong><br>
-                    위도(lat/mapY): ${userLocation.lat}<br>
-                    경도(lng/mapX): ${userLocation.lng}<br>
-                    <a href="https://map.kakao.com/link/map/내위치,${userLocation.lat},${userLocation.lng}" target="_blank">카카오맵에서 확인</a>
-                `;
-            }
-        }
-        
-        // 거리 계산 함수
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371e3; // 지구 반지름 (미터)
-            const φ1 = lat1 * Math.PI / 180;
-            const φ2 = lat2 * Math.PI / 180;
-            const Δφ = (lat2 - lat1) * Math.PI / 180;
-            const Δλ = (lon2 - lon1) * Math.PI / 180;
-            
-            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                      Math.cos(φ1) * Math.cos(φ2) *
-                      Math.sin(Δλ/2) * Math.sin(Δλ/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            
-            return Math.round(R * c); // 미터 단위
-        }
-        
-        // 지역별 검색
-        async function searchByArea() {
-            const areaCode = document.getElementById('areaCode').value;
-            const contentType = document.getElementById('contentType').value;
-            
-            showLoading(true);
-            
-            try {
-                let url = `${API_URL}?operation=areaBasedList&areaCode=${areaCode}&numOfRows=20`;
-                if (contentType) {
-                    url += `&contentTypeId=${contentType}`;
-                }
-                
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                if (data.success) {
-                    currentItems = data.data.items?.item || [];
-                    displayResults(currentItems);
-                } else {
-                    alert('검색 실패: ' + data.error.message);
-                }
-            } catch (error) {
-                alert('오류 발생: ' + error.message);
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // 결과 표시
-        function displayResults(items, showDistance = false) {
+        // 결과 표시 함수
+        function displayResults(data) {
             const resultsDiv = document.getElementById('results');
             
-            if (!items || items.length === 0) {
-                resultsDiv.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">검색 결과가 없습니다.</p>';
+            if (!data.items || !data.items.item || data.items.item.length === 0) {
+                resultsDiv.innerHTML = '<p style="text-align: center; color: #666;">검색 결과가 없습니다.</p>';
                 return;
             }
             
-            // 배열이 아닌 경우 배열로 변환
-            if (!Array.isArray(items)) {
-                items = [items];
-            }
+            const items = Array.isArray(data.items.item) ? data.items.item : [data.items.item];
             
-            resultsDiv.innerHTML = items.map((item, index) => `
-                <div class="card" onclick="showDetail(${index})">
-                    ${item.firstimage ? 
-                        `<img src="${item.firstimage}" alt="${item.title}" class="card-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                         <div class="no-image" style="display:none;">📷</div>` : 
-                        `<div class="card-image no-image">📷</div>`
-                    }
-                    <div class="card-content">
-                        <h3 class="card-title">${item.title}</h3>
-                        <p class="card-info">📍 ${item.addr1 || '주소 정보 없음'}</p>
-                        ${item.tel ? `<p class="card-info">📞 ${item.tel}</p>` : ''}
-                        ${showDistance && item.distance ? 
-                            `<span class="card-distance">${formatDistance(item.distance)}</span>` : ''
-                        }
+            resultsDiv.innerHTML = items.map(item => `
+                <div class="place-card" onclick="showDetail('${item.contentid}', '${item.contenttypeid}')">
+                    <img class="place-image" 
+                         src="${item.firstimage || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                         alt="${item.title}"
+                         onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                    <div class="place-content">
+                        <h3 class="place-title">${item.title}</h3>
+                        <p class="place-address">${item.addr1 || '주소 정보 없음'}</p>
+                        <div class="place-tags">
+                            ${item.cat3 ? `<span class="tag">${item.cat3}</span>` : ''}
+                            ${item.tel ? '<span class="tag">📞 전화번호 있음</span>' : ''}
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
         
-        // 거리 포맷
-        function formatDistance(meters) {
-            if (meters < 1000) {
-                return `${meters}m`;
-            }
-            return `${(meters / 1000).toFixed(1)}km`;
-        }
-        
-        // 상세 정보 보기
-        async function showDetail(index) {
-            const item = currentItems[index];
-            if (!item) return;
+        // 상세 정보 표시
+        async function showDetail(contentId, contentTypeId) {
+            const modal = document.getElementById('detailModal');
+            const modalContent = document.getElementById('modalContent');
             
-            // 현재 가지고 있는 정보로 모달 표시
-            displayDetailFromCurrent(item);
+            modal.style.display = 'block';
+            modalContent.innerHTML = '<div style="padding: 50px; text-align: center;"><div class="spinner"></div><p>상세 정보를 불러오는 중...</p></div>';
             
-            // detailIntro 추가 정보 가져오기 (실패해도 무시)
-            if (item.contenttypeid) {
-                try {
-                    const introUrl = `${API_URL}?operation=detailIntro&contentId=${item.contentid}&contentTypeId=${item.contenttypeid}`;
-                    console.log('추가 정보 요청:', introUrl);
+            try {
+                // 모든 상세 정보 동시 호출
+                const [commonData, introData, imageData, infoData] = await Promise.allSettled([
+                    apiCall('detailCommon', { contentId }),
+                    apiCall('detailIntro', { contentId, contentTypeId }),
+                    apiCall('detailImage', { contentId }),
+                    apiCall('detailInfo', { contentId, contentTypeId })
+                ]);
+                
+                // 기본 정보
+                const detail = commonData.status === 'fulfilled' ? 
+                    (Array.isArray(commonData.value.items.item) ? 
+                        commonData.value.items.item[0] : 
+                        commonData.value.items.item) : 
+                    null;
+                
+                // 소개 정보
+                const intro = introData.status === 'fulfilled' && introData.value.items?.item ? 
+                    (Array.isArray(introData.value.items.item) ? 
+                        introData.value.items.item[0] : 
+                        introData.value.items.item) : 
+                    null;
+                
+                // 이미지 정보
+                const images = imageData.status === 'fulfilled' && imageData.value.items?.item ? 
+                    (Array.isArray(imageData.value.items.item) ? 
+                        imageData.value.items.item : 
+                        [imageData.value.items.item]) : 
+                    [];
+                
+                // 추가 정보
+                const additionalInfo = infoData.status === 'fulfilled' && infoData.value.items?.item ? 
+                    (Array.isArray(infoData.value.items.item) ? 
+                        infoData.value.items.item[0] : 
+                        infoData.value.items.item) : 
+                    null;
+                
+                if (!detail) {
+                    throw new Error('상세 정보를 불러올 수 없습니다.');
+                }
+                
+                modalContent.innerHTML = `
+                    <img class="detail-image" 
+                         src="${detail.firstimage || 'https://via.placeholder.com/800x400?text=No+Image'}" 
+                         alt="${detail.title}"
+                         onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
                     
-                    const response = await fetch(introUrl);
-                    
-                    if (response.ok) {
-                        const data = await response.json();
+                    <div class="detail-content">
+                        <h2 class="detail-title">${detail.title}</h2>
                         
-                        if (data.success && data.data.items?.item) {
-                            const introItem = Array.isArray(data.data.items.item) ? data.data.items.item[0] : data.data.items.item;
-                            console.log('추가 정보:', introItem);
-                            // 추가 정보로 모달 업데이트
-                            displayDetailWithIntro(item, introItem);
-                        }
-                    } else {
-                        console.log('추가 정보 API 미지원 또는 오류');
-                    }
-                } catch (error) {
-                    console.log('추가 정보 로드 실패 (무시):', error);
-                }
+                        <div class="detail-section">
+                            <h3>📍 기본 정보</h3>
+                            <div class="info-grid">
+                                ${detail.addr1 ? `
+                                    <div class="info-item">
+                                        <div class="info-label">주소</div>
+                                        <div class="info-value">${detail.addr1} ${detail.addr2 || ''}</div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${detail.tel ? `
+                                    <div class="info-item">
+                                        <div class="info-label">전화번호</div>
+                                        <div class="info-value">${detail.tel}</div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${detail.homepage ? `
+                                    <div class="info-item">
+                                        <div class="info-label">홈페이지</div>
+                                        <div class="info-value">${detail.homepage}</div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${detail.zipcode ? `
+                                    <div class="info-item">
+                                        <div class="info-label">우편번호</div>
+                                        <div class="info-value">${detail.zipcode}</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        ${detail.overview ? `
+                            <div class="detail-section">
+                                <h3>📝 상세 설명</h3>
+                                <p>${detail.overview}</p>
+                            </div>
+                        ` : ''}
+                        
+                        ${images.length > 1 ? `
+                            <div class="detail-section">
+                                <h3>📸 추가 이미지</h3>
+                                <div class="thumbnail-grid">
+                                    ${images.slice(1, 9).map(img => `
+                                        <img src="${img.smallimageurl || img.originimgurl}" 
+                                             alt="${img.imgname || '추가 이미지'}" 
+                                             class="thumbnail"
+                                             onclick="window.open('${img.originimgurl}', '_blank')">
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${intro ? `
+                            <div class="detail-section">
+                                <h3>🎯 상세 정보</h3>
+                                <div class="info-grid">
+                                    ${Object.entries(intro)
+                                        .filter(([key, value]) => value && key !== 'contentid' && key !== 'contenttypeid')
+                                        .map(([key, value]) => `
+                                            <div class="info-item">
+                                                <div class="info-label">${formatLabel(key)}</div>
+                                                <div class="info-value">${value}</div>
+                                            </div>
+                                        `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${additionalInfo ? `
+                            <div class="detail-section">
+                                <h3>🏨 부대시설 정보</h3>
+                                <div class="info-grid">
+                                    ${additionalInfo.parkinginfo ? `
+                                        <div class="info-item">
+                                            <div class="info-label">주차시설</div>
+                                            <div class="info-value">${additionalInfo.parkinginfo}</div>
+                                        </div>
+                                    ` : ''}
+                                    ${additionalInfo.pickup ? `
+                                        <div class="info-item">
+                                            <div class="info-label">픽업서비스</div>
+                                            <div class="info-value">${additionalInfo.pickup}</div>
+                                        </div>
+                                    ` : ''}
+                                    ${additionalInfo.subfacility ? `
+                                        <div class="info-item">
+                                            <div class="info-label">부대시설</div>
+                                            <div class="info-value">${additionalInfo.subfacility}</div>
+                                        </div>
+                                    ` : ''}
+                                    ${additionalInfo.barbecue ? `
+                                        <div class="info-item">
+                                            <div class="info-label">바베큐</div>
+                                            <div class="info-value">${additionalInfo.barbecue}</div>
+                                        </div>
+                                    ` : ''}
+                                    ${additionalInfo.beverage ? `
+                                        <div class="info-item">
+                                            <div class="info-label">식음료장</div>
+                                            <div class="info-value">${additionalInfo.beverage}</div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${detail.mapx && detail.mapy ? `
+                            <div class="detail-section">
+                                <h3>🗺️ 위치</h3>
+                                <div style="background: #f0f0f0; padding: 20px; border-radius: 8px; text-align: center;">
+                                    <p>위도: ${detail.mapy}, 경도: ${detail.mapx}</p>
+                                    <a href="https://map.kakao.com/link/map/${detail.title},${detail.mapy},${detail.mapx}" 
+                                       target="_blank" 
+                                       style="display: inline-block; margin-top: 10px; padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px;">
+                                       카카오맵에서 보기
+                                    </a>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Detail error:', error);
+                modalContent.innerHTML = `
+                    <div style="padding: 50px; text-align: center;">
+                        <p style="color: #666;">상세 정보를 불러올 수 없습니다.</p>
+                        <p style="color: #999; font-size: 0.9rem; margin-top: 10px;">${error.message}</p>
+                    </div>
+                `;
             }
         }
         
-        // 현재 정보로 상세 표시
-        function displayDetailFromCurrent(item) {
-            const modalBody = document.getElementById('modal-body');
-            
-            // HTML 태그 제거 및 디코딩
-            const decodeHtml = (html) => {
-                if (!html) return '';
-                const txt = document.createElement('textarea');
-                txt.innerHTML = html;
-                return txt.value.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
-            };
-            
-            // 콘텐츠 타입별 아이콘
-            const getContentTypeIcon = (typeId) => {
-                const types = {
-                    '12': '🏛️', // 관광지
-                    '14': '🎭', // 문화시설
-                    '15': '🎪', // 축제/공연
-                    '25': '🚶', // 여행코스
-                    '28': '⛷️', // 레포츠
-                    '32': '🏨', // 숙박
-                    '38': '🛍️', // 쇼핑
-                    '39': '🍽️'  // 음식점
-                };
-                return types[typeId] || '📍';
-            };
-            
-            modalBody.innerHTML = `
-                ${item.firstimage ? 
-                    `<img src="${item.firstimage}" alt="${item.title}" class="modal-image" onerror="this.style.display='none'">` : 
-                    '<div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 72px; border-radius: 10px; margin-bottom: 20px;">📷</div>'
-                }
-                
-                <h2 style="margin-bottom: 20px;">
-                    ${getContentTypeIcon(item.contenttypeid)} ${item.title}
-                </h2>
-                
-                <div id="detail-content">
-                    <div class="info-section">
-                        <h3>📍 기본 정보</h3>
-                        <div class="info-grid">
-                            ${item.addr1 ? `
-                                <span class="info-label">주소:</span>
-                                <span>${item.addr1} ${item.addr2 || ''} ${item.zipcode ? `(${item.zipcode})` : ''}</span>
-                            ` : ''}
-                            ${item.tel ? `
-                                <span class="info-label">전화:</span>
-                                <span><a href="tel:${item.tel}" style="color: #007bff; text-decoration: none;">${item.tel}</a></span>
-                            ` : ''}
-                            ${item.homepage ? `
-                                <span class="info-label">홈페이지:</span>
-                                <span>${decodeHtml(item.homepage)}</span>
-                            ` : ''}
-                            ${item.distance ? `
-                                <span class="info-label">거리:</span>
-                                <span>${formatDistance(item.distance)}</span>
-                            ` : ''}
-                        </div>
-                    </div>
-                    
-                    ${item.overview ? `
-                        <div class="info-section">
-                            <h3>📝 상세 설명</h3>
-                            <p style="line-height: 1.6;">
-                                ${decodeHtml(item.overview)}
-                            </p>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="info-section">
-                        <h3>📊 추가 정보</h3>
-                        <div class="info-grid">
-                            <span class="info-label">콘텐츠 ID:</span>
-                            <span>${item.contentid}</span>
-                            <span class="info-label">콘텐츠 타입:</span>
-                            <span>${getContentTypeName(item.contenttypeid)}</span>
-                            ${item.createdtime ? `
-                                <span class="info-label">등록일:</span>
-                                <span>${formatDate(item.createdtime)}</span>
-                            ` : ''}
-                            ${item.modifiedtime ? `
-                                <span class="info-label">수정일:</span>
-                                <span>${formatDate(item.modifiedtime)}</span>
-                            ` : ''}
-                        </div>
-                    </div>
-                    
-                    <div id="additional-info">
-                        <!-- 추가 정보가 여기에 들어갑니다 -->
-                    </div>
-                </div>
-                
-                <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button onclick="window.open('https://map.kakao.com/link/map/${item.title},${item.mapy},${item.mapx}', '_blank')" 
-                            class="btn-kakao">
-                        🗺️ 카카오맵에서 보기
-                    </button>
-                    
-                    <button onclick="window.open('https://map.kakao.com/link/to/${item.title},${item.mapy},${item.mapx}', '_blank')" 
-                            class="btn-route">
-                        🚗 길찾기
-                    </button>
-                    
-                    <button onclick="window.open('https://search.naver.com/search.naver?query=${encodeURIComponent(item.title)}', '_blank')" 
-                            class="btn-web">
-                        🔍 네이버 검색
-                    </button>
-                </div>
-            `;
-            
-            document.getElementById('modal').style.display = 'block';
-        }
-        
-        // 추가 정보와 함께 상세 표시
-        function displayDetailWithIntro(item, introData) {
-            const additionalInfoDiv = document.getElementById('additional-info');
-            if (!additionalInfoDiv) return;
-            
-            let additionalHtml = '<div class="info-section"><h3>📋 상세 정보</h3><div class="info-grid">';
-            
-            // 모든 필드를 동적으로 표시
-            Object.entries(introData).forEach(([key, value]) => {
-                if (value && typeof value === 'string' && value.trim()) {
-                    const label = getFieldLabel(key);
-                    if (label) {
-                        additionalHtml += `<span class="info-label">${label}:</span><span>${value}</span>`;
-                    }
-                }
-            });
-            
-            additionalHtml += '</div></div>';
-            additionalInfoDiv.innerHTML = additionalHtml;
-        }
-        
-        // 필드 레이블 매핑
-        function getFieldLabel(key) {
+        // 라벨 포맷팅
+        function formatLabel(key) {
             const labels = {
-                // 공통
-                'usetime': '이용시간',
                 'restdate': '휴무일',
+                'usetime': '이용시간',
                 'parking': '주차',
                 'chkbabycarriage': '유모차',
                 'chkpet': '애완동물',
                 'chkcreditcard': '신용카드',
-                
-                // 문화시설
-                'usefee': '이용요금',
-                'usetimefestival': '관람시간',
-                'parkingfee': '주차요금',
-                'infocenterculture': '문의처',
-                
-                // 축제
-                'eventstartdate': '시작일',
-                'eventenddate': '종료일',
-                'playtime': '공연시간',
-                'eventplace': '행사장소',
-                'sponsor1': '주최',
-                'sponsor2': '주관',
-                'agelimit': '연령제한',
-                'bookingplace': '예매처',
-                
-                // 숙박
+                'expguide': '체험안내',
+                'heritage1': '세계문화유산',
+                'heritage2': '세계자연유산',
+                'heritage3': '세계기록유산',
+                'infocenter': '문의 및 안내',
+                'opendate': '개장일',
+                'restroom': '화장실',
+                'season': '이용시기',
+                'stroller': '유모차대여',
+                'accomcount': '수용인원',
+                'benikia': '베니키아',
                 'checkintime': '체크인',
                 'checkouttime': '체크아웃',
+                'chkcooking': '객실내취사',
+                'foodplace': '식음료장',
+                'goodstay': '굿스테이',
+                'hanok': '한옥',
+                'infocenterlodging': '문의 및 안내',
+                'parkinglodging': '주차시설',
+                'pickup': '픽업서비스',
                 'roomcount': '객실수',
-                'roomtype': '객실유형',
+                'reservationlodging': '예약안내',
                 'reservationurl': '예약URL',
-                
-                // 음식점
-                'firstmenu': '대표메뉴',
-                'treatmenu': '취급메뉴',
-                'opentimefood': '영업시간',
-                'restdatefood': '휴무일',
-                'seat': '좌석수'
+                'roomtype': '객실유형',
+                'scalelodging': '규모',
+                'subfacility': '부대시설'
             };
-            
-            return labels[key] || null;
-        }
-        
-        // 콘텐츠 타입 이름 가져오기
-        function getContentTypeName(typeId) {
-            const types = {
-                '12': '관광지',
-                '14': '문화시설',
-                '15': '축제/공연',
-                '25': '여행코스',
-                '28': '레포츠',
-                '32': '숙박',
-                '38': '쇼핑',
-                '39': '음식점'
-            };
-            return types[typeId] || '기타';
-        }
-        
-        // 날짜 포맷
-        function formatDate(dateStr) {
-            if (!dateStr || dateStr.length < 8) return dateStr;
-            return `${dateStr.substr(0,4)}-${dateStr.substr(4,2)}-${dateStr.substr(6,2)}`;
+            return labels[key] || key;
         }
         
         // 모달 닫기
-        function closeModal(event) {
-            if (!event || event.target.id === 'modal' || event.target.className === 'close-modal') {
-                document.getElementById('modal').style.display = 'none';
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+        
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target == modal) {
+                closeModal();
             }
         }
         
-        // 엔터키 이벤트
-        document.getElementById('keyword').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') searchByKeyword();
+        // 엔터키 검색
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchPlaces();
+            }
         });
         
-        // 페이지 로드 시 제주 검색
-        window.addEventListener('load', function() {
-            searchByKeyword();
-        });
+        // 초기 로딩
+        window.onload = function() {
+            document.getElementById('loading').style.display = 'none';
+        };
     </script>
 </body>
 </html>
-```
-
-이제 서버 재배포 전까지는 기본 정보만 보여주고, `detailIntro` API가 실패해도 에러 없이 작동합니다!
