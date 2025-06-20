@@ -255,7 +255,7 @@
             padding: 0;
             border-radius: 15px;
             width: 90%;
-            max-width: 800px;
+            max-width: 900px;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
@@ -315,38 +315,61 @@
         .modal-info {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 30px;
         }
 
         .info-item {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 10px;
-            padding: 10px;
+            padding: 15px;
             background: #f8f9fa;
             border-radius: 8px;
+            border-left: 4px solid #667eea;
         }
 
         .info-icon {
             font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #555;
+            line-height: 1.4;
         }
 
         .modal-description {
             line-height: 1.8;
             color: #555;
             margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
         }
 
-        .image-gallery {
-            margin-bottom: 30px;
-        }
-
-        .gallery-title {
+        .section-title {
             font-size: 1.3rem;
             font-weight: bold;
             margin-bottom: 15px;
             color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .image-gallery {
+            margin-bottom: 30px;
         }
 
         .gallery-grid {
@@ -372,6 +395,25 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .website-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .website-link:hover {
+            background: #667eea;
+            color: white;
         }
 
         .error-message {
@@ -425,6 +467,10 @@
             .tab-button {
                 flex: 1;
                 min-width: 120px;
+            }
+
+            .modal-info {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -560,7 +606,7 @@
                 <div class="modal-info" id="modalInfo"></div>
                 <div class="modal-description" id="modalDescription"></div>
                 <div class="image-gallery" id="imageGallery" style="display: none;">
-                    <h3 class="gallery-title">📸 이미지 갤러리</h3>
+                    <h3 class="section-title">📸 이미지 갤러리</h3>
                     <div class="gallery-grid" id="galleryGrid"></div>
                 </div>
             </div>
@@ -574,7 +620,7 @@
         // 전역 변수
         let currentResults = [];
         let currentPage = 1;
-        const itemsPerPage = 50; // numOfRows를 50으로 변경
+        const itemsPerPage = 50;
 
         // 콘텐츠 타입 매핑
         const contentTypeNames = {
@@ -600,15 +646,12 @@
             button.addEventListener('click', () => {
                 const tabName = button.dataset.tab;
                 
-                // 모든 탭 버튼과 콘텐츠 비활성화
                 document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
                 
-                // 선택된 탭 활성화
                 button.classList.add('active');
                 document.getElementById(`${tabName}-tab`).classList.add('active');
                 
-                // 결과 초기화
                 clearResults();
             });
         });
@@ -812,41 +855,73 @@
                 `;
             }
 
-            // 닫기 버튼 이벤트 재등록
+ // 닫기 버튼 이벤트 재등록
             modalHeader.querySelector('.close').addEventListener('click', () => modal.style.display = 'none');
 
-            // 기본 정보
+            // 기본 정보 표시
             const modalInfo = document.getElementById('modalInfo');
             modalInfo.innerHTML = `
                 <div class="info-item">
                     <span class="info-icon">🏷️</span>
-                    <div>
-                        <strong>카테고리</strong><br>
-                        ${contentTypeNames[item.contenttypeid] || '기타'}
+                    <div class="info-content">
+                        <div class="info-label">카테고리</div>
+                        <div class="info-value">${contentTypeNames[item.contenttypeid] || '기타'}</div>
                     </div>
                 </div>
                 <div class="info-item">
                     <span class="info-icon">📍</span>
-                    <div>
-                        <strong>주소</strong><br>
-                        ${item.addr1 || item.addr2 || '주소 정보 없음'}
+                    <div class="info-content">
+                        <div class="info-label">주소</div>
+                        <div class="info-value">${item.addr1 || item.addr2 || '주소 정보 없음'}</div>
                     </div>
                 </div>
                 ${item.tel ? `
                 <div class="info-item">
                     <span class="info-icon">📞</span>
-                    <div>
-                        <strong>전화번호</strong><br>
-                        ${item.tel}
+                    <div class="info-content">
+                        <div class="info-label">전화번호</div>
+                        <div class="info-value"><a href="tel:${item.tel}" style="color: #667eea; text-decoration: none;">${item.tel}</a></div>
+                    </div>
+                </div>
+                ` : ''}
+                ${item.zipcode ? `
+                <div class="info-item">
+                    <span class="info-icon">📮</span>
+                    <div class="info-content">
+                        <div class="info-label">우편번호</div>
+                        <div class="info-value">${item.zipcode}</div>
+                    </div>
+                </div>
+                ` : ''}
+                ${item.mapx && item.mapy ? `
+                <div class="info-item">
+                    <span class="info-icon">🗺️</span>
+                    <div class="info-content">
+                        <div class="info-label">좌표</div>
+                        <div class="info-value">
+                            <a href="https://map.kakao.com/link/map/${encodeURIComponent(item.title)},${item.mapy},${item.mapx}" 
+                               target="_blank" class="website-link" style="margin: 0; padding: 5px 10px; font-size: 0.9rem;">
+                                🗺️ 지도에서 보기
+                            </a>
+                        </div>
                     </div>
                 </div>
                 ` : ''}
                 ${item.distance ? `
                 <div class="info-item">
                     <span class="info-icon">📏</span>
-                    <div>
-                        <strong>거리</strong><br>
-                        ${(item.distance / 1000).toFixed(1)}km
+                    <div class="info-content">
+                        <div class="info-label">거리</div>
+                        <div class="info-value">${(item.distance / 1000).toFixed(1)}km</div>
+                    </div>
+                </div>
+                ` : ''}
+                ${item.mlevel ? `
+                <div class="info-item">
+                    <span class="info-icon">📊</span>
+                    <div class="info-content">
+                        <div class="info-label">지도 레벨</div>
+                        <div class="info-value">${item.mlevel}</div>
                     </div>
                 </div>
                 ` : ''}
@@ -856,7 +931,7 @@
             await loadDetailInfo(item.contentid, item.contenttypeid);
         }
 
-        // 상세 정보 로드 (새로운 API 사용)
+        // 상세 정보 로드
         async function loadDetailInfo(contentId, contentTypeId) {
             try {
                 // 공통 정보 조회
@@ -883,16 +958,67 @@
                     // 개요 정보 표시
                     if (item.overview) {
                         document.getElementById('modalDescription').innerHTML = `
-                            <h3>📝 상세 설명</h3>
-                            <p>${item.overview}</p>
+                            <h3 class="section-title">📝 상세 설명</h3>
+                            <div>${item.overview}</div>
+                        `;
+                    }
+
+                    // 홈페이지 정보 추가
+                    if (item.homepage) {
+                        const modalInfo = document.getElementById('modalInfo');
+                        const homepageMatch = item.homepage.match(/href="([^"]+)"/);
+                        const homepageUrl = homepageMatch ? homepageMatch[1] : item.homepage;
+                        
+                        modalInfo.innerHTML += `
+                            <div class="info-item">
+                                <span class="info-icon">🌐</span>
+                                <div class="info-content">
+                                    <div class="info-label">홈페이지</div>
+                                    <div class="info-value">
+                                        <a href="${homepageUrl}" target="_blank" class="website-link">
+                                            🌐 웹사이트 방문
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    // 작성일 정보 추가
+                    if (item.createdtime) {
+                        const modalInfo = document.getElementById('modalInfo');
+                        const formattedDate = new Date(item.createdtime).toLocaleDateString('ko-KR');
+                        modalInfo.innerHTML += `
+                            <div class="info-item">
+                                <span class="info-icon">📅</span>
+                                <div class="info-content">
+                                    <div class="info-label">등록일</div>
+                                    <div class="info-value">${formattedDate}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    // 수정일 정보 추가
+                    if (item.modifiedtime) {
+                        const modalInfo = document.getElementById('modalInfo');
+                        const formattedDate = new Date(item.modifiedtime).toLocaleDateString('ko-KR');
+                        modalInfo.innerHTML += `
+                            <div class="info-item">
+                                <span class="info-icon">🔄</span>
+                                <div class="info-content">
+                                    <div class="info-label">수정일</div>
+                                    <div class="info-value">${formattedDate}</div>
+                                </div>
+                            </div>
                         `;
                     }
                 }
 
-                // 이미지 정보 조회 (새로운 detailImage API 사용)
+                // 이미지 정보 조회
                 await loadDetailImages(contentId);
 
-                // 소개 정보 조회 (기존 detailIntro API)
+                // 소개 정보 조회
                 if (contentTypeId) {
                     await loadDetailIntro(contentId, contentTypeId);
                 }
@@ -901,7 +1027,8 @@
                 console.error('Detail info load error:', error);
             }
         }
-     // 이미지 갤러리 로드 (새로운 detailImage API 사용)
+
+        // 이미지 갤러리 로드
         async function loadDetailImages(contentId) {
             try {
                 const response = await fetch(API_BASE_URL, {
@@ -950,7 +1077,8 @@
                     galleryItem.innerHTML = `
                         <img src="${image.smallimageurl || image.originimgurl}" 
                              alt="${image.imgname || '관광지 이미지'}"
-                             onclick="openImageModal('${image.originimgurl}', '${image.imgname || ''}')">
+                             onclick="openImageModal('${image.originimgurl}', '${image.imgname || ''}')"
+                             loading="lazy">
                     `;
                     galleryGrid.appendChild(galleryItem);
                 }
@@ -961,7 +1089,7 @@
             }
         }
 
-        // 소개 정보 로드 (기존 detailIntro API)
+        // 소개 정보 로드
         async function loadDetailIntro(contentId, contentTypeId) {
             try {
                 const response = await fetch(API_BASE_URL, {
@@ -1001,59 +1129,840 @@
             switch(contentTypeId) {
                 case '12': // 관광지
                     additionalInfo = `
-                        ${item.heritage1 ? `<div class="info-item"><span class="info-icon">🏛️</span><div><strong>문화재 정보</strong><br>${item.heritage1}</div></div>` : ''}
-                        ${item.infocenter ? `<div class="info-item"><span class="info-icon">ℹ️</span><div><strong>문의 및 안내</strong><br>${item.infocenter}</div></div>` : ''}
-                        ${item.restdate ? `<div class="info-item"><span class="info-icon">🚫</span><div><strong>쉬는날</strong><br>${item.restdate}</div></div>` : ''}
-                        ${item.usetime ? `<div class="info-item"><span class="info-icon">⏰</span><div><strong>이용시간</strong><br>${item.usetime}</div></div>` : ''}
-                        ${item.parking ? `<div class="info-item"><span class="info-icon">🅿️</span><div><strong>주차시설</strong><br>${item.parking}</div></div>` : ''}
+                        ${item.heritage1 ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏛️</span>
+                            <div class="info-content">
+                                <div class="info-label">문화재 정보</div>
+                                <div class="info-value">${item.heritage1}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.heritage2 ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏛️</span>
+                            <div class="info-content">
+                                <div class="info-label">세계문화유산</div>
+                                <div class="info-value">${item.heritage2}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.heritage3 ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏛️</span>
+                            <div class="info-content">
+                                <div class="info-label">세계자연유산</div>
+                                <div class="info-value">${item.heritage3}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.infocenter ? `
+                        <div class="info-item">
+                            <span class="info-icon">ℹ️</span>
+                            <div class="info-content">
+                                <div class="info-label">문의 및 안내</div>
+                                <div class="info-value">${item.infocenter}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.restdate ? `
+                        <div class="info-item">
+                            <span class="info-icon">🚫</span>
+                            <div class="info-content">
+                                <div class="info-label">쉬는날</div>
+                                <div class="info-value">${item.restdate}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.usetime ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏰</span>
+                            <div class="info-content">
+                                <div class="info-label">이용시간</div>
+                                <div class="info-value">${item.usetime}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.useseason ? `
+                        <div class="info-item">
+                            <span class="info-icon">🌸</span>
+                            <div class="info-content">
+                                <div class="info-label">이용시기</div>
+                                <div class="info-value">${item.useseason}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.usefee ? `
+                        <div class="info-item">
+                            <span class="info-icon">💰</span>
+                            <div class="info-content">
+                                <div class="info-label">이용요금</div>
+                                <div class="info-value">${item.usefee}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.parking ? `
+                        <div class="info-item">
+                            <span class="info-icon">🅿️</span>
+                            <div class="info-content">
+                                <div class="info-label">주차시설</div>
+                                <div class="info-value">${item.parking}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.chkbabycarriage ? `
+                        <div class="info-item">
+                            <span class="info-icon">👶</span>
+                            <div class="info-content">
+                                <div class="info-label">유모차 대여</div>
+                                <div class="info-value">${item.chkbabycarriage}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.chkpet ? `
+                        <div class="info-item">
+                            <span class="info-icon">🐕</span>
+                            <div class="info-content">
+                                <div class="info-label">애완동물 동반</div>
+                                <div class="info-value">${item.chkpet}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.chkcreditcard ? `
+                        <div class="info-item">
+                            <span class="info-icon">💳</span>
+                            <div class="info-content">
+                                <div class="info-label">신용카드 가능</div>
+                                <div class="info-value">${item.chkcreditcard}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.expguide ? `
+                        <div class="info-item">
+                            <span class="info-icon">🎯</span>
+                            <div class="info-content">
+                                <div class="info-label">체험안내</div>
+                                <div class="info-value">${item.expguide}</div>
+                            </div>
+                        </div>` : ''}
                     `;
                     break;
                 case '32': // 숙박
                     additionalInfo = `
-                        ${item.checkintime ? `<div class="info-item"><span class="info-icon">🏨</span><div><strong>체크인</strong><br>${item.checkintime}</div></div>` : ''}
-                        ${item.checkouttime ? `<div class="info-item"><span class="info-icon">🏃</span><div><strong>체크아웃</strong><br>${item.checkouttime}</div></div>` : ''}
-                        ${item.roomcount ? `<div class="info-item"><span class="info-icon">🛏️</span><div><strong>객실수</strong><br>${item.roomcount}개</div></div>` : ''}
-                        ${item.parkinglodging ? `<div class="info-item"><span class="info-icon">🅿️</span><div><strong>주차시설</strong><br>${item.parkinglodging}</div></div>` : ''}
+                        ${item.accomcount ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏠</span>
+                            <div class="info-content">
+                                <div class="info-label">수용인원</div>
+                                <div class="info-value">${item.accomcount}명</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.checkintime ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏨</span>
+                            <div class="info-content">
+                                <div class="info-label">체크인</div>
+                                <div class="info-value">${item.checkintime}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.checkouttime ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏃</span>
+                            <div class="info-content">
+                                <div class="info-label">체크아웃</div>
+                                <div class="info-value">${item.checkouttime}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.roomcount ? `
+                        <div class="info-item">
+                            <span class="info-icon">🛏️</span>
+                            <div class="info-content">
+                                <div class="info-label">객실수</div>
+                                <div class="info-value">${item.roomcount}개</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.roomtype ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏠</span>
+                            <div class="info-content">
+                                <div class="info-label">객실유형</div>
+                                <div class="info-value">${item.roomtype}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.refundregulation ? `
+                        <div class="info-item">
+                            <span class="info-icon">💸</span>
+                            <div class="info-content">
+                                <div class="info-label">환불규정</div>
+                                <div class="info-value">${item.refundregulation}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.reservationlodging ? `
+                        <div class="info-item">
+                            <span class="info-icon">📞</span>
+                            <div class="info-content">
+                                <div class="info-label">예약안내</div>
+                                <div class="info-value">${item.reservationlodging}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.parkinglodging ? `
+                        <div class="info-item">
+                            <span class="info-icon">🅿️</span>
+                            <div class="info-content">
+                                <div class="info-label">주차시설</div>
+                                <div class="info-value">${item.parkinglodging}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.pickup ? `
+                        <div class="info-item">
+                            <span class="info-icon">🚗</span>
+                            <div class="info-content">
+                                <div class="info-label">픽업서비스</div>
+                                <div class="info-value">${item.pickup}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.infocenterlodging ? `
+                        <div class="info-item">
+                            <span class="info-icon">ℹ️</span>
+                            <div class="info-content">
+                                <div class="info-label">문의 및 안내</div>
+                                <div class="info-value">${item.infocenterlodging}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.foodplace ? `
+                        <div class="info-item">
+                            <span class="info-icon">🍽️</span>
+                            <div class="info-content">
+                                <div class="info-label">식음료장</div>
+                                <div class="info-value">${item.foodplace}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.barbecue ? `
+                        <div class="info-item">
+                            <span class="info-icon">🔥</span>
+                            <div class="info-content">
+                                <div class="info-label">바베큐장</div>
+                                <div class="info-value">${item.barbecue}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.beauty ? `
+                        <div class="info-item">
+                            <span class="info-icon">💅</span>
+                            <div class="info-content">
+                                <div class="info-label">뷰티시설</div>
+                                <div class="info-value">${item.beauty}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.beverage ? `
+                        <div class="info-item">
+                            <span class="info-icon">🥤</span>
+                            <div class="info-content">
+                                <div class="info-label">식음료</div>
+                                <div class="info-value">${item.beverage}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.bicycle ? `
+                        <div class="info-item">
+                            <span class="info-icon">🚴</span>
+                            <div class="info-content">
+                                <div class="info-label">자전거 대여</div>
+                                <div class="info-value">${item.bicycle}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.campfire ? `
+                        <div class="info-item">
+                            <span class="info-icon">🔥</span>
+                            <div class="info-content">
+                                <div class="info-label">캠프파이어</div>
+                                <div class="info-value">${item.campfire}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.fitness ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏋️</span>
+                            <div class="info-content">
+                                <div class="info-label">휘트니스센터</div>
+                                <div class="info-value">${item.fitness}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.karaoke ? `
+                        <div class="info-item">
+                            <span class="info-icon">🎤</span>
+                            <div class="info-content">
+                                <div class="info-label">노래방</div>
+                                <div class="info-value">${item.karaoke}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.publicpc ? `
+                        <div class="info-item">
+                            <span class="info-icon">💻</span>
+                            <div class="info-content">
+                                <div class="info-label">공용PC</div>
+                                <div class="info-value">${item.publicpc}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.publicbath ? `
+                        <div class="info-item">
+                            <span class="info-icon">🛁</span>
+                            <div class="info-content">
+                                <div class="info-label">공용샤워실</div>
+                                <div class="info-value">${item.publicbath}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.seminar ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏢</span>
+                            <div class="info-content">
+                                <div class="info-label">세미나실</div>
+                                <div class="info-value">${item.seminar}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.sports ? `
+                        <div class="info-item">
+                            <span class="info-icon">⚽</span>
+                            <div class="info-content">
+                                <div class="info-label">스포츠시설</div>
+                                <div class="info-value">${item.sports}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.sauna ? `
+                        <div class="info-item">
+                            <span class="info-icon">🧖</span>
+                            <div class="info-content">
+                                <div class="info-label">사우나</div>
+                                <div class="info-value">${item.sauna}</div>
+                            </div>
+                        </div>` : ''}
                     `;
                     break;
                 case '39': // 음식점
                     additionalInfo = `
-                        ${item.opentimefood ? `<div class="info-item"><span class="info-icon">⏰</span><div><strong>영업시간</strong><br>${item.opentimefood}</div></div>` : ''}
-                        ${item.restdatefood ? `<div class="info-item"><span class="info-icon">🚫</span><div><strong>쉬는날</strong><br>${item.restdatefood}</div></div>` : ''}
-                        ${item.treatmenu ? `<div class="info-item"><span class="info-icon">🍽️</span><div><strong>대표메뉴</strong><br>${item.treatmenu}</div></div>` : ''}
-                        ${item.parkingfood ? `<div class="info-item"><span class="info-icon">🅿️</span><div><strong>주차시설</strong><br>${item.parkingfood}</div></div>` : ''}
+                        ${item.opentimefood ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏰</span>
+                            <div class="info-content">
+                                <div class="info-label">영업시간</div>
+                                <div class="info-value">${item.opentimefood}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.restdatefood ? `
+                        <div class="info-item">
+                            <span class="info-icon">🚫</span>
+                            <div class="info-content">
+                                <div class="info-label">쉬는날</div>
+                                <div class="info-value">${item.restdatefood}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.treatmenu ? `
+                        <div class="info-item">
+                            <span class="info-icon">🍽️</span>
+                            <div class="info-content">
+                                <div class="info-label">대표메뉴</div>
+                                <div class="info-value">${item.treatmenu}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.smoking ? `
+                        <div class="info-item">
+                            <span class="info-icon">🚬</span>
+                            <div class="info-content">
+                                <div class="info-label">금연/흡연</div>
+                                <div class="info-value">${item.smoking}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.packing ? `
+                        <div class="info-item">
+                            <span class="info-icon">📦</span>
+                            <div class="info-content">
+                                <div class="info-label">포장 가능</div>
+                                <div class="info-value">${item.packing}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.infocenterfood ? `
+                        <div class="info-item">
+                            <span class="info-icon">ℹ️</span>
+                            <div class="info-content">
+                                <div class="info-label">문의 및 안내</div>
+                                <div class="info-value">${item.infocenterfood}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.scalefood ? `
+                        <div class="info-item">
+                            <span class="info-icon">📏</span>
+                            <div class="info-content">
+                                <div class="info-label">규모</div>
+                                <div class="info-value">${item.scalefood}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.seat ? `
+                        <div class="info-item">
+                            <span class="info-icon">💺</span>
+                            <div class="info-content">
+                                <div class="info-label">좌석수</div>
+                                <div class="info-value">${item.seat}석</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.kidsfacility ? `
+                        <div class="info-item">
+                            <span class="info-icon">🧸</span>
+                            <div class="info-content">
+                                <div class="info-label">어린이 놀이방</div>
+                                <div class="info-value">${item.kidsfacility}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.reservationfood ? `
+                        <div class="info-item">
+                            <span class="info-icon">📞</span>
+                            <div class="info-content">
+                                <div class="info-label">예약안내</div>
+                                <div class="info-value">${item.reservationfood}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.parkingfood ? `
+                        <div class="info-item">
+                            <span class="info-icon">🅿️</span>
+                            <div class="info-content">
+                                <div class="info-label">주차시설</div>
+                                <div class="info-value">${item.parkingfood}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.lcnsno ? `
+                        <div class="info-item">
+                            <span class="info-icon">📋</span>
+                            <div class="info-content">
+
+
+      <div class="info-label">인허가번호</div>
+                                <div class="info-value">${item.lcnsno}</div>
+                            </div>
+                        </div>` : ''}
                     `;
                     break;
                 case '14': // 문화시설
                     additionalInfo = `
-                        ${item.usetime ? `<div class="info-item"><span class="info-icon">⏰</span><div><strong>이용시간</strong><br>${item.usetime}</div></div>` : ''}
-                        ${item.restdate ? `<div class="info-item"><span class="info-icon">🚫</span><div><strong>쉬는날</strong><br>${item.restdate}</div></div>` : ''}
-                        ${item.usefee ? `<div class="info-item"><span class="info-icon">💰</span><div><strong>이용요금</strong><br>${item.usefee}</div></div>` : ''}
-                        ${item.parkingculture ? `<div class="info-item"><span class="info-icon">🅿️</span><div><strong>주차시설</strong><br>${item.parkingculture}</div></div>` : ''}
+                        ${item.usetime ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏰</span>
+                            <div class="info-content">
+                                <div class="info-label">이용시간</div>
+                                <div class="info-value">${item.usetime}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.restdate ? `
+                        <div class="info-item">
+                            <span class="info-icon">🚫</span>
+                            <div class="info-content">
+                                <div class="info-label">쉬는날</div>
+                                <div class="info-value">${item.restdate}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.usefee ? `
+                        <div class="info-item">
+                            <span class="info-icon">💰</span>
+                            <div class="info-content">
+                                <div class="info-label">이용요금</div>
+                                <div class="info-value">${item.usefee}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.spendtime ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏱️</span>
+                            <div class="info-content">
+                                <div class="info-label">관람소요시간</div>
+                                <div class="info-value">${item.spendtime}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.parkingculture ? `
+                        <div class="info-item">
+                            <span class="info-icon">🅿️</span>
+                            <div class="info-content">
+                                <div class="info-label">주차시설</div>
+                                <div class="info-value">${item.parkingculture}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.infocenterculture ? `
+                        <div class="info-item">
+                            <span class="info-icon">ℹ️</span>
+                            <div class="info-content">
+                                <div class="info-label">문의 및 안내</div>
+                                <div class="info-value">${item.infocenterculture}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.accomcountculture ? `
+                        <div class="info-item">
+                            <span class="info-icon">👥</span>
+                            <div class="info-content">
+                                <div class="info-label">수용인원</div>
+                                <div class="info-value">${item.accomcountculture}명</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.usetimeculture ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏰</span>
+                            <div class="info-content">
+                                <div class="info-label">이용시간</div>
+                                <div class="info-value">${item.usetimeculture}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.scale ? `
+                        <div class="info-item">
+                            <span class="info-icon">📏</span>
+                            <div class="info-content">
+                                <div class="info-label">규모</div>
+                                <div class="info-value">${item.scale}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.discountinfo ? `
+                        <div class="info-item">
+                            <span class="info-icon">🎟️</span>
+                            <div class="info-content">
+                                <div class="info-label">할인정보</div>
+                                <div class="info-value">${item.discountinfo}</div>
+                            </div>
+                        </div>` : ''}
                     `;
                     break;
                 case '15': // 축제공연행사
                     additionalInfo = `
-                        ${item.eventstartdate && item.eventenddate ? `<div class="info-item"><span class="info-icon">📅</span><div><strong>행사기간</strong><br>${item.eventstartdate} ~ ${item.eventenddate}</div></div>` : ''}
-                        ${item.eventplace ? `<div class="info-item"><span class="info-icon">📍</span><div><strong>행사장소</strong><br>${item.eventplace}</div></div>` : ''}
-                        ${item.usetimefestival ? `<div class="info-item"><span class="info-icon">⏰</span><div><strong>이용시간</strong><br>${item.usetimefestival}</div></div>` : ''}
-                        ${item.sponsor1 ? `<div class="info-item"><span class="info-icon">🏢</span><div><strong>주최자</strong><br>${item.sponsor1}</div></div>` : ''}
+                        ${item.eventstartdate && item.eventenddate ? `
+                        <div class="info-item">
+                            <span class="info-icon">📅</span>
+                            <div class="info-content">
+                                <div class="info-label">행사기간</div>
+                                <div class="info-value">${formatDate(item.eventstartdate)} ~ ${formatDate(item.eventenddate)}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.eventplace ? `
+                        <div class="info-item">
+                            <span class="info-icon">📍</span>
+                            <div class="info-content">
+                                <div class="info-label">행사장소</div>
+                                <div class="info-value">${item.eventplace}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.eventhomepage ? `
+                        <div class="info-item">
+                            <span class="info-icon">🌐</span>
+                            <div class="info-content">
+                                <div class="info-label">행사홈페이지</div>
+                                <div class="info-value">
+                                    <a href="${item.eventhomepage}" target="_blank" class="website-link">
+                                        🌐 행사 홈페이지
+                                    </a>
+                                </div>
+                            </div>
+                        </div>` : ''}
+                        ${item.agelimit ? `
+                        <div class="info-item">
+                            <span class="info-icon">👶</span>
+                            <div class="info-content">
+                                <div class="info-label">관람가능연령</div>
+                                <div class="info-value">${item.agelimit}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.bookingplace ? `
+                        <div class="info-item">
+                            <span class="info-icon">🎫</span>
+                            <div class="info-content">
+                                <div class="info-label">예매처</div>
+                                <div class="info-value">${item.bookingplace}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.discountinfofestival ? `
+                        <div class="info-item">
+                            <span class="info-icon">🎟️</span>
+                            <div class="info-content">
+                                <div class="info-label">할인정보</div>
+                                <div class="info-value">${item.discountinfofestival}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.festivalgrade ? `
+                        <div class="info-item">
+                            <span class="info-icon">⭐</span>
+                            <div class="info-content">
+                                <div class="info-label">축제등급</div>
+                                <div class="info-value">${item.festivalgrade}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.placeinfo ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏟️</span>
+                            <div class="info-content">
+                                <div class="info-label">행사장 정보</div>
+                                <div class="info-value">${item.placeinfo}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.playtime ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏱️</span>
+                            <div class="info-content">
+                                <div class="info-label">공연시간</div>
+                                <div class="info-value">${item.playtime}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.program ? `
+                        <div class="info-item">
+                            <span class="info-icon">📋</span>
+                            <div class="info-content">
+                                <div class="info-label">행사프로그램</div>
+                                <div class="info-value">${item.program}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.spendtimefestival ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏰</span>
+                            <div class="info-content">
+                                <div class="info-label">관람소요시간</div>
+                                <div class="info-value">${item.spendtimefestival}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.sponsor1 ? `
+                        <div class="info-item">
+                            <span class="info-icon">🏢</span>
+                            <div class="info-content">
+                                <div class="info-label">주최자</div>
+                                <div class="info-value">${item.sponsor1}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.sponsor2 ? `
+                        <div class="info-item">
+                            <span class="info-icon">🤝</span>
+                            <div class="info-content">
+                                <div class="info-label">주관사</div>
+                                <div class="info-value">${item.sponsor2}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.subevent ? `
+                        <div class="info-item">
+                            <span class="info-icon">🎪</span>
+                            <div class="info-content">
+                                <div class="info-label">부대행사</div>
+                                <div class="info-value">${item.subevent}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.usetimefestival ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏰</span>
+                            <div class="info-content">
+                                <div class="info-label">이용시간</div>
+                                <div class="info-value">${item.usetimefestival}</div>
+                            </div>
+                        </div>` : ''}
                     `;
                     break;
                 case '28': // 레포츠
                     additionalInfo = `
-                        ${item.openperiod ? `<div class="info-item"><span class="info-icon">📅</span><div><strong>개장기간</strong><br>${item.openperiod}</div></div>` : ''}
-                        ${item.usetime ? `<div class="info-item"><span class="info-icon">⏰</span><div><strong>이용시간</strong><br>${item.usetime}</div></div>` : ''}
-                        ${item.usefeeleports ? `<div class="info-item"><span class="info-icon">💰</span><div><strong>이용요금</strong><br>${item.usefeeleports}</div></div>` : ''}
-                        ${item.parkingleports ? `<div class="info-item"><span class="info-icon">🅿️</span><div><strong>주차시설</strong><br>${item.parkingleports}</div></div>` : ''}
+                        ${item.openperiod ? `
+                        <div class="info-item">
+                            <span class="info-icon">📅</span>
+                            <div class="info-content">
+                                <div class="info-label">개장기간</div>
+                                <div class="info-value">${item.openperiod}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.usetime ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏰</span>
+                            <div class="info-content">
+                                <div class="info-label">이용시간</div>
+                                <div class="info-value">${item.usetime}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.usefeeleports ? `
+                        <div class="info-item">
+                            <span class="info-icon">💰</span>
+                            <div class="info-content">
+                                <div class="info-label">이용요금</div>
+                                <div class="info-value">${item.usefeeleports}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.expagerangeleports ? `
+                        <div class="info-item">
+                            <span class="info-icon">👥</span>
+                            <div class="info-content">
+                                <div class="info-label">체험가능연령</div>
+                                <div class="info-value">${item.expagerangeleports}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.accomcountleports ? `
+                        <div class="info-item">
+                            <span class="info-icon">👥</span>
+                            <div class="info-content">
+                                <div class="info-label">수용인원</div>
+                                <div class="info-value">${item.accomcountleports}명</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.restdateleports ? `
+                        <div class="info-item">
+                            <span class="info-icon">🚫</span>
+                            <div class="info-content">
+                                <div class="info-label">쉬는날</div>
+                                <div class="info-value">${item.restdateleports}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.scaleleports ? `
+                        <div class="info-item">
+                            <span class="info-icon">📏</span>
+                            <div class="info-content">
+                                <div class="info-label">규모</div>
+                                <div class="info-value">${item.scaleleports}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.parkingleports ? `
+                        <div class="info-item">
+                            <span class="info-icon">🅿️</span>
+                            <div class="info-content">
+                                <div class="info-label">주차시설</div>
+                                <div class="info-value">${item.parkingleports}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.reservation ? `
+                        <div class="info-item">
+                            <span class="info-icon">📞</span>
+                            <div class="info-content">
+                                <div class="info-label">예약안내</div>
+                                <div class="info-value">${item.reservation}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.infocenterleports ? `
+                        <div class="info-item">
+                            <span class="info-icon">ℹ️</span>
+                            <div class="info-content">
+                                <div class="info-label">문의 및 안내</div>
+                                <div class="info-value">${item.infocenterleports}</div>
+                            </div>
+                        </div>` : ''}
                     `;
                     break;
                 case '38': // 쇼핑
                     additionalInfo = `
-                        ${item.opentime ? `<div class="info-item"><span class="info-icon">⏰</span><div><strong>영업시간</strong><br>${item.opentime}</div></div>` : ''}
-                        ${item.restdateshopping ? `<div class="info-item"><span class="info-icon">🚫</span><div><strong>쉬는날</strong><br>${item.restdateshopping}</div></div>` : ''}
-                        ${item.saleitem ? `<div class="info-item"><span class="info-icon">🛍️</span><div><strong>판매품목</strong><br>${item.saleitem}</div></div>` : ''}
-                        ${item.parkingshopping ? `<div class="info-item"><span class="info-icon">🅿️</span><div><strong>주차시설</strong><br>${item.parkingshopping}</div></div>` : ''}
+                        ${item.opentime ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏰</span>
+                            <div class="info-content">
+                                <div class="info-label">영업시간</div>
+                                <div class="info-value">${item.opentime}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.restdateshopping ? `
+                        <div class="info-item">
+                            <span class="info-icon">🚫</span>
+                            <div class="info-content">
+                                <div class="info-label">쉬는날</div>
+                                <div class="info-value">${item.restdateshopping}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.saleitem ? `
+                        <div class="info-item">
+                            <span class="info-icon">🛍️</span>
+                            <div class="info-content">
+                                <div class="info-label">판매품목</div>
+                                <div class="info-value">${item.saleitem}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.saleitemcost ? `
+                        <div class="info-item">
+                            <span class="info-icon">💰</span>
+                            <div class="info-content">
+                                <div class="info-label">판매품목별 가격</div>
+                                <div class="info-value">${item.saleitemcost}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.scaleshopping ? `
+                        <div class="info-item">
+                            <span class="info-icon">📏</span>
+                            <div class="info-content">
+                                <div class="info-label">규모</div>
+                                <div class="info-value">${item.scaleshopping}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.shopguide ? `
+                        <div class="info-item">
+                            <span class="info-icon">🛒</span>
+                            <div class="info-content">
+                                <div class="info-label">매장안내</div>
+                                <div class="info-value">${item.shopguide}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.culturecenter ? `
+                        <div class="info-item">
+                            <span class="info-icon">🎭</span>
+                            <div class="info-content">
+                                <div class="info-label">문화센터</div>
+                                <div class="info-value">${item.culturecenter}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.fairday ? `
+                        <div class="info-item">
+                            <span class="info-icon">🎪</span>
+                            <div class="info-content">
+                                <div class="info-label">장서는날</div>
+                                <div class="info-value">${item.fairday}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.infocentershopping ? `
+                        <div class="info-item">
+                            <span class="info-icon">ℹ️</span>
+                            <div class="info-content">
+                                <div class="info-label">문의 및 안내</div>
+                                <div class="info-value">${item.infocentershopping}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.opendateshopping ? `
+                        <div class="info-item">
+                            <span class="info-icon">📅</span>
+                            <div class="info-content">
+                                <div class="info-label">개장일</div>
+                                <div class="info-value">${item.opendateshopping}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.parkingshopping ? `
+                        <div class="info-item">
+                            <span class="info-icon">🅿️</span>
+                            <div class="info-content">
+                                <div class="info-label">주차시설</div>
+                                <div class="info-value">${item.parkingshopping}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.restroom ? `
+                        <div class="info-item">
+                            <span class="info-icon">🚻</span>
+                            <div class="info-content">
+                                <div class="info-label">화장실</div>
+                                <div class="info-value">${item.restroom}</div>
+                            </div>
+                        </div>` : ''}
+                    `;
+                    break;
+                case '25': // 여행코스
+                    additionalInfo = `
+                        ${item.distance ? `
+                        <div class="info-item">
+                            <span class="info-icon">📏</span>
+                            <div class="info-content">
+                                <div class="info-label">코스 총거리</div>
+                                <div class="info-value">${item.distance}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.taketime ? `
+                        <div class="info-item">
+                            <span class="info-icon">⏱️</span>
+                            <div class="info-content">
+                                <div class="info-label">코스 총 소요시간</div>
+                                <div class="info-value">${item.taketime}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.theme ? `
+                        <div class="info-item">
+                            <span class="info-icon">🎨</span>
+                            <div class="info-content">
+                                <div class="info-label">코스 테마</div>
+                                <div class="info-value">${item.theme}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.infocentertourcourse ? `
+                        <div class="info-item">
+                            <span class="info-icon">ℹ️</span>
+                            <div class="info-content">
+                                <div class="info-label">문의 및 안내</div>
+                                <div class="info-value">${item.infocentertourcourse}</div>
+                            </div>
+                        </div>` : ''}
+                        ${item.schedule ? `
+                        <div class="info-item">
+                            <span class="info-icon">📅</span>
+                            <div class="info-content">
+                                <div class="info-label">코스 일정</div>
+                                <div class="info-value">${item.schedule}</div>
+                            </div>
+                        </div>` : ''}
                     `;
                     break;
             }
@@ -1063,15 +1972,27 @@
             }
         }
 
+        // 날짜 포맷팅 함수
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const year = dateString.substring(0, 4);
+            const month = dateString.substring(4, 6);
+            const day = dateString.substring(6, 8);
+            return `${year}.${month}.${day}`;
+        }
+
         // 이미지 모달 열기
         function openImageModal(imageUrl, imageName) {
             const imageModal = document.createElement('div');
             imageModal.className = 'modal';
             imageModal.style.display = 'block';
             imageModal.innerHTML = `
-                <div class="modal-content" style="max-width: 90%; margin: 5% auto; padding: 0; background: transparent;">
-                    <span class="close" style="position: absolute; top: 20px; right: 30px; z-index: 1002;">&times;</span>
-                    <img src="${imageUrl}" alt="${imageName}" style="width: 100%; height: auto; border-radius: 10px;">
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000;">
+                    <span class="close" style="position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; z-index: 2001;">&times;</span>
+                    <div style="max-width: 90%; max-height: 90%; text-align: center;">
+                        <img src="${imageUrl}" alt="${imageName}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px;">
+                        ${imageName ? `<p style="color: white; margin-top: 20px; font-size: 18px;">${imageName}</p>` : ''}
+                    </div>
                 </div>
             `;
             
@@ -1084,8 +2005,19 @@
             
             imageModal.querySelector('.close').addEventListener('click', closeImageModal);
             imageModal.addEventListener('click', (e) => {
-                if (e.target === imageModal) closeImageModal();
+                if (e.target === imageModal || e.target.parentElement === imageModal) {
+                    closeImageModal();
+                }
             });
+
+            // ESC 키로 닫기
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    closeImageModal();
+                    document.removeEventListener('keydown', handleEsc);
+                }
+            };
+            document.addEventListener('keydown', handleEsc);
         }
 
         // 로딩 표시/숨김
@@ -1097,6 +2029,9 @@
         function showError(message) {
             errorEl.textContent = message;
             errorEl.style.display = 'block';
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 5000);
         }
 
         // 에러 숨김
@@ -1116,13 +2051,20 @@
                 <div class="no-results">
                     <h3>🔍 검색 결과가 없습니다</h3>
                     <p>다른 키워드나 조건으로 다시 검색해보세요.</p>
+                    <div style="margin-top: 20px;">
+                        <p><strong>검색 팁:</strong></p>
+                        <ul style="text-align: left; display: inline-block; margin-top: 10px;">
+                            <li>더 간단한 키워드로 검색해보세요</li>
+                            <li>지역을 바꿔서 검색해보세요</li>
+                            <li>카테고리를 '전체'로 설정해보세요</li>
+                        </ul>
+                    </div>
                 </div>
             `;
         }
 
         // 초기 로드 시 서울 관광지 표시
         document.addEventListener('DOMContentLoaded', () => {
-            // 기본적으로 서울 관광지를 표시
             searchTourism('areaBasedList', {
                 areaCode: '1',
                 contentTypeId: '12',
@@ -1131,7 +2073,7 @@
             });
         });
 
-        // 키보드 이벤트 (Enter 키로 검색)
+        // 키보드 이벤트
         document.getElementById('keyword-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -1139,22 +2081,13 @@
             }
         });
 
-        // 스크롤 이벤트 (무한 스크롤 - 추가 구현 가능)
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
-                // 추가 데이터 로드 로직 (필요시 구현)
-            }
-        });
-
         // 반응형 처리
         function handleResize() {
             if (window.innerWidth <= 768) {
-                // 모바일 최적화
                 document.querySelectorAll('.form-group').forEach(group => {
                     group.style.minWidth = '100%';
                 });
             } else {
-                // 데스크톱 최적화
                 document.querySelectorAll('.form-group').forEach(group => {
                     group.style.minWidth = '200px';
                 });
@@ -1162,15 +2095,71 @@
         }
 
         window.addEventListener('resize', handleResize);
-        handleResize(); // 초기 실행
+        handleResize();
 
-        // 에러 핸들링 개선
+        // 에러 핸들링
         window.addEventListener('unhandledrejection', (event) => {
             console.error('Unhandled promise rejection:', event.reason);
             showError('예상치 못한 오류가 발생했습니다. 페이지를 새로고침해주세요.');
         });
 
-        // 서비스 워커 등록 (PWA 지원 - 선택사항)
+        // 성능 최적화: 이미지 지연 로딩
+        function setupLazyLoading() {
+            const images = document.querySelectorAll('img[loading="lazy"]');
+            
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src || img.src;
+                            img.classList.remove('lazy');
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+
+                images.forEach(img => imageObserver.observe(img));
+            }
+        }
+
+        // 검색 기록 저장 (로컬스토리지)
+        function saveSearchHistory(query, type) {
+            try {
+                const history = JSON.parse(localStorage.getItem('tourismSearchHistory') || '[]');
+                const newEntry = {
+                    query,
+                    type,
+                    timestamp: Date.now()
+                };
+                
+                // 중복 제거
+                const filteredHistory = history.filter(item => 
+                    !(item.query === query && item.type === type)
+                );
+                
+                filteredHistory.unshift(newEntry);
+                
+                // 최대 10개까지만 저장
+                const limitedHistory = filteredHistory.slice(0, 10);
+                
+                localStorage.setItem('tourismSearchHistory', JSON.stringify(limitedHistory));
+            } catch (error) {
+                console.error('Failed to save search history:', error);
+            }
+        }
+
+        // 검색 기록 불러오기
+        function loadSearchHistory() {
+            try {
+                return JSON.parse(localStorage.getItem('tourismSearchHistory') || '[]');
+            } catch (error) {
+                console.error('Failed to load search history:', error);
+                return [];
+            }
+        }
+
+        // PWA 지원
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
@@ -1182,6 +2171,45 @@
                     });
             });
         }
+
+        // 앱 설치 프롬프트
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // 설치 버튼 표시 (필요시)
+            const installButton = document.getElementById('install-button');
+            if (installButton) {
+                installButton.style.display = 'block';
+                installButton.addEventListener('click', () => {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the A2HS prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+                });
+            }
+        });
+
+        // 온라인/오프라인 상태 감지
+        window.addEventListener('online', () => {
+            clearError();
+            console.log('Back online');
+        });
+
+        window.addEventListener('offline', () => {
+            showError('인터넷 연결이 끊어졌습니다. 연결을 확인해주세요.');
+        });
     </script>
 </body>
-</html>
+
+
+
+
+
+
+
+                               
