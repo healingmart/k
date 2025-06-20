@@ -119,6 +119,17 @@
             color: white;
         }
 
+        .btn-outline-warning {
+            background: transparent;
+            color: #ffc107;
+            border: 2px solid #ffc107;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -186,6 +197,25 @@
             object-fit: cover;
         }
 
+        .result-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .distance-badge,
+        .area-badge {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+
         .result-content {
             padding: 20px;
         }
@@ -199,10 +229,17 @@
 
         .result-address {
             color: #666;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 5px;
+        }
+
+        .result-phone,
+        .result-update {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
         }
 
         .result-distance {
@@ -222,6 +259,32 @@
             font-size: 14px;
         }
 
+        /* 정렬 옵션 */
+        .sort-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .sort-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .sort-options label {
+            font-weight: 600;
+        }
+
+        .sort-options select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+
+        /* 모달 스타일 */
         .modal {
             display: none;
             position: fixed;
@@ -242,6 +305,9 @@
             background: white;
             border-radius: 15px;
             overflow: hidden;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .modal-header {
@@ -251,6 +317,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .close {
@@ -268,9 +335,105 @@
 
         .modal-body {
             padding: 20px;
-            max-height: 70vh;
             overflow-y: auto;
+            flex: 1;
         }
+
+        /* 상세 정보 스타일 */
+        .detail-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-header h3 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .update-date {
+            color: #666;
+            font-size: 0.9em;
+            margin: 0;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+        }
+
+        .detail-section h4 {
+            color: #4facfe;
+            margin-bottom: 15px;
+            border-left: 4px solid #4facfe;
+            padding-left: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .info-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item strong {
+            color: #333;
+            min-width: 120px;
+            display: inline-block;
+        }
+
+        .overview {
+            line-height: 1.6;
+            color: #555;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .detail-image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .detail-image-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .detail-image-item:hover {
+            transform: scale(1.05);
+        }
+
+        .detail-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .more-images {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .event-status {
+            font-weight: bold;
+        }
+
+        .status-upcoming { color: #007bff; }
+        .status-ongoing { color: #28a745; }
+        .status-ended { color: #6c757d; }
 
         .image-gallery {
             display: grid;
@@ -331,6 +494,36 @@
             cursor: not-allowed;
         }
 
+        /* 애니메이션 */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
         @media (max-width: 768px) {
             .search-form {
                 grid-template-columns: 1fr;
@@ -348,10 +541,19 @@
                 width: 95%;
                 margin: 10% auto;
             }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .btn-sm {
+                justify-content: center;
+            }
         }
     </style>
 </head>
-<body>
+
+    <body>
     <div class="container">
         <div class="header">
             <h1>🗺️ 대한민국 관광지 탐색기</h1>
@@ -376,7 +578,7 @@
 
                 <div class="form-group">
                     <label for="keyword">키워드</label>
-                    <input type="text" id="keyword" name="keyword" placeholder="관광지명, 주소 등">
+                    <input type="text" id="keyword" name="keyword" placeholder="관광지명, 주소, 일출, 일몰, 맛집 등">
                 </div>
 
                 <div class="form-group">
@@ -406,10 +608,22 @@
                     🔄 초기화
                 </button>
             </div>
+
+            <div class="sort-container" id="sortContainer" style="display: none;">
+                <div class="sort-options">
+                    <label for="sortBy">정렬:</label>
+                    <select id="sortBy" onchange="sortResults()">
+                        <option value="distance">거리순</option>
+                        <option value="name">가나다순</option>
+                        <option value="popular">인기순</option>
+                        <option value="recent">최신순</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <div class="loading hidden" id="loading">
-            <div>검색 중...</div>
+            <div>🔍 검색 중...</div>
         </div>
 
         <div class="results hidden" id="results">
@@ -419,11 +633,11 @@
         </div>
     </div>
 
-    <!-- 이미지 갤러리 모달 -->
+    <!-- 상세정보/이미지 모달 -->
     <div id="imageModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>📸 이미지 갤러리</h3>
+                <h3>📋 상세 정보</h3>
                 <button class="close" onclick="closeImageModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -431,15 +645,15 @@
             </div>
         </div>
     </div>
-
-    <script>
+    </body>
+ <script>
         // 전역 변수
         let currentPage = 1;
         let currentParams = {};
         let userLocation = null;
 
         // API 기본 URL
-        const API_BASE_URL = '/api/tourism'; // Vercel 배포 시 경로
+        const API_BASE_URL = '/api/tourism';
 
         /**
          * 페이지 로드 시 초기화
@@ -447,6 +661,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadAreaCodes();
             setupEventListeners();
+            console.log('🗺️ 관광지 탐색기가 로드되었습니다!');
         });
 
         /**
@@ -472,6 +687,16 @@
                 const modal = document.getElementById('imageModal');
                 if (e.target === modal) {
                     closeImageModal();
+                }
+            });
+
+            // 키보드 단축키
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeImageModal();
+                }
+                if (e.ctrlKey && e.key === 'Enter') {
+                    searchTourism();
                 }
             });
         }
@@ -555,6 +780,37 @@
             }
         }
 
+  /**
+         * 키워드 확장 (동의어 처리)
+         */
+        function expandKeyword(keyword) {
+            const synonyms = {
+                '일출': '일출 해돋이 sunrise',
+                '일몰': '일몰 해넘이 석양 sunset',
+                '두가시부엌': '두가시부엌 투가시 두가시',
+                '구럼비': '구럼비 구름비 돌',
+                '카페': '카페 커피 coffee',
+                '맛집': '맛집 음식점 레스토랑',
+                '바다': '바다 해변 beach ocean',
+                '산': '산 mountain 등산',
+                '계곡': '계곡 valley 물놀이',
+                '폭포': '폭포 waterfall',
+                '사찰': '사찰 절 temple',
+                '박물관': '박물관 museum',
+                '공원': '공원 park',
+                '온천': '온천 hot spring 스파'
+            };
+
+            const lowerKeyword = keyword.toLowerCase();
+            for (const [key, value] of Object.entries(synonyms)) {
+                if (lowerKeyword.includes(key)) {
+                    return value;
+                }
+            }
+
+            return keyword;
+        }
+
         /**
          * 관광지 검색
          */
@@ -566,11 +822,15 @@
             // 폼 데이터 수집
             for (let [key, value] of formData.entries()) {
                 if (value.trim()) {
-                    params[key] = value.trim();
+                    // 키워드 동의어 처리
+                    if (key === 'keyword') {
+                        params[key] = expandKeyword(value.trim());
+                    } else {
+                        params[key] = value.trim();
+                    }
                 }
             }
 
-            // 키워드 검색과 일반 검색 구분
             const hasKeyword = params.keyword;
             const operation = hasKeyword ? 'searchKeyword' : 'areaBasedList';
 
@@ -586,6 +846,7 @@
             try {
                 const result = await callAPI(operation, params);
                 displayResults(result);
+                document.getElementById('sortContainer').style.display = 'block';
             } catch (error) {
                 showError(error.message);
             } finally {
@@ -630,6 +891,7 @@
 
                         const result = await callAPI('locationBasedList', params);
                         displayResults(result, true);
+                        document.getElementById('sortContainer').style.display = 'block';
                     } catch (error) {
                         showError(error.message);
                     } finally {
@@ -661,6 +923,32 @@
         }
 
         /**
+         * 위치 기반 검색 (페이지네이션용)
+         */
+        async function searchLocationBased(page = 1) {
+            if (!userLocation) {
+                getCurrentLocation();
+                return;
+            }
+
+            const params = {
+                ...currentParams.params,
+                pageNo: page
+            };
+
+            currentPage = page;
+            showLoading();
+
+            try {
+                const result = await callAPI('locationBasedList', params);
+                displayResults(result, true);
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+      /**
          * 검색 결과 표시
          */
         function displayResults(result, showDistance = false) {
@@ -685,12 +973,14 @@
                 resultsGrid.appendChild(card);
             });
 
-            // 페이지네이션 생성
             createPagination(totalCount);
             showResults();
         }
 
         /**
+
+
+            /**
          * 결과 카드 생성
          */
         function createResultCard(item, showDistance = false) {
@@ -698,16 +988,22 @@
             card.className = 'result-card';
 
             const imageUrl = item.firstimage || item.firstimage2 || '';
-            const distance = showDistance && item.dist ? `${parseFloat(item.dist).toLocaleString()}m` : '';
+            const distance = showDistance && item.dist ? formatDistance(item.dist) : '';
+            const area = getAreaInfo(item.addr1);
 
             card.innerHTML = `
                 <div class="result-image">
-                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.title}" onerror="this.style.display='none'">` : '🏞️'}
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.title}" onerror="handleImageError(this)">` : '🏞️'}
+                    <div class="result-badge">
+                        ${distance ? `<span class="distance-badge">📏 ${distance}</span>` : ''}
+                        ${area ? `<span class="area-badge">📍 ${area}</span>` : ''}
+                    </div>
                 </div>
                 <div class="result-content">
                     <div class="result-title">${item.title}</div>
-                    <div class="result-address">📍 ${item.addr1 || '주소 정보 없음'}</div>
-                    ${distance ? `<div class="result-distance">📏 ${distance}</div>` : ''}
+                    <div class="result-address">📍 ${truncateText(item.addr1 || '주소 정보 없음', 50)}</div>
+                    ${item.tel ? `<div class="result-phone">📞 ${item.tel}</div>` : ''}
+                    ${item.modifiedtime ? `<div class="result-update">📅 ${formatDate(item.modifiedtime)}</div>` : ''}
                     <div class="result-actions">
                         <button class="btn btn-primary btn-sm" onclick="showDetails('${item.contentid}', '${item.contenttypeid}')">
                             상세정보
@@ -720,6 +1016,9 @@
                                 지도보기
                             </button>
                         ` : ''}
+                        <button class="btn btn-outline-warning btn-sm" onclick="toggleBookmark('${item.contentid}', '${item.title}')" data-bookmark="${item.contentid}">
+                            ☆ 즐겨찾기
+                        </button>
                     </div>
                 </div>
             `;
@@ -789,42 +1088,52 @@
         }
 
         /**
-         * 위치 기반 검색 (페이지네이션용)
+         * 결과 정렬
          */
-        async function searchLocationBased(page = 1) {
-            if (!userLocation) {
-                getCurrentLocation();
-                return;
-            }
+        function sortResults() {
+            const sortBy = document.getElementById('sortBy').value;
+            const resultsGrid = document.getElementById('resultsGrid');
+            const cards = Array.from(resultsGrid.children);
 
-            const params = {
-                ...currentParams.params,
-                pageNo: page
-            };
+            cards.sort((a, b) => {
+                switch (sortBy) {
+                    case 'distance':
+                        const distA = parseFloat(a.querySelector('.distance-badge')?.textContent.replace(/[^0-9.]/g, '') || '999999');
+                        const distB = parseFloat(b.querySelector('.distance-badge')?.textContent.replace(/[^0-9.]/g, '') || '999999');
+                        return distA - distB;
+                    
+                    case 'name':
+                        const nameA = a.querySelector('.result-title').textContent;
+                        const nameB = b.querySelector('.result-title').textContent;
+                        return nameA.localeCompare(nameB, 'ko');
+                    
+                    case 'popular':
+                        return Math.random() - 0.5;
+                    
+                    case 'recent':
+                        const dateA = a.querySelector('.result-update')?.textContent || '';
+                        const dateB = b.querySelector('.result-update')?.textContent || '';
+                        return dateB.localeCompare(dateA);
+                    
+                    default:
+                        return 0;
+                }
+            });
 
-            currentPage = page;
-            showLoading();
-
-            try {
-                const result = await callAPI('locationBasedList', params);
-                displayResults(result, true);
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                hideLoading();
-            }
+            cards.forEach(card => resultsGrid.appendChild(card));
         }
 
-        /**
+     /**
          * 상세 정보 표시
          */
         async function showDetails(contentId, contentTypeId) {
             try {
                 showLoading();
                 
-                const [commonInfo, introInfo] = await Promise.all([
+                const [commonInfo, introInfo, imageInfo] = await Promise.all([
                     callAPI('detailCommon', { contentId }),
-                    callAPI('detailIntro', { contentId, contentTypeId })
+                    callAPI('detailIntro', { contentId, contentTypeId }),
+                    callAPI('detailImage', { contentId, numOfRows: 10 }).catch(() => null)
                 ]);
 
                 const modal = document.getElementById('imageModal');
@@ -835,32 +1144,59 @@
 
                 let detailHtml = '';
 
-                // 공통 정보
+                // 공통 정보 표시
                 if (commonInfo.items?.item) {
                     const item = Array.isArray(commonInfo.items.item) ? commonInfo.items.item[0] : commonInfo.items.item;
+                    
                     detailHtml += `
-                        <div style="margin-bottom: 20px;">
-                            <h4>${item.title}</h4>
-                            <p><strong>주소:</strong> ${item.addr1 || '정보 없음'}</p>
-                            <p><strong>전화번호:</strong> ${item.tel || '정보 없음'}</p>
-                            ${item.homepage ? `<p><strong>홈페이지:</strong> ${item.homepage}</p>` : ''}
-                            ${item.overview ? `<p><strong>개요:</strong> ${item.overview}</p>` : ''}
+                        <div class="detail-header">
+                            <h3>${item.title}</h3>
+                            ${item.modifiedtime ? `<p class="update-date">📅 업데이트: ${formatDate(item.modifiedtime)}</p>` : ''}
                         </div>
+                        
+                        <div class="detail-section">
+                            <h4>🏢 기본 정보</h4>
+                            <div class="info-grid">
+                                ${item.addr1 ? `<div class="info-item"><strong>주소:</strong> ${item.addr1}</div>` : ''}
+                                ${item.tel ? `<div class="info-item"><strong>전화번호:</strong> <a href="tel:${item.tel}">${item.tel}</a></div>` : ''}
+                                ${item.homepage ? `<div class="info-item"><strong>홈페이지:</strong> ${item.homepage}</div>` : ''}
+                                ${item.zipcode ? `<div class="info-item"><strong>우편번호:</strong> ${item.zipcode}</div>` : ''}
+                            </div>
+                        </div>
+                        
+                        ${item.overview ? `
+                            <div class="detail-section">
+                                <h4>📝 개요</h4>
+                                <div class="overview">${stripHtml(item.overview)}</div>
+                            </div>
+                        ` : ''}
                     `;
                 }
 
-                // 소개 정보
+                // 상세 정보 (타입별)
                 if (introInfo.items?.item) {
                     const intro = Array.isArray(introInfo.items.item) ? introInfo.items.item[0] : introInfo.items.item;
-                    detailHtml += '<div><h4>상세 정보</h4>';
-                    
-                    Object.entries(intro).forEach(([key, value]) => {
-                        if (value && key !== 'contentid' && key !== 'contenttypeid') {
-                            detailHtml += `<p><strong>${key}:</strong> ${value}</p>`;
-                        }
-                    });
-                    
-                    detailHtml += '</div>';
+                    detailHtml += formatDetailInfo(intro, contentTypeId);
+                }
+
+                // 이미지 갤러리
+                if (imageInfo && imageInfo.items?.item) {
+                    const images = Array.isArray(imageInfo.items.item) ? imageInfo.items.item : [imageInfo.items.item];
+                    detailHtml += `
+                        <div class="detail-section">
+                            <h4>📸 이미지 갤러리</h4>
+                            <div class="detail-image-grid">
+                                ${images.slice(0, 6).map(image => `
+                                    <div class="detail-image-item" onclick="window.open('${image.originimgurl}', '_blank')">
+                                        <img src="${image.smallimageurl || image.originimgurl}" 
+                                             alt="${image.imgname || '이미지'}" 
+                                             onerror="this.parentElement.style.display='none'">
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ${images.length > 6 ? `<p class="more-images">+ ${images.length - 6}개 이미지 더보기</p>` : ''}
+                        </div>
+                    `;
                 }
 
                 modalBody.innerHTML = detailHtml || '<p>상세 정보를 불러올 수 없습니다.</p>';
@@ -871,6 +1207,145 @@
             } finally {
                 hideLoading();
             }
+        }
+
+        /**
+         * 상세 정보 포맷팅 (타입별)
+         */
+        function formatDetailInfo(intro, contentTypeId) {
+            let html = '<div class="detail-section"><h4>🔍 상세 정보</h4><div class="info-grid">';
+            
+            // 숙박 (32)
+            if (contentTypeId === '32') {
+                const lodgingInfo = [
+                    { key: 'roomcount', label: '객실 수', value: intro.roomcount },
+                    { key: 'roomtype', label: '객실 타입', value: intro.roomtype },
+                    { key: 'checkintime', label: '체크인', value: intro.checkintime },
+                    { key: 'checkouttime', label: '체크아웃', value: intro.checkouttime },
+                    { key: 'parkinglodging', label: '주차 정보', value: intro.parkinglodging },
+                    { key: 'pickup', label: '픽업 서비스', value: intro.pickup },
+                    { key: 'subfacility', label: '부대시설', value: intro.subfacility },
+                    { key: 'foodplace', label: '식음료', value: intro.foodplace },
+                    { key: 'reservationurl', label: '예약 사이트', value: intro.reservationurl, isUrl: true },
+                    { key: 'accomcountlodging', label: '수용 인원', value: intro.accomcountlodging },
+                    { key: 'scalelodging', label: '규모', value: intro.scalelodging }
+                ];
+
+                lodgingInfo.forEach(info => {
+                    if (info.value && info.value !== '0' && info.value !== '불가') {
+                        if (info.isUrl) {
+                            html += `<div class="info-item"><strong>${info.label}:</strong> <a href="${info.value}" target="_blank">${info.value}</a></div>`;
+                        } else {
+                            html += `<div class="info-item"><strong>${info.label}:</strong> ${info.value}</div>`;
+                        }
+                    }
+                });
+
+                // 편의시설 체크
+                const facilities = [
+                    { key: 'seminar', label: '세미나실' },
+                    { key: 'sports', label: '스포츠시설' },
+                    { key: 'sauna', label: '사우나' },
+                    { key: 'beauty', label: '미용실' },
+                    { key: 'beverage', label: '음료' },
+                    { key: 'karaoke', label: '노래방' },
+                    { key: 'barbecue', label: '바베큐' },
+                    { key: 'fitness', label: '피트니스' },
+                    { key: 'bicycle', label: '자전거' }
+                ];
+
+                const availableFacilities = facilities.filter(f => intro[f.key] === '1').map(f => f.label);
+                if (availableFacilities.length > 0) {
+                    html += `<div class="info-item"><strong>편의시설:</strong> ${availableFacilities.join(', ')}</div>`;
+                }
+            }
+            
+            // 축제/공연/행사 (15)
+            else if (contentTypeId === '15') {
+                const eventInfo = [
+                    { key: 'eventstartdate', label: '시작일', value: intro.eventstartdate, isDate: true },
+                    { key: 'eventenddate', label: '종료일', value: intro.eventenddate, isDate: true },
+                    { key: 'eventplace', label: '행사장소', value: intro.eventplace },
+                    { key: 'eventtime', label: '행사시간', value: intro.eventtime },
+                    { key: 'agelimit', label: '연령제한', value: intro.agelimit },
+                    { key: 'bookingplace', label: '예매처', value: intro.bookingplace },
+                    { key: 'placeinfo', label: '장소정보', value: intro.placeinfo },
+                    { key: 'playtime', label: '공연시간', value: intro.playtime },
+                    { key: 'program', label: '프로그램', value: intro.program },
+                    { key: 'spendtimefestival', label: '관람소요시간', value: intro.spendtimefestival },
+                    { key: 'sponsor1', label: '주최자', value: intro.sponsor1 },
+                    { key: 'sponsor2', label: '주관사', value: intro.sponsor2 },
+                    { key: 'usetimefestival', label: '이용요금', value: intro.usetimefestival }
+                ];
+
+                eventInfo.forEach(info => {
+                    if (info.value) {
+                        if (info.isDate) {
+                            html += `<div class="info-item"><strong>${info.label}:</strong> ${formatDate(info.value)}</div>`;
+                        } else {
+                            html += `<div class="info-item"><strong>${info.label}:</strong> ${info.value}</div>`;
+                        }
+                    }
+                });
+
+                // 현재 진행 상태 표시
+                if (intro.eventstartdate && intro.eventenddate) {
+                    const status = getEventStatus(intro.eventstartdate, intro.eventenddate);
+                    html += `<div class="info-item event-status ${status.class}"><strong>진행 상태:</strong> ${status.text}</div>`;
+                }
+            }
+            
+            // 관광지 (12)
+            else if (contentTypeId === '12') {
+                const tourInfo = [
+                    { key: 'accomcount', label: '수용인원', value: intro.accomcount },
+                    { key: 'chkbabycarriage', label: '유모차대여', value: intro.chkbabycarriage },
+                    { key: 'chkcreditcard', label: '신용카드', value: intro.chkcreditcard },
+                    { key: 'chkpet', label: '애완동물동반', value: intro.chkpet },
+                    { key: 'expagerange', label: '체험연령', value: intro.expagerange },
+                    { key: 'expguide', label: '체험안내', value: intro.expguide },
+                    { key: 'heritage1', label: '세계문화유산', value: intro.heritage1 },
+                    { key: 'heritage2', label: '세계자연유산', value: intro.heritage2 },
+                    { key: 'heritage3', label: '세계기록유산', value: intro.heritage3 },
+                    { key: 'infocenter', label: '문의및안내', value: intro.infocenter },
+                    { key: 'opendate', label: '개장일', value: intro.opendate },
+                    { key: 'parking', label: '주차시설', value: intro.parking },
+                    { key: 'restdate', label: '쉬는날', value: intro.restdate },
+                    { key: 'useseason', label: '이용시기', value: intro.useseason },
+                    { key: 'usetime', label: '이용시간', value: intro.usetime }
+                ];
+
+                tourInfo.forEach(info => {
+                    if (info.value && info.value !== '0' && info.value !== 'N') {
+                        html += `<div class="info-item"><strong>${info.label}:</strong> ${info.value}</div>`;
+                    }
+                });
+            }
+
+            // 음식점 (39)
+            else if (contentTypeId === '39') {
+                const foodInfo = [
+                    { key: 'firstmenu', label: '대표메뉴', value: intro.firstmenu },
+                    { key: 'treatmenu', label: '취급메뉴', value: intro.treatmenu },
+                    { key: 'smoking', label: '금연/흡연', value: intro.smoking },
+                    { key: 'packing', label: '포장가능', value: intro.packing },
+                    { key: 'opentimefood', label: '영업시간', value: intro.opentimefood },
+                    { key: 'restdatefood', label: '휴무일', value: intro.restdatefood },
+                    { key: 'reservationfood', label: '예약안내', value: intro.reservationfood },
+                    { key: 'parkingfood', label: '주차시설', value: intro.parkingfood },
+                    { key: 'seat', label: '좌석수', value: intro.seat },
+                    { key: 'kidsfacility', label: '어린이시설', value: intro.kidsfacility }
+                ];
+
+                foodInfo.forEach(info => {
+                    if (info.value && info.value !== '0' && info.value !== 'N') {
+                        html += `<div class="info-item"><strong>${info.label}:</strong> ${info.value}</div>`;
+                    }
+                });
+            }
+
+            html += '</div></div>';
+            return html;
         }
 
         /**
@@ -918,100 +1393,64 @@
                 hideLoading();
             }
         }
+  /**
+         * 축제 진행 상태 확인
+         */
+        function getEventStatus(startDate, endDate) {
+            const now = new Date();
+            const start = new Date(startDate);
+            const end = new Date(endDate);
 
-        /**
-         * 지도 열기
-         */
-        function openMap(lat, lng, title) {
-            const mapUrl = `https://map.kakao.com/link/map/${encodeURIComponent(title)},${lat},${lng}`;
-            window.open(mapUrl, '_blank');
-        }
-        /**
-         * 폼 초기화
-         */
-        function resetForm() {
-            document.getElementById('searchForm').reset();
-            document.getElementById('sigunguCode').innerHTML = '<option value="">전체 시군구</option>';
-            hideResults();
-            userLocation = null;
-            currentParams = {};
-            currentPage = 1;
-        }
-
-        /**
-         * 이미지 모달 닫기
-         */
-        function closeImageModal() {
-            document.getElementById('imageModal').style.display = 'none';
-        }
-
-        /**
-         * 로딩 표시
-         */
-        function showLoading() {
-            document.getElementById('loading').classList.remove('hidden');
-        }
-
-        /**
-         * 로딩 숨기기
-         */
-        function hideLoading() {
-            document.getElementById('loading').classList.add('hidden');
-        }
-
-        /**
-         * 결과 표시
-         */
-        function showResults() {
-            document.getElementById('results').classList.remove('hidden');
-        }
-
-        /**
-         * 결과 숨기기
-         */
-        function hideResults() {
-            document.getElementById('results').classList.add('hidden');
-        }
-
-        /**
-         * 에러 메시지 표시
-         */
-        function showError(message) {
-            hideLoading();
-            hideResults();
-            
-            // 기존 에러 메시지 제거
-            const existingError = document.querySelector('.error');
-            if (existingError) {
-                existingError.remove();
+            if (now < start) {
+                return { text: '예정', class: 'status-upcoming' };
+            } else if (now >= start && now <= end) {
+                return { text: '진행중', class: 'status-ongoing' };
+            } else {
+                return { text: '종료', class: 'status-ended' };
             }
-
-            // 새 에러 메시지 생성
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error';
-            errorDiv.innerHTML = `
-                <strong>오류:</strong> ${message}
-                <button onclick="this.parentElement.remove()" style="float: right; background: none; border: none; color: #721c24; font-size: 18px; cursor: pointer;">&times;</button>
-            `;
-
-            // 검색 섹션 다음에 에러 메시지 삽입
-            const searchSection = document.querySelector('.search-section');
-            searchSection.insertAdjacentElement('afterend', errorDiv);
-
-            // 5초 후 자동 제거
-            setTimeout(() => {
-                if (errorDiv.parentElement) {
-                    errorDiv.remove();
-                }
-            }, 5000);
         }
 
         /**
-         * 이미지 로드 에러 처리
+         * 날짜 포맷팅
          */
-        function handleImageError(img) {
-            img.style.display = 'none';
-            img.parentElement.innerHTML = '🏞️';
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+            
+            return date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        /**
+         * 거리 포맷팅
+         */
+        function formatDistance(distance) {
+            const dist = parseFloat(distance);
+            if (isNaN(dist)) return '';
+            
+            if (dist < 1000) {
+                return `${Math.round(dist)}m`;
+            } else {
+                return `${(dist / 1000).toFixed(1)}km`;
+            }
+        }
+
+        /**
+         * 지역 정보 추출
+         */
+        function getAreaInfo(address) {
+            if (!address) return '';
+            
+            const parts = address.split(' ');
+            if (parts.length >= 2) {
+                return `${parts[0]} ${parts[1]}`;
+            }
+            return parts[0] || '';
         }
 
         /**
@@ -1032,110 +1471,100 @@
         }
 
         /**
-         * 거리 포맷팅
+         * 이미지 로드 에러 처리
          */
-        function formatDistance(distance) {
-            const dist = parseFloat(distance);
-            if (isNaN(dist)) return '';
-            
-            if (dist < 1000) {
-                return `${Math.round(dist)}m`;
-            } else {
-                return `${(dist / 1000).toFixed(1)}km`;
-            }
+        function handleImageError(img) {
+            img.style.display = 'none';
+            img.parentElement.innerHTML = '🏞️';
         }
 
         /**
-         * 키보드 단축키 처리
+         * 지도 열기
          */
-        document.addEventListener('keydown', function(e) {
-            // Escape 키로 모달 닫기
-            if (e.key === 'Escape') {
-                closeImageModal();
-            }
-            
-            // Ctrl+Enter로 검색
-            if (e.ctrlKey && e.key === 'Enter') {
-                searchTourism();
-            }
-            
-            // F5 새로고침 방지 (개발 시에만 사용)
-            if (e.key === 'F5') {
-                e.preventDefault();
-                location.reload();
-            }
-        });
+        function openMap(lat, lng, title) {
+            const mapUrl = `https://map.kakao.com/link/map/${encodeURIComponent(title)},${lat},${lng}`;
+            window.open(mapUrl, '_blank');
+        }
 
         /**
-         * 스크롤 이벤트 처리 (무한 스크롤 준비)
+         * 폼 초기화
          */
-        let isScrollLoading = false;
-        window.addEventListener('scroll', function() {
-            if (isScrollLoading) return;
-            
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-            
-            // 페이지 하단 근처에서 다음 페이지 로드 (향후 구현)
-            if (scrollTop + windowHeight >= documentHeight - 1000) {
-                // 무한 스크롤 로직은 필요시 구현
-            }
-        });
+        function resetForm() {
+            document.getElementById('searchForm').reset();
+            document.getElementById('sigunguCode').innerHTML = '<option value="">전체 시군구</option>';
+            document.getElementById('sortContainer').style.display = 'none';
+            hideResults();
+            userLocation = null;
+            currentParams = {};
+            currentPage = 1;
+        }
 
         /**
-         * 브라우저 뒤로가기/앞으로가기 처리
+         * 이미지 모달 닫기
          */
-        window.addEventListener('popstate', function(e) {
-            if (e.state) {
-                // 상태 복원 로직
-                currentParams = e.state.params || {};
-                currentPage = e.state.page || 1;
-                userLocation = e.state.userLocation || null;
-                
-                // 폼 값 복원
-                if (e.state.formData) {
-                    Object.entries(e.state.formData).forEach(([key, value]) => {
-                        const element = document.getElementById(key);
-                        if (element) {
-                            element.value = value;
-                        }
-                    });
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        /**
+         * 로딩 표시/숨기기
+         */
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        /**
+         * 결과 표시/숨기기
+         */
+        function showResults() {
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        function hideResults() {
+            document.getElementById('results').classList.add('hidden');
+        }
+
+        /**
+         * 에러 메시지 표시
+         */
+        function showError(message) {
+            hideLoading();
+            hideResults();
+            
+            const existingError = document.querySelector('.error');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.innerHTML = `
+                <strong>오류:</strong> ${message}
+                <button onclick="this.parentElement.remove()" style="float: right; background: none; border: none; color: #721c24; font-size: 18px; cursor: pointer;">&times;</button>
+            `;
+
+            const searchSection = document.querySelector('.search-section');
+            searchSection.insertAdjacentElement('afterend', errorDiv);
+
+            setTimeout(() => {
+                if (errorDiv.parentElement) {
+                    errorDiv.remove();
                 }
-            }
-        });
-
-        /**
-         * URL 상태 저장
-         */
-        function saveState() {
-            const formData = {};
-            const form = document.getElementById('searchForm');
-            const formElements = new FormData(form);
-            
-            for (let [key, value] of formElements.entries()) {
-                formData[key] = value;
-            }
-            
-            const state = {
-                params: currentParams,
-                page: currentPage,
-                userLocation: userLocation,
-                formData: formData
-            };
-            
-            history.pushState(state, '', window.location.pathname);
+            }, 5000);
         }
 
         /**
-         * 즐겨찾기 기능 (로컬 스토리지 활용)
+         * 즐겨찾기 토글
          */
         function toggleBookmark(contentId, title) {
             const bookmarks = JSON.parse(localStorage.getItem('tourismBookmarks') || '[]');
             const index = bookmarks.findIndex(item => item.contentId === contentId);
             
             if (index === -1) {
-                // 즐겨찾기 추가
                 bookmarks.push({
                     contentId: contentId,
                     title: title,
@@ -1143,7 +1572,6 @@
                 });
                 showMessage('즐겨찾기에 추가되었습니다.');
             } else {
-                // 즐겨찾기 제거
                 bookmarks.splice(index, 1);
                 showMessage('즐겨찾기에서 제거되었습니다.');
             }
@@ -1164,7 +1592,7 @@
         }
 
         /**
-         * 성공 메시지 표시
+         * 메시지 표시
          */
         function showMessage(message, type = 'success') {
             const messageDiv = document.createElement('div');
@@ -1192,151 +1620,18 @@
             }, 3000);
         }
 
-        /**
-         * 공유 기능
-         */
-        function shareLocation(contentId, title, addr) {
-            if (navigator.share) {
-                navigator.share({
-                    title: title,
-                    text: `${title} - ${addr}`,
-                    url: window.location.href + `?contentId=${contentId}`
-                }).catch(err => console.log('공유 실패:', err));
-            } else {
-                // 폴백: 클립보드에 복사
-                const shareText = `${title}\n${addr}\n${window.location.href}?contentId=${contentId}`;
-                navigator.clipboard.writeText(shareText).then(() => {
-                    showMessage('링크가 클립보드에 복사되었습니다.');
-                }).catch(() => {
-                    showMessage('공유 기능을 사용할 수 없습니다.', 'error');
-                });
-            }
-        }
+        // 전역 에러 핸들러
+        window.addEventListener('error', function(e) {
+            console.error('전역 에러:', e.error);
+            showMessage('예상치 못한 오류가 발생했습니다.', 'error');
+        });
 
-        /**
-         * 인쇄 기능
-         */
-        function printResults() {
-            const printWindow = window.open('', '_blank');
-            const results = document.getElementById('resultsGrid').innerHTML;
-            
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>관광지 검색 결과</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; }
-                        .result-card { 
-                            border: 1px solid #ddd; 
-                            margin: 10px 0; 
-                            padding: 10px; 
-                            page-break-inside: avoid; 
-                        }
-                        .result-image { display: none; }
-                        .result-actions { display: none; }
-                    </style>
-                </head>
-                <body>
-                    <h1>관광지 검색 결과</h1>
-                    <div>${results}</div>
-                </body>
-                </html>
-            `);
-            
-            printWindow.document.close();
-            printWindow.print();
-        }
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('처리되지 않은 Promise 거부:', e.reason);
+            showMessage('네트워크 오류가 발생했습니다.', 'error');
+        });
 
-        /**
-         * 데이터 내보내기 (CSV)
-         */
-        function exportToCsv() {
-            const results = document.querySelectorAll('.result-card');
-            if (results.length === 0) {
-                showMessage('내보낼 데이터가 없습니다.', 'error');
-                return;
-            }
-            
-            let csvContent = 'Title,Address,Distance\n';
-            
-            results.forEach(card => {
-                const title = card.querySelector('.result-title')?.textContent || '';
-                const address = card.querySelector('.result-address')?.textContent.replace('📍 ', '') || '';
-                const distance = card.querySelector('.result-distance')?.textContent.replace('📏 ', '') || '';
-                
-                csvContent += `"${title}","${address}","${distance}"\n`;
-            });
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            
-            link.setAttribute('href', url);
-            link.setAttribute('download', `tourism_results_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            showMessage('CSV 파일이 다운로드되었습니다.');
-        }
-
-        /**
-         * 애니메이션 CSS 추가
-         */
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            
-            @keyframes slideOutRight {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-            
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            
-            .result-card {
-                animation: fadeIn 0.5s ease-out;
-            }
-            
-            .loading {
-                animation: pulse 1.5s infinite;
-            }
-            
-            @keyframes pulse {
-                0% { opacity: 1; }
-                50% { opacity: 0.5; }
-                100% { opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-
-        /**
-         * 서비스 워커 등록 (PWA 준비)
-         */
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(function(err) {
-                        console.log('ServiceWorker registration failed');
-                    });
-            });
-        }
-
-        /**
-         * 오프라인 감지
-         */
+        // 오프라인 감지
         window.addEventListener('online', function() {
             showMessage('인터넷 연결이 복구되었습니다.');
         });
@@ -1344,34 +1639,13 @@
         window.addEventListener('offline', function() {
             showMessage('인터넷 연결이 끊어졌습니다. 일부 기능이 제한될 수 있습니다.', 'error');
         });
-
-        /**
-         * 성능 모니터링
-         */
-        function logPerformance(operation, startTime) {
-            const endTime = performance.now();
-            const duration = endTime - startTime;
-            console.log(`${operation} 실행 시간: ${duration.toFixed(2)}ms`);
-            
-            // 성능 데이터를 서버로 전송 (선택적)
-            if (duration > 5000) { // 5초 이상 걸린 경우
-                console.warn(`느린 응답 감지: ${operation} - ${duration.toFixed(2)}ms`);
-            }
-        }
-
-        // 전역 에러 핸들러
-        window.addEventListener('error', function(e) {
-            console.error('전역 에러:', e.error);
-            showMessage('예상치 못한 오류가 발생했습니다.', 'error');
-        });
-
-        // Promise 거부 핸들러
-        window.addEventListener('unhandledrejection', function(e) {
-            console.error('처리되지 않은 Promise 거부:', e.reason);
-            showMessage('네트워크 오류가 발생했습니다.', 'error');
-        });
-
-        console.log('🗺️ 관광지 탐색기가 로드되었습니다!');
     </script>
 </body>
 </html>
+
+     
+
+     
+     
+    
+        
