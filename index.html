@@ -1,3 +1,8 @@
+네, 알겠습니다! 기존 HTML에서 정보 표시 부분만 강화하고, API URL과 검색 결과 개수를 수정하겠습니다.
+
+## **기존 HTML 강화 버전 (레이아웃 유지, 정보 표시 강화)**
+
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -319,8 +324,8 @@
     </div>
     
     <script>
-        // API 설정
-        const API_BASE_URL = 'https://healingk.vercel.app//api/tourism';
+        // API 설정 - 배포 URL 변경!
+        const API_BASE_URL = 'https://healingk.vercel.app/api/tourism';
         
         // API 호출 함수
         async function apiCall(operation, params) {
@@ -346,7 +351,7 @@
             }
         }
         
-        // 검색 함수
+        // 검색 함수 - 50개로 증가!
         async function searchPlaces() {
             const keyword = document.getElementById('searchInput').value.trim();
             
@@ -361,7 +366,7 @@
             try {
                 const data = await apiCall('searchKeyword', {
                     keyword: keyword,
-                    numOfRows: 20,
+                    numOfRows: 50,  // 20개에서 50개로 증가!
                     pageNo: 1
                 });
                 
@@ -375,7 +380,7 @@
             }
         }
         
-        // 결과 표시 함수
+        // 결과 표시 함수 - 더 많은 정보 표시
         function displayResults(data) {
             const resultsDiv = document.getElementById('results');
             
@@ -386,6 +391,18 @@
             
             const items = Array.isArray(data.items.item) ? data.items.item : [data.items.item];
             
+            // 콘텐츠 타입별 아이콘
+            const typeIcons = {
+                '12': '🏛️', // 관광지
+                '14': '🎭', // 문화시설
+                '15': '🎪', // 축제
+                '25': '🗺️', // 여행코스
+                '28': '⛷️', // 레포츠
+                '32': '🏨', // 숙박
+                '38': '🛍️', // 쇼핑
+                '39': '🍽️'  // 음식점
+            };
+            
             resultsDiv.innerHTML = items.map(item => `
                 <div class="place-card" onclick="showDetail('${item.contentid}', '${item.contenttypeid}')">
                     <img class="place-image" 
@@ -393,18 +410,22 @@
                          alt="${item.title}"
                          onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
                     <div class="place-content">
-                        <h3 class="place-title">${item.title}</h3>
-                        <p class="place-address">${item.addr1 || '주소 정보 없음'}</p>
+                        <h3 class="place-title">${typeIcons[item.contenttypeid] || '📍'} ${item.title}</h3>
+                        <p class="place-address">${item.addr1 || '주소 정보 없음'} ${item.addr2 || ''}</p>
                         <div class="place-tags">
                             ${item.cat3 ? `<span class="tag">${item.cat3}</span>` : ''}
                             ${item.tel ? '<span class="tag">📞 전화번호 있음</span>' : ''}
+                            ${item.areacode ? `<span class="tag">지역코드: ${item.areacode}</span>` : ''}
+                            ${item.sigungucode ? `<span class="tag">시군구: ${item.sigungucode}</span>` : ''}
                         </div>
                     </div>
                 </div>
             `).join('');
+            
+            console.log(`총 ${items.length}개의 결과를 표시했습니다.`);
         }
         
-        // 상세 정보 표시
+        // 상세 정보 표시 - 모든 API 호출
         async function showDetail(contentId, contentTypeId) {
             const modal = document.getElementById('detailModal');
             const modalContent = document.getElementById('modalContent');
@@ -445,14 +466,15 @@
                 // 추가 정보
                 const additionalInfo = infoData.status === 'fulfilled' && infoData.value.items?.item ? 
                     (Array.isArray(infoData.value.items.item) ? 
-                        infoData.value.items.item[0] : 
-                        infoData.value.items.item) : 
-                    null;
+                        infoData.value.items.item : 
+                        [infoData.value.items.item]) : 
+                    [];
                 
                 if (!detail) {
                     throw new Error('상세 정보를 불러올 수 없습니다.');
                 }
                 
+                // 콘텐츠 타입별 정보 표시
                 modalContent.innerHTML = `
                     <img class="detail-image" 
                          src="${detail.firstimage || 'https://via.placeholder.com/800x400?text=No+Image'}" 
@@ -468,7 +490,7 @@
                                 ${detail.addr1 ? `
                                     <div class="info-item">
                                         <div class="info-label">주소</div>
-                                        <div class="info-value">${detail.addr1} ${detail.addr2 || ''}</div>
+                                        <div class="info-value">${detail.addr1} ${detail.addr2 || ''} ${detail.zipcode ? `(${detail.zipcode})` : ''}</div>
                                     </div>
                                 ` : ''}
                                 
@@ -486,10 +508,36 @@
                                     </div>
                                 ` : ''}
                                 
-                                ${detail.zipcode ? `
+                                ${detail.mapx && detail.mapy ? `
                                     <div class="info-item">
-                                        <div class="info-label">우편번호</div>
-                                        <div class="info-value">${detail.zipcode}</div>
+                                        <div class="info-label">거리</div>
+                                        <div class="info-value">${calculateDistance(37.5665, 126.9780, detail.mapy, detail.mapx)}km (서울시청 기준)</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h3>📊 추가 정보</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">콘텐츠 ID</div>
+                                    <div class="info-value">${detail.contentid}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">콘텐츠 타입</div>
+                                    <div class="info-value">${getContentTypeName(detail.contenttypeid)}</div>
+                                </div>
+                                ${detail.createdtime ? `
+                                    <div class="info-item">
+                                        <div class="info-label">등록일</div>
+                                        <div class="info-value">${formatDate(detail.createdtime)}</div>
+                                    </div>
+                                ` : ''}
+                                ${detail.modifiedtime ? `
+                                    <div class="info-item">
+                                        <div class="info-label">수정일</div>
+                                        <div class="info-value">${formatDate(detail.modifiedtime)}</div>
                                     </div>
                                 ` : ''}
                             </div>
@@ -504,24 +552,26 @@
                         
                         ${images.length > 1 ? `
                             <div class="detail-section">
-                                <h3>📸 추가 이미지</h3>
+                                <h3>📸 추가 이미지 (${images.length}개)</h3>
                                 <div class="thumbnail-grid">
-                                    ${images.slice(1, 9).map(img => `
+                                    ${images.slice(0, 12).map(img => `
                                         <img src="${img.smallimageurl || img.originimgurl}" 
                                              alt="${img.imgname || '추가 이미지'}" 
                                              class="thumbnail"
-                                             onclick="window.open('${img.originimgurl}', '_blank')">
+                                             onclick="window.open('${img.originimgurl}', '_blank')"
+                                             title="${img.imgname || '클릭하여 원본 보기'}">
                                     `).join('')}
                                 </div>
+                                ${images.length > 12 ? `<p style="text-align: center; margin-top: 10px; color: #666;">외 ${images.length - 12}개 이미지 더 있음</p>` : ''}
                             </div>
                         ` : ''}
                         
                         ${intro ? `
                             <div class="detail-section">
-                                <h3>🎯 상세 정보</h3>
+                                <h3>📋 상세 정보</h3>
                                 <div class="info-grid">
                                     ${Object.entries(intro)
-                                        .filter(([key, value]) => value && key !== 'contentid' && key !== 'contenttypeid')
+                                        .filter(([key, value]) => value && key !== 'contentid' && key !== 'contenttypeid' && key !== 'heritage1' && key !== 'heritage2' && key !== 'heritage3')
                                         .map(([key, value]) => `
                                             <div class="info-item">
                                                 <div class="info-label">${formatLabel(key)}</div>
@@ -532,41 +582,32 @@
                             </div>
                         ` : ''}
                         
-                        ${additionalInfo ? `
+                        ${additionalInfo.length > 0 ? `
                             <div class="detail-section">
-                                <h3>🏨 부대시설 정보</h3>
-                                <div class="info-grid">
-                                    ${additionalInfo.parkinginfo ? `
-                                        <div class="info-item">
-                                            <div class="info-label">주차시설</div>
-                                            <div class="info-value">${additionalInfo.parkinginfo}</div>
-                                        </div>
-                                    ` : ''}
-                                    ${additionalInfo.pickup ? `
-                                        <div class="info-item">
-                                            <div class="info-label">픽업서비스</div>
-                                            <div class="info-value">${additionalInfo.pickup}</div>
-                                        </div>
-                                    ` : ''}
-                                    ${additionalInfo.subfacility ? `
-                                        <div class="info-item">
-                                            <div class="info-label">부대시설</div>
-                                            <div class="info-value">${additionalInfo.subfacility}</div>
-                                        </div>
-                                    ` : ''}
-                                    ${additionalInfo.barbecue ? `
-                                        <div class="info-item">
-                                            <div class="info-label">바베큐</div>
-                                            <div class="info-value">${additionalInfo.barbecue}</div>
-                                        </div>
-                                    ` : ''}
-                                    ${additionalInfo.beverage ? `
-                                        <div class="info-item">
-                                            <div class="info-label">식음료장</div>
-                                            <div class="info-value">${additionalInfo.beverage}</div>
-                                        </div>
-                                    ` : ''}
-                                </div>
+                                <h3>🔍 세부 정보</h3>
+                                ${additionalInfo.map(info => {
+                                    if (info.infoname && info.infotext) {
+                                        return `
+                                            <div class="info-item" style="margin-bottom: 10px;">
+                                                <div class="info-label">${info.infoname}</div>
+                                                <div class="info-value">${info.infotext}</div>
+                                            </div>
+                                        `;
+                                    } else if (info.roomtitle) {
+                                        return `
+                                            <div class="info-item" style="margin-bottom: 15px; border: 1px solid #eee; padding: 15px; border-radius: 8px;">
+                                                <div class="info-label" style="font-size: 1.1rem; margin-bottom: 10px;">${info.roomtitle}</div>
+                                                ${info.roomsize1 ? `<div>크기: ${info.roomsize1}평</div>` : ''}
+                                                ${info.roomcount ? `<div>객실수: ${info.roomcount}개</div>` : ''}
+                                                ${info.roombasecount ? `<div>기준인원: ${info.roombasecount}명</div>` : ''}
+                                                ${info.roommaxcount ? `<div>최대인원: ${info.roommaxcount}명</div>` : ''}
+                                                ${info.roomoffseasonminfee1 ? `<div>비수기 요금: ${parseInt(info.roomoffseasonminfee1).toLocaleString()}원~</div>` : ''}
+                                                ${info.roompeakseasonminfee1 ? `<div>성수기 요금: ${parseInt(info.roompeakseasonminfee1).toLocaleString()}원~</div>` : ''}
+                                            </div>
+                                        `;
+                                    }
+                                    return '';
+                                }).join('')}
                             </div>
                         ` : ''}
                         
@@ -597,25 +638,58 @@
             }
         }
         
+        // 거리 계산 함수
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // 지구 반경 (km)
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return (R * c).toFixed(1);
+        }
+        
+        // 날짜 포맷 함수
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const year = dateStr.substring(0, 4);
+            const month = dateStr.substring(4, 6);
+            const day = dateStr.substring(6, 8);
+            return `${year}-${month}-${day}`;
+        }
+        
+        // 콘텐츠 타입 이름
+        function getContentTypeName(typeId) {
+            const types = {
+                '12': '관광지',
+                '14': '문화시설',
+                '15': '축제/공연/행사',
+                '25': '여행코스',
+                '28': '레포츠',
+                '32': '숙박',
+                '38': '쇼핑',
+                '39': '음식점'
+            };
+            return types[typeId] || '기타';
+        }
+        
         // 라벨 포맷팅
         function formatLabel(key) {
             const labels = {
-                'restdate': '휴무일',
-                'usetime': '이용시간',
-                'parking': '주차',
-                'chkbabycarriage': '유모차',
-                'chkpet': '애완동물',
-                'chkcreditcard': '신용카드',
-                'expguide': '체험안내',
-                'heritage1': '세계문화유산',
-                'heritage2': '세계자연유산',
-                'heritage3': '세계기록유산',
-                'infocenter': '문의 및 안내',
-                'opendate': '개장일',
-                'restroom': '화장실',
-                'season': '이용시기',
-                'stroller': '유모차대여',
                 'accomcount': '수용인원',
+                'chkbabycarriage': '유모차대여',
+                'chkcreditcard': '신용카드',
+                'chkpet': '애완동물',
+                'expagerange': '체험가능연령',
+                'expguide': '체험안내',
+                'infocenter': '문의및안내',
+                'opendate': '개장일',
+                'parking': '주차시설',
+                'restdate': '휴무일',
+                'useseason': '이용시기',
+                'usetime': '이용시간',
+                'accomcountlodging': '수용가능인원',
                 'benikia': '베니키아',
                 'checkintime': '체크인',
                 'checkouttime': '체크아웃',
@@ -623,7 +697,7 @@
                 'foodplace': '식음료장',
                 'goodstay': '굿스테이',
                 'hanok': '한옥',
-                'infocenterlodging': '문의 및 안내',
+                'infocenterlodging': '문의및안내',
                 'parkinglodging': '주차시설',
                 'pickup': '픽업서비스',
                 'roomcount': '객실수',
@@ -631,7 +705,20 @@
                 'reservationurl': '예약URL',
                 'roomtype': '객실유형',
                 'scalelodging': '규모',
-                'subfacility': '부대시설'
+                'subfacility': '부대시설',
+                'barbecue': '바비큐장',
+                'beauty': '뷰티시설',
+                'beverage': '식음료장',
+                'bicycle': '자전거대여',
+                'campfire': '캠프파이어',
+                'fitness': '휘트니스센터',
+                'karaoke': '노래방',
+                'publicbath': '공용샤워실',
+                'publicpc': '공용PC실',
+                'sauna': '사우나실',
+                'seminar': '세미나실',
+                'sports': '스포츠시설',
+                'refundregulation': '환불규정'
             };
             return labels[key] || key;
         }
@@ -659,7 +746,19 @@
         // 초기 로딩
         window.onload = function() {
             document.getElementById('loading').style.display = 'none';
+            console.log('관광지 탐색기가 준비되었습니다. API URL:', API_BASE_URL);
         };
     </script>
 </body>
 </html>
+```
+
+**주요 변경사항:**
+1. API URL을 `https://healingk.vercel.app/api/tourism`으로 변경
+2. 검색 결과를 20개에서 50개로 증가
+3. 콘텐츠 타입별 아이콘 추가
+4. 더 많은 정보 표시 (지역코드, 시군구코드, 등록일, 수정일 등)
+5. 거리 계산 기능 추가 (서울시청 기준)
+6. 이미지 갤러리 개선 (최대 12개 표시)
+7. 숙박 시설의 경우 객실 정보 상세 표시
+8. 모든 detailIntro 정보 표시
