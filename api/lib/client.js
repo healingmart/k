@@ -379,3 +379,73 @@ module.exports = {
   ApiError,
   checkRateLimit
 };
+
+
+
+
+/**
+ * 이미지 정보 조회 (detailImage API)
+ */
+async detailImage(params = {}) {
+    if (!params.contentId) {
+        throw new ApiError('contentId는 필수 파라미터입니다.', 'VALIDATION_ERROR', 400);
+    }
+
+    const validatedParams = {
+        contentId: String(params.contentId),
+        imageYN: 'Y',
+        subImageYN: 'Y',
+        numOfRows: safeParseInt(params.numOfRows, 10),
+        pageNo: safeParseInt(params.pageNo, 1)
+    };
+
+    return this.makeRequest('/detailImage2', validatedParams, 'detailImage');
+}
+
+/**
+ * 반복 정보 조회 (detailInfo API)
+ */
+async detailInfo(params = {}) {
+    if (!params.contentId || !params.contentTypeId) {
+        throw new ApiError('contentId와 contentTypeId는 필수 파라미터입니다.', 'VALIDATION_ERROR', 400);
+    }
+
+    const validatedParams = {
+        contentId: String(params.contentId),
+        contentTypeId: String(params.contentTypeId),
+        numOfRows: safeParseInt(params.numOfRows, 10),
+        pageNo: safeParseInt(params.pageNo, 1)
+    };
+
+    return this.makeRequest('/detailInfo2', validatedParams, 'detailInfo');
+}
+
+/**
+ * 지역코드 조회 (areaCode API)
+ */
+async areaCode(params = {}) {
+    const validatedParams = {
+        numOfRows: safeParseInt(params.numOfRows, 100),
+        pageNo: safeParseInt(params.pageNo, 1),
+        ...params
+    };
+
+    return this.makeRequest('/areaCode2', validatedParams, 'areaCode');
+}
+
+/**
+ * 서비스분류코드 조회 (categoryCode API)
+ */
+async categoryCode(params = {}) {
+    const validatedParams = {
+        numOfRows: safeParseInt(params.numOfRows, 100),
+        pageNo: safeParseInt(params.pageNo, 1),
+        ...params
+    };
+
+    return this.makeRequest('/categoryCode2', validatedParams, 'categoryCode');
+}
+
+
+
+
