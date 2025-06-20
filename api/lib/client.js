@@ -1,5 +1,5 @@
 /**
- * 관광 API 클라이언트
+ * 관광 API 클라이언트 (매뉴얼 기반 수정버전)
  */
 
 const { CONFIG, API_ERROR_CODES } = require('./config');
@@ -98,7 +98,7 @@ class TourismApiClient {
     }
 
     /**
-     * API 요청 실행
+     * API 요청 실행 (매뉴얼 기반 수정)
      */
     async makeRequest(endpoint, params = {}, operation = 'unknown') {
         const fullParams = this.buildBaseParams(params);
@@ -145,32 +145,49 @@ class TourismApiClient {
 
             console.log(`[${operation}] Response:`, data);
 
-            // API 응답 검증
-            if (data.response?.header?.resultCode !== '0000') {
-                const resultCode = data.response?.header?.resultCode || '99';
+            // 매뉴얼 기반 API 응답 구조 처리
+            let resultCode, resultMsg, responseBody;
+
+            // 표준 응답 구조 (매뉴얼 기준)
+            if (data.response?.header) {
+                resultCode = data.response.header.resultCode;
+                resultMsg = data.response.header.resultMsg;
+                responseBody = data.response.body || {};
+            }
+            // 직접 응답 구조 (에러 응답)
+            else if (data.resultCode !== undefined) {
+                resultCode = data.resultCode;
+                resultMsg = data.resultMsg;
+                responseBody = data;
+            }
+            // 기타 응답
+            else {
+                resultCode = '0000'; // 성공으로 가정
+                responseBody = data;
+            }
+
+            // API 응답 검증 (매뉴얼 기준)
+            if (resultCode !== '0000') {
                 const errorCode = API_ERROR_CODES[resultCode] || 'API_ERROR';
                 throw new ApiError(
-                    data.response?.header?.resultMsg || '알 수 없는 오류',
+                    resultMsg || '알 수 없는 오류',
                     errorCode,
                     400,
                     {
                         resultCode,
-                        resultMsg: data.response?.header?.resultMsg
+                        resultMsg
                     }
                 );
             }
 
-            // 성공 응답 처리
-            const result = data.response?.body || data;
-
             // 캐시 저장
             cache.set(cacheKey, {
-                data: result,
+                data: responseBody,
                 expiry: Date.now() + CONFIG.CACHE_TTL,
                 timestamp: Date.now()
             });
 
-            return result;
+            return responseBody;
         } catch (error) {
             if (error.name === 'AbortError') {
                 throw new ApiError('API 요청 시간 초과', 'TIMEOUT', 504);
@@ -210,13 +227,8 @@ class TourismApiClient {
 
         const validatedParams = {
             contentId: String(params.contentId),
-            defaultYN: 'Y',
-            firstImageYN: 'Y',
-            areacodeYN: 'Y',
-            catcodeYN: 'Y',
-            addrinfoYN: 'Y',
-            mapinfoYN: 'Y',
-            overviewYN: 'Y'
+            numOfRows: 10,
+            pageNo: 1
         };
 
         return this.makeRequest('/detailCommon2', validatedParams, 'detailCommon');
@@ -253,8 +265,7 @@ class TourismApiClient {
         const validatedParams = {
             contentId: String(params.contentId),
             imageYN: 'Y',
-            subImageYN: 'Y',
-            numOfRows: safeParseInt(params.numOfRows, 10),
+            numOfRows: safeParseInt(params.numOfRows, 20),
             pageNo: safeParseInt(params.pageNo, 1)
         };
 
@@ -324,7 +335,7 @@ class TourismApiClient {
     }
 
     /**
-     * 위치 기반 관광정보 조회
+     * 위치 기반 관광정보 조회 (매뉴얼 기반 수정)
      */
     async locationBasedList(params = {}) {
         if (!params.mapX || !params.mapY) {
@@ -347,39 +358,43 @@ class TourismApiClient {
             );
         }
 
+        // 매뉴얼 기준 파라미터 (addDistance 제거)
         const validatedParams = {
             numOfRows: safeParseInt(params.numOfRows, 10),
             pageNo: safeParseInt(params.pageNo, 1),
             mapX: lng,
             mapY: lat,
-            radius: safeParseInt(params.radius, 1000),
-            ...params
+            radius: safeParseInt(params.radius, 1000)
         };
+
+        // 선택적 파라미터들
+        if (params.contentTypeId) validatedParams.contentTypeId = params.contentTypeId;
+        if (params.areaCode) validatedParams.areaCode = params.areaCode;
+        if (params.sigunguCode) validatedParams.sigunguCode = params.sigunguCode;
+        if (params.cat1) validatedParams.cat1 = params.cat1;
+        if (params.cat2) validatedParams.cat2 = params.cat2;
+        if (params.cat3) validatedParams.cat3 = params.cat3;
 
         const result = await this.makeRequest('/locationBasedList2', validatedParams, 'locationBasedList');
 
-        // 거리 정보 추가 (선택사항)
-        if (params.addDistance === 'Y' && result.items?.item) {
+        // API에서 제공하는 dist 필드 사용 (거리 정보는 자동으로 포함됨)
+        if (result.items?.item) {
             const items = Array.isArray(result.items.item) ? result.items.item : [result.items.item];
-
+            
+            // dist 필드를 distance로 변환 (호환성)
             result.items.item = items.map(item => {
-                const itemLat = safeParseFloat(item.mapy);
-                const itemLng = safeParseFloat(item.mapx);
-
-                if (!isNaN(itemLat) && !isNaN(itemLng)) {
-                    const distance = this.calculateDistance(lat, lng, itemLat, itemLng);
-                    return { ...item, distance };
+                if (item.dist && !item.distance) {
+                    return { ...item, distance: parseFloat(item.dist) };
                 }
-
                 return item;
-            }).sort((a, b) => (a.distance || 999999) - (b.distance || 999999));
+            });
         }
 
         return result;
     }
 
     /**
-     * 거리 계산 (미터 단위)
+     * 거리 계산 (미터 단위) - 백업용
      */
     calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 6371e3; // 지구 반지름 (미터)
