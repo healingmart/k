@@ -1,4 +1,4 @@
-/*
+ /*
  * 관광 API 클라이언트
  */
 
@@ -12,7 +12,7 @@ const cache = new Map();
  * 캐시 정리
  */
 function cleanupCache() {
-    const now = Date.now();
+    const now = Date.now();  
     for (const [key, data] of cache.entries()) {
         if (now > data.expiry) {
             cache.delete(key);
