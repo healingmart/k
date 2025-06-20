@@ -136,6 +136,16 @@
             transform: translateY(-1px);
         }
 
+        .btn-debug {
+            background: #e74c3c !important;
+            color: white !important;
+        }
+
+        .btn-debug:hover {
+            background: #c0392b !important;
+            transform: translateY(-1px);
+        }
+
         /* 정렬 옵션 */
         .sort-container {
             margin-top: 20px;
@@ -641,6 +651,10 @@
                 <button type="button" class="btn btn-secondary" onclick="resetForm()">
                     🔄 초기화
                 </button>
+                <!-- 디버그 버튼 추가 -->
+                <button type="button" class="btn btn-debug" onclick="checkDataStatus()">
+                    📊 데이터 현황 조회
+                </button>
             </div>
 
             <div class="sort-container hidden" id="sortContainer">
@@ -690,7 +704,7 @@
         let userLocation = null;
         let currentResults = [];
 
-        // API 기본 URL (Vercel 환경에 맞게 수정)
+        // API 기본 URL
         const API_BASE_URL = '/api/tourism';
 
         /**
@@ -772,6 +786,199 @@
                 console.error('API 호출 오류:', error);
                 throw error;
             }
+        }
+
+        /**
+         * 전체 데이터 현황 조회 (디버그용)
+         */
+        async function checkDataStatus() {
+            showLoading();
+            
+            const statusData = {
+                categories: {},
+                regions: {},
+                total: 0
+            };
+
+            try {
+                // 1. 전체 개수 확인
+                console.log('=== 전체 데이터 개수 조회 ===');
+                const totalResult = await callAPI('areaBasedList', { numOfRows: 1 });
+                statusData.total = totalResult.totalCount || 0;
+                console.log(`전체: ${statusData.total.toLocaleString()}개`);
+
+                // 2. 카테고리별 개수 확인
+                console.log('=== 카테고리별 데이터 개수 ===');
+                const categories = [
+                    { id: '12', name: '관광지' },
+                    { id: '14', name: '문화시설' },
+                    { id: '15', name: '축제공연행사' },
+                    { id: '25', name: '여행코스' },
+                    { id: '28', name: '레포츠' },
+                    { id: '32', name: '숙박' },
+                    { id: '38', name: '쇼핑' },
+                    { id: '39', name: '음식점' }
+                ];
+
+                for (const category of categories) {
+                    try {
+                        const result = await callAPI('areaBasedList', { 
+                            contentTypeId: category.id,
+                            numOfRows: 1 
+                        });
+                        const count = result.totalCount || 0;
+                        statusData.categories[category.name] = count;
+                        console.log(`${category.name}: ${count.toLocaleString()}개`);
+                        
+                        // UI에 즉시 표시를 위한 딜레이
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                    } catch (error) {
+                        console.error(`${category.name} 조회 실패:`, error);
+                        statusData.categories[category.name] = 'Error';
+                    }
+                }
+
+                // 3. 주요 지역별 개수 확인
+                console.log('=== 주요 지역별 데이터 개수 ===');
+                const regions = [
+                    { code: '1', name: '서울특별시' },
+                    { code: '6', name: '부산광역시' },
+                    { code: '4', name: '대구광역시' },
+                    { code: '2', name: '인천광역시' },
+                    { code: '5', name: '광주광역시' },
+                    { code: '3', name: '대전광역시' },
+                    { code: '7', name: '울산광역시' },
+                    { code: '31', name: '경기도' }
+                ];
+
+                for (const region of regions) {
+                    try {
+                        const result = await callAPI('areaBasedList', { 
+                            areaCode: region.code,
+                            numOfRows: 1 
+                        });
+                        const count = result.totalCount || 0;
+                        statusData.regions[region.name] = count;
+                        console.log(`${region.name}: ${count.toLocaleString()}개`);
+                        
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                    } catch (error) {
+                        console.error(`${region.name} 조회 실패:`, error);
+                        statusData.regions[region.name] = 'Error';
+                    }
+                }
+
+                // 4. 키워드 테스트
+                console.log('=== 키워드 검색 테스트 ===');
+                const testKeywords = ['스타벅스', '투썸플레이스', '파스타', '피자', '한정식'];
+                
+                for (const keyword of testKeywords) {
+                    try {
+                        const result = await callAPI('searchKeyword', { 
+                            keyword: keyword,
+                            numOfRows: 1
+                        });
+                        const count = result.totalCount || 0;
+                        console.log(`"${keyword}" 검색 결과: ${count}개`);
+                        
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                    } catch (error) {
+                        console.error(`"${keyword}" 검색 실패:`, error);
+                    }
+                }
+
+                // 결과 표시
+                displayDataStatus(statusData);
+
+            } catch (error) {
+                showError('데이터 현황 조회 중 오류가 발생했습니다: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        /**
+         * 데이터 현황 결과 표시
+         */
+        function displayDataStatus(statusData) {
+            const modal = document.getElementById('detailModal');
+            const modalBody = document.getElementById('modalBody');
+            
+            let html = `
+                <div class="detail-header">
+                    <h3>📊 관광공사 API 데이터 현황</h3>
+                    <p class="update-date">조회 시간: ${new Date().toLocaleString('ko-KR')}</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>🔢 전체 데이터</h4>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>총 데이터 개수:</strong> ${statusData.total.toLocaleString()}개</div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>🏷️ 카테고리별 현황</h4>
+                    <div class="info-grid">
+            `;
+            
+            Object.entries(statusData.categories).forEach(([category, count]) => {
+                const displayCount = typeof count === 'number' ? count.toLocaleString() : count;
+                html += `<div class="info-item"><strong>${category}:</strong> ${displayCount}개</div>`;
+            });
+            
+            html += `
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>🌍 지역별 현황 (주요 도시)</h4>
+                    <div class="info-grid">
+            `;
+            
+            Object.entries(statusData.regions).forEach(([region, count]) => {
+                const displayCount = typeof count === 'number' ? count.toLocaleString() : count;
+                html += `<div class="info-item"><strong>${region}:</strong> ${displayCount}개</div>`;
+            });
+            
+            html += `
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+
+      <h4>💡 분석 결과</h4>
+                    <div class="overview">
+                        <p><strong>데이터 특징:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>전체 ${statusData.total.toLocaleString()}개는 일반 상업시설 대비 매우 적은 수치</li>
+                            <li>관광공사 API는 <strong>관광 목적지</strong> 중심으로 선별된 데이터</li>
+                            <li>일반 프랜차이즈(스타벅스, 맥도날드 등)는 대부분 제외</li>
+                            <li>지역 특색 맛집, 관광지 인근 업소 위주로 등록</li>
+                            <li>관광청 승인 또는 지자체 추천 업소만 포함</li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>권장 활용법:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li><strong>"힐링K 엄선 관광 맛집"</strong> 컨셉으로 포지셔닝</li>
+                            <li>관광지와 연계된 특색 있는 업소 발굴</li>
+                            <li>지역별 숨은 맛집 탐방 가이드</li>
+                            <li>전통 음식점, 향토 음식 전문점 위주 활용</li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>한계점:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>일반적인 맛집 검색 서비스로는 부적합</li>
+                            <li>프랜차이즈 체인점 정보 거의 없음</li>
+                            <li>최신 트렌드 맛집 반영 늦음</li>
+                            <li>대도시보다 관광지 중심 데이터 편중</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            modalBody.innerHTML = html;
+            modal.style.display = 'block';
         }
 
         /**
@@ -986,9 +1193,8 @@
                     <div class="result-address">📍 ${truncateText(item.addr1 || '주소 정보 없음', 40)}</div>
                     ${item.tel ? `<div class="result-phone">📞 ${item.tel}</div>` : ''}
                     ${item.modifiedtime ? `<div class="result-update">최종 업데이트: ${formatDate(item.modifiedtime)}</div>` : ''}
-                    <div class="result-actions"
-
-         <button class="btn btn-detail btn-sm" onclick="showDetails('${item.contentid}', '${item.contenttypeid}')">
+                    <div class="result-actions">
+                        <button class="btn btn-detail btn-sm" onclick="showDetails('${item.contentid}', '${item.contenttypeid}')">
                             상세정보
                         </button>
                         ${item.mapx && item.mapy ? `
@@ -1118,7 +1324,6 @@
                         return dateB.localeCompare(dateA);
                     
                     case 'popular':
-                        // 임시로 랜덤 정렬 (실제로는 조회수나 평점 기준)
                         return Math.random() - 0.5;
                     
                     default:
@@ -1126,7 +1331,6 @@
                 }
             });
 
-            // 정렬된 카드들을 다시 배치
             cards.forEach(card => resultsGrid.appendChild(card));
         }
 
@@ -1438,7 +1642,8 @@
         }
 
         /**
-         * 지도 열기
+
+      * 지도 열기
          */
         function openMap(lat, lng, title) {
             const mapUrl = `https://map.kakao.com/link/map/${encodeURIComponent(title)},${lat},${lng}`;
@@ -1530,5 +1735,5 @@
     </script>
 </body>
 </html>
-
-                    
+        
+                
