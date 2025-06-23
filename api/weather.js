@@ -161,7 +161,8 @@ function getFallbackLocationCoordinates() {
         '예래동': { lat: 33.2505, lon: 126.3685, name: '제주 서귀포시 예래동' },
         '강정동': { lat: 33.2507, lon: 126.5054, name: '제주 서귀포시 강정동' },
         '하효동': { lat: 33.2625, lon: 126.6023, name: '제주 서귀포시 하효동' },
-        '색달동': { lat: 33.2482, lon: 126.4026, name: '제주 서귀포시 색달동' }
+        '색달동': { lat: 33.2482, lon: 126.4026, name: '제주 서귀포시 색달동' },
+        '서귀동': { lat: 33.2503, lon: 126.5668, name: '제주 서귀포시 서귀동' } // '서귀동' 명시적으로 추가
     };
 }
 
@@ -194,21 +195,22 @@ async function findLocationCoordinates(query) {
 
             if (kakaoResponse.data && kakaoResponse.data.documents && kakaoResponse.data.documents.length > 0) {
                 let bestDoc = null;
+                const documents = kakaoResponse.data.documents;
 
-                // 2-1. 정확한 place_name 일치 또는 행정구역(AD5) 우선 선택
-                for (const doc of kakaoResponse.data.documents) {
-                    // 쿼리와 place_name이 정확히 일치하거나, 행정구역 코드인 경우
-                    if (doc.place_name.trim() === query.trim() || doc.category_group_code === 'AD5') {
-                        bestDoc = doc;
-                        console.log(`✨ Kakao Geocoding API: '${query}'에 대한 최적 결과 선택 (이름 일치 또는 행정구역): ${doc.place_name}`);
-                        break;
+                // 2-1. 쿼리와 place_name이 정확히 일치하는 결과 우선 선택
+                bestDoc = documents.find(doc => doc.place_name.trim() === query.trim());
+                if (bestDoc) {
+                    console.log(`✨ Kakao Geocoding API: '${query}'에 대한 최적 결과 선택 (이름 정확히 일치): ${bestDoc.place_name}`);
+                } else {
+                    // 2-2. 정확히 일치하는 결과가 없다면, 행정구역(AD5) 코드 결과를 찾음
+                    bestDoc = documents.find(doc => doc.category_group_code === 'AD5');
+                    if (bestDoc) {
+                        console.log(`✨ Kakao Geocoding API: '${query}'에 대한 최적 결과 선택 (행정구역 AD5): ${bestDoc.place_name}`);
+                    } else {
+                        // 2-3. 행정구역도 없으면, 첫 번째 문서 사용
+                        bestDoc = documents[0];
+                        console.log(`⚠️ Kakao Geocoding API: 최적 결과 부재, 첫 번째 결과 사용: ${bestDoc.place_name}`);
                     }
-                }
-
-                // 2-2. 최적의 문서가 없다면, 첫 번째 문서 사용
-                if (!bestDoc) {
-                    bestDoc = kakaoResponse.data.documents[0];
-                    console.log(`⚠️ Kakao Geocoding API: 최적 결과 부재, 첫 번째 결과 사용: ${bestDoc.place_name}`);
                 }
 
                 const lat = parseFloat(bestDoc.y);
