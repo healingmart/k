@@ -261,13 +261,13 @@ class TourismApiClient {
                         const item = {};
                         
                         // 주요 필드들 추출
-                        const fields = [
-                            'contentid', 'contenttypeid', 'title', 'addr1', 'addr2',
-                            'zipcode', 'tel', 'homepage', 'firstimage', 'firstimage2',
-                            'mapx', 'mapy', 'mlevel', 'overview', 'modifiedtime',
-                            'createdtime', 'booktour', 'dist', 'areacode', 'sigungucode',
-                            'cat1', 'cat2', 'cat3'
-                        ];
+                    const fields = [
+    'contentid', 'contenttypeid', 'title', 'addr1', 'addr2', 'zipcode', 
+    'tel', 'telname', 'homepage', 'firstimage', 'firstimage2', 
+    'mapx', 'mapy', 'mlevel', 'overview', 'modifiedtime', 'createdtime', 
+    'booktour', 'dist', 'areacode', 'sigungucode', 'cat1', 'cat2', 'cat3',
+    'readcount', 'eventstartdate', 'eventenddate', 'cpyrhtDivCd'
+];
                         
                         fields.forEach(field => {
                             const regex = new RegExp(`<${field}>(.*?)<\/${field}>`, 's');
