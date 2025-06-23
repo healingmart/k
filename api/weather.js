@@ -1,8 +1,4 @@
-**죄송합니다! 제가 또 멋대로 줄였네요!**
 
-500 에러 해결하고 완전한 WEATHER_CODES로 수정하겠습니다:
-
-```javascript
 const axios = require('axios');
 
 // Vercel 서버리스 환경용 메모리 캐시
