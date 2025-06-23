@@ -3,7 +3,7 @@ const axios = require('axios');
 // Vercel 서버리스용 캐시
 let weatherCache = new Map();
 
-// 완전한 기상청 날씨 코드 매핑
+// 완전한 기상청 날씨 코드 매핑 (이 부분은 기상청 데이터 해석에 필요하므로 유지합니다.)
 const WEATHER_CODES = {
   // 하늘상태 (SKY) - 기상청 공식 전체 코드
   SKY: {
@@ -147,6 +147,7 @@ function latLonToGrid(lat, lon) {
 
   const DEGRAD = Math.PI / 180.0;
   const re = RE / GRID;
+
   const slat1 = SLAT1 * DEGRAD;
   const slat2 = SLAT2 * DEGRAD;
   const olon = OLON * DEGRAD;
@@ -176,439 +177,91 @@ function latLonToGrid(lat, lon) {
 }
 
 /**
- * 완전한 전국 좌표 매핑 (중복 지역 처리 포함)
- * @returns {Object} 지역별 좌표 정보
+ * 필수 지역명에 대한 하드코딩된 좌표 (API 실패 시 폴백용)
+ * 이 목록은 최소한으로 유지하며, 대부분의 검색은 Kakao API를 통해 이루어집니다.
  */
-function getLocationCoordinates() {
-  return {
-    // 서울특별시 (구별 + 주요 동)
-    '서울': { lat: 37.5665, lon: 126.9780, name: '서울특별시' },
-    '서울시': { lat: 37.5665, lon: 126.9780, name: '서울특별시' },
-    '종로구': { lat: 37.5735, lon: 126.9788, name: '서울 종로구' },
-    '중구서울': { lat: 37.5641, lon: 126.9979, name: '서울 중구' },
-    '용산구': { lat: 37.5326, lon: 126.9905, name: '서울 용산구' },
-    '성동구': { lat: 37.5635, lon: 127.0365, name: '서울 성동구' },
-    '광진구': { lat: 37.5384, lon: 127.0822, name: '서울 광진구' },
-    '동대문구': { lat: 37.5744, lon: 127.0394, name: '서울 동대문구' },
-    '중랑구': { lat: 37.6063, lon: 127.0925, name: '서울 중랑구' },
-    '성북구': { lat: 37.5894, lon: 127.0167, name: '서울 성북구' },
-    '강북구': { lat: 37.6397, lon: 127.0256, name: '서울 강북구' },
-    '도봉구': { lat: 37.6688, lon: 127.0471, name: '서울 도봉구' },
-    '노원구': { lat: 37.6541, lon: 127.0568, name: '서울 노원구' },
-    '은평구': { lat: 37.6176, lon: 126.9227, name: '서울 은평구' },
-    '서대문구': { lat: 37.5791, lon: 126.9368, name: '서울 서대문구' },
-    '마포구': { lat: 37.5663, lon: 126.9019, name: '서울 마포구' },
-    '양천구': { lat: 37.5170, lon: 126.8665, name: '서울 양천구' },
-    '강서구서울': { lat: 37.5509, lon: 126.8495, name: '서울 강서구' },
-    '구로구': { lat: 37.4955, lon: 126.8876, name: '서울 구로구' },
-    '금천구': { lat: 37.4519, lon: 126.8954, name: '서울 금천구' },
-    '영등포구': { lat: 37.5264, lon: 126.8962, name: '서울 영등포구' },
-    '동작구': { lat: 37.5124, lon: 126.9393, name: '서울 동작구' },
-    '관악구': { lat: 37.4784, lon: 126.9516, name: '서울 관악구' },
-    '서초구': { lat: 37.4837, lon: 127.0324, name: '서울 서초구' },
-    '강남구': { lat: 37.5172, lon: 127.0473, name: '서울 강남구' },
-    '송파구': { lat: 37.5145, lon: 127.1059, name: '서울 송파구' },
-    '강동구': { lat: 37.5301, lon: 127.1238, name: '서울 강동구' },
-
-    // 주요 서울 지역명
-    '명동': { lat: 37.5636, lon: 126.9869, name: '서울 중구 명동' },
-    '홍대': { lat: 37.5563, lon: 126.9220, name: '서울 마포구 홍대' },
-    '강남': { lat: 37.5172, lon: 127.0473, name: '서울 강남구' },
-    '이태원': { lat: 37.5349, lon: 126.9947, name: '서울 용산구 이태원' },
-    '잠실': { lat: 37.5133, lon: 127.1000, name: '서울 송파구 잠실' },
-    '여의도': { lat: 37.5219, lon: 126.9245, name: '서울 영등포구 여의도' },
-    '신촌': { lat: 37.5591, lon: 126.9425, name: '서울 서대문구 신촌' },
-    '동대문': { lat: 37.5714, lon: 127.0094, name: '서울 동대문구' },
-    '종로': { lat: 37.5735, lon: 126.9788, name: '서울 종로구' },
-
-    // 부산광역시
-    '부산': { lat: 35.1796, lon: 129.0756, name: '부산광역시' },
-    '부산시': { lat: 35.1796, lon: 129.0756, name: '부산광역시' },
-    '중구부산': { lat: 35.1064, lon: 129.0326, name: '부산 중구' },
-    '서구부산': { lat: 35.0979, lon: 129.0244, name: '부산 서구' },
-    '동구부산': { lat: 35.1368, lon: 129.0568, name: '부산 동구' },
-    '영도구': { lat: 35.0914, lon: 129.0679, name: '부산 영도구' },
-    '부산진구': { lat: 35.1634, lon: 129.0530, name: '부산 부산진구' },
-    '동래구': { lat: 35.2048, lon: 129.0837, name: '부산 동래구' },
-    '남구부산': { lat: 35.1366, lon: 129.0845, name: '부산 남구' },
-    '북구부산': { lat: 35.1975, lon: 128.9897, name: '부산 북구' },
-    '해운대구': { lat: 35.1631, lon: 129.1635, name: '부산 해운대구' },
-    '사하구': { lat: 35.1043, lon: 128.9742, name: '부산 사하구' },
-    '금정구': { lat: 35.2429, lon: 129.0929, name: '부산 금정구' },
-    '강서구부산': { lat: 35.2120, lon: 128.9804, name: '부산 강서구' },
-    '연제구': { lat: 35.1765, lon: 129.0785, name: '부산 연제구' },
-    '수영구': { lat: 35.1453, lon: 129.1136, name: '부산 수영구' },
-    '사상구': { lat: 35.1549, lon: 128.9906, name: '부산 사상구' },
-    '기장군': { lat: 35.2446, lon: 129.2224, name: '부산 기장군' },
-
-    // 부산 주요 지역
-    '해운대': { lat: 35.1631, lon: 129.1635, name: '부산 해운대구' },
-    '광안리': { lat: 35.1532, lon: 129.1183, name: '부산 수영구 광안리' },
-    '서면': { lat: 35.1579, lon: 129.0563, name: '부산 부산진구 서면' },
-    '남포동': { lat: 35.0975, lon: 129.0279, name: '부산 중구 남포동' },
-    '태종대': { lat: 35.0516, lon: 129.0875, name: '부산 영도구 태종대' },
-    '기장': { lat: 35.2446, lon: 129.2224, name: '부산 기장군' },
-
-    // 대구광역시
-    '대구': { lat: 35.8714, lon: 128.6014, name: '대구광역시' },
-    '대구시': { lat: 35.8714, lon: 128.6014, name: '대구광역시' },
-    '중구대구': { lat: 35.8686, lon: 128.6059, name: '대구 중구' },
-    '동구대구': { lat: 35.8896, lon: 128.6355, name: '대구 동구' },
-    '서구대구': { lat: 35.8719, lon: 128.5592, name: '대구 서구' },
-    '남구대구': { lat: 35.8464, lon: 128.5974, name: '대구 남구' },
-    '북구대구': { lat: 35.8858, lon: 128.5829, name: '대구 북구' },
-    '수성구': { lat: 35.8581, lon: 128.6311, name: '대구 수성구' },
-    '달서구': { lat: 35.8328, lon: 128.5327, name: '대구 달서구' },
-    '달성군': { lat: 35.7749, lon: 128.4315, name: '대구 달성군' },
-    '동성로': { lat: 35.8686, lon: 128.5950, name: '대구 중구 동성로' },
-
-    // 인천광역시
-    '인천': { lat: 37.4563, lon: 126.7052, name: '인천광역시' },
-    '인천시': { lat: 37.4563, lon: 126.7052, name: '인천광역시' },
-    '중구인천': { lat: 37.4738, lon: 126.6214, name: '인천 중구' },
-    '동구인천': { lat: 37.4739, lon: 126.6433, name: '인천 동구' },
-    '미추홀구': { lat: 37.4639, lon: 126.6505, name: '인천 미추홀구' },
-    '연수구': { lat: 37.4106, lon: 126.6784, name: '인천 연수구' },
-    '남동구': { lat: 37.4468, lon: 126.7312, name: '인천 남동구' },
-    '부평구': { lat: 37.5073, lon: 126.7218, name: '인천 부평구' },
-    '계양구': { lat: 37.5373, lon: 126.7378, name: '인천 계양구' },
-    '서구인천': { lat: 37.5458, lon: 126.6757, name: '인천 서구' },
-    '강화군': { lat: 37.7473, lon: 126.4877, name: '인천 강화군' },
-    '옹진군': { lat: 37.4465, lon: 126.6362, name: '인천 옹진군' },
-    '송도': { lat: 37.3894, lon: 126.6541, name: '인천 연수구 송도' },
-    '월미도': { lat: 37.4756, lon: 126.5935, name: '인천 중구 월미도' },
-    '강화': { lat: 37.7473, lon: 126.4877, name: '인천 강화군' },
-    '을왕리': { lat: 37.4455, lon: 126.3738, name: '인천 중구 을왕리' },
-
-    // 광주광역시
-    '광주': { lat: 35.1595, lon: 126.8526, name: '광주광역시' },
-    '광주시': { lat: 35.1595, lon: 126.8526, name: '광주광역시' },
-    '동구광주': { lat: 35.1465, lon: 126.9227, name: '광주 동구' },
-    '서구광주': { lat: 35.1522, lon: 126.8892, name: '광주 서구' },
-    '남구광주': { lat: 35.1330, lon: 126.9026, name: '광주 남구' },
-    '북구광주': { lat: 35.1740, lon: 126.9115, name: '광주 북구' },
-    '광산구': { lat: 35.1395, lon: 126.7934, name: '광주 광산구' },
-    '무등산': { lat: 35.1347, lon: 126.9881, name: '광주 동구 무등산' },
-
-    // 대전광역시
-    '대전': { lat: 36.3504, lon: 127.3845, name: '대전광역시' },
-    '대전시': { lat: 36.3504, lon: 127.3845, name: '대전광역시' },
-    '동구대전': { lat: 36.3504, lon: 127.4548, name: '대전 동구' },
-    '중구대전': { lat: 36.3256, lon: 127.4211, name: '대전 중구' },
-    '서구대전': { lat: 36.3554, lon: 127.3834, name: '대전 서구' },
-    '유성구': { lat: 36.3621, lon: 127.3565, name: '대전 유성구' },
-    '대덕구': { lat: 36.3467, lon: 127.4154, name: '대전 대덕구' },
-    '유성': { lat: 36.3621, lon: 127.3565, name: '대전 유성구' },
-
-    // 울산광역시
-    '울산': { lat: 35.5384, lon: 129.3114, name: '울산광역시' },
-    '울산시': { lat: 35.5384, lon: 129.3114, name: '울산광역시' },
-    '중구울산': { lat: 35.5693, lon: 129.3309, name: '울산 중구' },
-    '남구울산': { lat: 35.5460, lon: 129.3297, name: '울산 남구' },
-    '동구울산': { lat: 35.5049, lon: 129.4167, name: '울산 동구' },
-    '북구울산': { lat: 35.5827, lon: 129.3612, name: '울산 북구' },
-    '울주군': { lat: 35.5220, lon: 129.1538, name: '울산 울주군' },
-
-    // 세종특별자치시
-    '세종': { lat: 36.4801, lon: 127.2890, name: '세종특별자치시' },
-    '세종시': { lat: 36.4801, lon: 127.2890, name: '세종특별자치시' },
-
-    // 경기도 주요 도시
-    '수원': { lat: 37.2636, lon: 127.0286, name: '경기 수원시' },
-    '성남': { lat: 37.4201, lon: 127.1262, name: '경기 성남시' },
-    '용인': { lat: 37.2411, lon: 127.1776, name: '경기 용인시' },
-    '안양': { lat: 37.3943, lon: 126.9568, name: '경기 안양시' },
-    '안산': { lat: 37.3236, lon: 126.8219, name: '경기 안산시' },
-    '고양': { lat: 37.6584, lon: 126.8320, name: '경기 고양시' },
-    '과천': { lat: 37.4292, lon: 126.9876, name: '경기 과천시' },
-    '광명': { lat: 37.4786, lon: 126.8644, name: '경기 광명시' },
-    '광주경기': { lat: 37.4297, lon: 127.2550, name: '경기 광주시' },
-    '구리': { lat: 37.5943, lon: 127.1296, name: '경기 구리시' },
-    '군포': { lat: 37.3617, lon: 126.9352, name: '경기 군포시' },
-    '김포': { lat: 37.6150, lon: 126.7158, name: '경기 김포시' },
-    '남양주': { lat: 37.6369, lon: 127.2167, name: '경기 남양주시' },
-    '동두천': { lat: 37.9034, lon: 127.0606, name: '경기 동두천시' },
-    '부천': { lat: 37.5034, lon: 126.7660, name: '경기 부천시' },
-    '시흥': { lat: 37.3802, lon: 126.8031, name: '경기 시흥시' },
-    '안성': { lat: 37.0078, lon: 127.2797, name: '경기 안성시' },
-    '양주': { lat: 37.7851, lon: 127.0458, name: '경기 양주시' },
-    '오산': { lat: 37.1499, lon: 127.0776, name: '경기 오산시' },
-    '의왕': { lat: 37.3449, lon: 126.9683, name: '경기 의왕시' },
-    '의정부': { lat: 37.7381, lon: 127.0338, name: '경기 의정부시' },
-    '이천': { lat: 37.2720, lon: 127.4349, name: '경기 이천시' },
-    '파주': { lat: 37.7598, lon: 126.7800, name: '경기 파주시' },
-    '평택': { lat: 36.9921, lon: 127.1123, name: '경기 평택시' },
-    '포천': { lat: 37.8948, lon: 127.2001, name: '경기 포천시' },
-    '하남': { lat: 37.5392, lon: 127.2145, name: '경기 하남시' },
-    '화성': { lat: 37.1997, lon: 126.8312, name: '경기 화성시' },
-    '여주': { lat: 37.2982, lon: 127.6377, name: '경기 여주시' },
-    '연천': { lat: 38.0963, lon: 127.0746, name: '경기 연천군' },
-    '가평': { lat: 37.8314, lon: 127.5109, name: '경기 가평군' },
-    '양평': { lat: 37.4919, lon: 127.4873, name: '경기 양평군' },
-
-    // 강원도 (전체)
-    '춘천': { lat: 37.8816, lon: 127.7292, name: '강원 춘천시' },
-    '원주': { lat: 37.3422, lon: 127.9200, name: '강원 원주시' },
-    '강릉': { lat: 37.7519, lon: 128.8758, name: '강원 강릉시' },
-    '동해': { lat: 37.5255, lon: 129.1177, name: '강원 동해시' },
-    '태백': { lat: 37.1648, lon: 128.9859, name: '강원 태백시' },
-    '속초': { lat: 38.2036, lon: 128.5647, name: '강원 속초시' },
-    '삼척': { lat: 37.4475, lon: 129.1678, name: '강원 삼척시' },
-    '홍천': { lat: 37.8860, lon: 127.8845, name: '강원 홍천군' },
-    '횡성': { lat: 37.4920, lon: 127.9830, name: '강원 횡성군' },
-    '영월': { lat: 37.1852, lon: 128.4687, name: '강원 영월군' },
-    '평창': { lat: 37.3712, lon: 128.3970, name: '강원 평창군' },
-    '정선': { lat: 37.3807, lon: 128.6607, name: '강원 정선군' },
-    '철원': { lat: 38.1467, lon: 127.3130, name: '강원 철원군' },
-    '화천': { lat: 38.1063, lon: 127.7084, name: '강원 화천군' },
-    '양구': { lat: 38.1103, lon: 127.9898, name: '강원 양구군' },
-    '인제': { lat: 38.0695, lon: 128.1709, name: '강원 인제군' },
-    '고성강원': { lat: 38.3797, lon: 128.4677, name: '강원 고성군' },
-    '고성': { lat: 38.3797, lon: 128.4677, name: '강원 고성군' }, // 기본값은 강원 고성
-    '양양': { lat: 38.0759, lon: 128.6190, name: '강원 양양군' },
-
-    // 강원도 주요 관광지
-    '설악산': { lat: 38.1194, lon: 128.4654, name: '강원 설악산국립공원' },
-    '오대산': { lat: 37.7971, lon: 128.5436, name: '강원 오대산국립공원' },
-    '정동진': { lat: 37.6896, lon: 129.0336, name: '강원 강릉시 정동진' },
-
-    // 충청북도 (전체)
-    '청주': { lat: 36.6424, lon: 127.4890, name: '충북 청주시' },
-    '충주': { lat: 36.9910, lon: 127.9259, name: '충북 충주시' },
-    '제천': { lat: 37.1326, lon: 128.1906, name: '충북 제천시' },
-    '보은': { lat: 36.4895, lon: 127.7294, name: '충북 보은군' },
-    '옥천': { lat: 36.3062, lon: 127.5720, name: '충북 옥천군' },
-    '영동': { lat: 36.1750, lon: 127.7764, name: '충북 영동군' },
-    '증평': { lat: 36.7808, lon: 127.5814, name: '충북 증평군' },
-    '진천': { lat: 36.8553, lon: 127.4335, name: '충북 진천군' },
-    '괴산': { lat: 36.8156, lon: 127.7879, name: '충북 괴산군' },
-    '음성': { lat: 36.9441, lon: 127.6868, name: '충북 음성군' },
-    '단양': { lat: 36.9845, lon: 128.3659, name: '충북 단양군' },
-
-    // 충청남도 (전체)
-    '천안': { lat: 36.8151, lon: 127.1139, name: '충남 천안시' },
-    '공주': { lat: 36.4465, lon: 127.1189, name: '충남 공주시' },
-    '보령': { lat: 36.3332, lon: 126.6123, name: '충남 보령시' },
-    '아산': { lat: 36.7898, lon: 127.0018, name: '충남 아산시' },
-    '서산': { lat: 36.7848, lon: 126.4503, name: '충남 서산시' },
-    '논산': { lat: 36.1872, lon: 127.0986, name: '충남 논산시' },
-    '계룡': { lat: 36.2743, lon: 127.2487, name: '충남 계룡시' },
-    '당진': { lat: 36.8937, lon: 126.6297, name: '충남 당진시' },
-    '금산': { lat: 36.1089, lon: 127.4881, name: '충남 금산군' },
-    '부여': { lat: 36.2756, lon: 126.9100, name: '충남 부여군' },
-    '서천': { lat: 36.0814, lon: 126.6919, name: '충남 서천군' },
-    '청양': { lat: 36.4592, lon: 126.8025, name: '충남 청양군' },
-    '홍성': { lat: 36.6014, lon: 126.6608, name: '충남 홍성군' },
-    '예산': { lat: 36.6818, lon: 126.8497, name: '충남 예산군' },
-    '태안': { lat: 36.7455, lon: 126.2980, name: '충남 태안군' },
-
-    // 충남 주요 관광지
-    '태안안면도': { lat: 36.5262, lon: 126.3340, name: '충남 태안 안면도' },
-
-    // 전라북도 (전체)
-    '전주': { lat: 35.8242, lon: 127.1480, name: '전북 전주시' },
-    '군산': { lat: 35.9677, lon: 126.7366, name: '전북 군산시' },
-    '익산': { lat: 35.9483, lon: 126.9575, name: '전북 익산시' },
-    '정읍': { lat: 35.5697, lon: 126.8561, name: '전북 정읍시' },
-    '남원전북': { lat: 35.4163, lon: 127.3906, name: '전북 남원시' },
-    '남원': { lat: 35.4163, lon: 127.3906, name: '전북 남원시' }, // 기본값은 전북 남원
-    '김제': { lat: 35.8035, lon: 126.8809, name: '전북 김제시' },
-    '완주': { lat: 35.9052, lon: 127.1605, name: '전북 완주군' },
-    '진안': { lat: 35.7917, lon: 127.4249, name: '전북 진안군' },
-    '무주': { lat: 36.0073, lon: 127.6608, name: '전북 무주군' },
-    '장수': { lat: 35.6477, lon: 127.5199, name: '전북 장수군' },
-    '임실': { lat: 35.6176, lon: 127.2896, name: '전북 임실군' },
-    '순창': { lat: 35.3744, lon: 127.1375, name: '전북 순창군' },
-    '고창': { lat: 35.4347, lon: 126.7022, name: '전북 고창군' },
-    '부안': { lat: 35.7318, lon: 126.7330, name: '전북 부안군' },
-
-    // 전북 주요 관광지
-    '전주한옥마을': { lat: 35.8154, lon: 127.1530, name: '전북 전주 한옥마을' },
-    '내장산': { lat: 35.4981, lon: 126.8936, name: '전북 정읍 내장산' },
-    '변산반도': { lat: 35.6184, lon: 126.4862, name: '전북 부안 변산반도' },
-    '부안채석강': { lat: 35.6184, lon: 126.4862, name: '전북 부안 채석강' },
-    '고창고인돌': { lat: 35.4347, lon: 126.7022, name: '전북 고창 고인돌' },
-
-    // 전라남도 (전체)
-    '목포': { lat: 34.8118, lon: 126.3922, name: '전남 목포시' },
-    '여수': { lat: 34.7604, lon: 127.6622, name: '전남 여수시' },
-    '순천': { lat: 34.9507, lon: 127.4872, name: '전남 순천시' },
-    '나주': { lat: 35.0160, lon: 126.7107, name: '전남 나주시' },
-    '광양': { lat: 34.9407, lon: 127.5959, name: '전남 광양시' },
-    '담양': { lat: 35.3215, lon: 126.9881, name: '전남 담양군' },
-    '곡성': { lat: 35.2819, lon: 127.2918, name: '전남 곡성군' },
-    '구례': { lat: 35.2020, lon: 127.4632, name: '전남 구례군' },
-    '고흥': { lat: 34.6114, lon: 127.2854, name: '전남 고흥군' },
-    '보성': { lat: 34.7714, lon: 127.0800, name: '전남 보성군' },
-    '화순': { lat: 35.0646, lon: 126.9864, name: '전남 화순군' },
-    '장흥': { lat: 34.6811, lon: 126.9066, name: '전남 장흥군' },
-    '강진': { lat: 34.6420, lon: 126.7669, name: '전남 강진군' },
-    '해남': { lat: 34.5736, lon: 126.5990, name: '전남 해남군' },
-    '영암': { lat: 34.8004, lon: 126.6967, name: '전남 영암군' },
-    '무안': { lat: 34.9906, lon: 126.4819, name: '전남 무안군' },
-    '함평': { lat: 35.0665, lon: 126.5165, name: '전남 함평군' },
-    '영광': { lat: 35.2773, lon: 126.5122, name: '전남 영광군' },
-    '장성': { lat: 35.3018, lon: 126.7886, name: '전남 장성군' },
-    '완도': { lat: 34.3110, lon: 126.7552, name: '전남 완도군' },
-    '진도': { lat: 34.4867, lon: 126.2635, name: '전남 진도군' },
-    '신안': { lat: 34.8328, lon: 126.1068, name: '전남 신안군' },
-
-    // 전남 주요 관광지
-    '여수엑스포': { lat: 34.7604, lon: 127.6622, name: '전남 여수 엑스포' },
-    '보성녹차밭': { lat: 34.7714, lon: 127.0800, name: '전남 보성 녹차밭' },
-    '담양죽녹원': { lat: 35.3215, lon: 126.9881, name: '전남 담양 죽녹원' },
-    '완도청산도': { lat: 34.1372, lon: 126.8515, name: '전남 완도 청산도' },
-    '진도신비의바닷길': { lat: 34.4867, lon: 126.2635, name: '전남 진도 신비의바닷길' },
-
-    // 경상북도 (전체)
-    '포항': { lat: 36.0190, lon: 129.3435, name: '경북 포항시' },
-    '경주': { lat: 35.8562, lon: 129.2247, name: '경북 경주시' },
-    '김천': { lat: 36.1395, lon: 128.1137, name: '경북 김천시' },
-    '안동': { lat: 36.5684, lon: 128.7294, name: '경북 안동시' },
-    '구미': { lat: 36.1196, lon: 128.3441, name: '경북 구미시' },
-    '영주': { lat: 36.8056, lon: 128.6239, name: '경북 영주시' },
-    '영천': { lat: 35.9733, lon: 128.9386, name: '경북 영천시' },
-    '상주': { lat: 36.4109, lon: 128.1589, name: '경북 상주시' },
-    '문경': { lat: 36.5869, lon: 128.1866, name: '경북 문경시' },
-    '경산': { lat: 35.8251, lon: 128.7411, name: '경북 경산시' },
-    '군위': { lat: 36.2395, lon: 128.5735, name: '경북 군위군' },
-    '의성': { lat: 36.3524, lon: 128.6977, name: '경북 의성군' },
-    '청송': { lat: 36.4359, lon: 129.0570, name: '경북 청송군' },
-    '영양': { lat: 36.6666, lon: 129.1123, name: '경북 영양군' },
-    '영덕': { lat: 36.4152, lon: 129.3658, name: '경북 영덕군' },
-    '청도': { lat: 35.6506, lon: 128.7364, name: '경북 청도군' },
-    '고령': { lat: 35.7284, lon: 128.2637, name: '경북 고령군' },
-    '성주': { lat: 35.9196, lon: 128.2830, name: '경북 성주군' },
-    '칠곡': { lat: 35.9942, lon: 128.4017, name: '경북 칠곡군' },
-    '예천': { lat: 36.6554, lon: 128.4517, name: '경북 예천군' },
-    '봉화': { lat: 36.8930, lon: 128.7322, name: '경북 봉화군' },
-    '울진': { lat: 36.9930, lon: 129.4006, name: '경북 울진군' },
-    '울릉도': { lat: 37.4845, lon: 130.9057, name: '경북 울릉군' },
-
-    // 경북 주요 관광지
-    '경주역사유적지구': { lat: 35.8562, lon: 129.2247, name: '경북 경주 역사유적지구' },
-    '안동하회마을': { lat: 36.5397, lon: 128.5188, name: '경북 안동 하회마을' },
-
-    // 경상남도 (전체)
-    '창원': { lat: 35.2281, lon: 128.6811, name: '경남 창원시' },
-    '진주': { lat: 35.1800, lon: 128.1076, name: '경남 진주시' },
-    '통영': { lat: 34.8544, lon: 128.4331, name: '경남 통영시' },
-    '사천': { lat: 35.0036, lon: 128.0645, name: '경남 사천시' },
-    '김해': { lat: 35.2342, lon: 128.8896, name: '경남 김해시' },
-    '밀양': { lat: 35.5040, lon: 128.7469, name: '경남 밀양시' },
-    '거제': { lat: 34.8806, lon: 128.6212, name: '경남 거제시' },
-    '양산': { lat: 35.3350, lon: 129.0375, name: '경남 양산시' },
-    '의령': { lat: 35.3220, lon: 128.2618, name: '경남 의령군' },
-    '함안': { lat: 35.2732, lon: 128.4065, name: '경남 함안군' },
-    '창녕': { lat: 35.5444, lon: 128.4925, name: '경남 창녕군' },
-    '고성경남': { lat: 34.9733, lon: 128.3229, name: '경남 고성군' },
-    '남해': { lat: 34.8375, lon: 127.8926, name: '경남 남해군' },
-    '하동': { lat: 35.0677, lon: 127.7514, name: '경남 하동군' },
-    '산청': { lat: 35.4151, lon: 127.8736, name: '경남 산청군' },
-    '함양': { lat: 35.5205, lon: 127.7248, name: '경남 함양군' },
-    '거창': { lat: 35.6869, lon: 127.9095, name: '경남 거창군' },
-    '합천': { lat: 35.5665, lon: 128.1655, name: '경남 합천군' },
-
-    // 경남 주요 관광지
-    '통영케이블카': { lat: 34.8544, lon: 128.4331, name: '경남 통영 케이블카' },
-    '거제외도': { lat: 34.7996, lon: 128.6945, name: '경남 거제 외도' },
-    '남해독일마을': { lat: 34.8375, lon: 127.8926, name: '경남 남해 독일마을' },
-
-    // 제주특별자치도 (전체) - 세분화 유지
-    '제주': { lat: 33.4996, lon: 126.5312, name: '제주특별자치도' },
-    '제주시': { lat: 33.5097, lon: 126.5219, name: '제주시' },
-    '서귀포': { lat: 33.2541, lon: 126.5601, name: '서귀포시' },
-    '성산': { lat: 33.4615, lon: 126.9410, name: '제주 성산읍' },
-    '중문': { lat: 33.2394, lon: 126.4128, name: '제주 중문관광단지' },
-    '한림': { lat: 33.4144, lon: 126.2692, name: '제주 한림읍' },
-    '애월': { lat: 33.4618, lon: 126.3314, name: '제주 애월읍' },
-    '표선': { lat: 33.3274, lon: 126.8394, name: '제주 표선면' },
-    '대정': { lat: 33.2169, lon: 126.2394, name: '제주 대정읍' },
-    '한라산': { lat: 33.3617, lon: 126.5292, name: '제주 한라산' },
-    '우도': { lat: 33.5009, lon: 126.9506, name: '제주 우도' },
-    '마라도': { lat: 33.1170, lon: 126.2687, name: '제주 마라도' },
-    '남원제주': { lat: 33.2594, lon: 126.7136, name: '제주 남원읍' },
-    '구좌': { lat: 33.5567, lon: 126.8394, name: '제주 구좌읍' },
-    '조천': { lat: 33.5567, lon: 126.6394, name: '제주 조천읍' },
-    '한경': { lat: 33.3567, lon: 126.1894, name: '제주 한경면' },
-    '추자': { lat: 33.9567, lon: 126.2994, name: '제주 추자면' },
-
-    // 제주 주요 관광지
-    '한라산국립공원': { lat: 33.3617, lon: 126.5292, name: '제주 한라산국립공원' },
-
-    // 기타 주요 국립공원 및 관광지
-    '설악산국립공원': { lat: 38.1194, lon: 128.4654, name: '설악산국립공원' },
-    '지리산국립공원': { lat: 35.3384, lon: 127.7303, name: '지리산국립공원' },
-    '북한산국립공원': { lat: 37.6583, lon: 126.9778, name: '북한산국립공원' },
-    '소백산국립공원': { lat: 36.9583, lon: 128.4778, name: '소백산국립공원' },
-    '주왕산국립공원': { lat: 36.3583, lon: 129.1778, name: '주왕산국립공원' },
-    '가야산국립공원': { lat: 35.8183, lon: 128.1178, name: '가야산국립공원' },
-    '덕유산국립공원': { lat: 35.8583, lon: 127.7478, name: '덕유산국립공원' },
-    '계룡산국립공원': { lat: 36.3483, lon: 127.2178, name: '계룡산국립공원' },
-    '치악산국립공원': { lat: 37.3783, lon: 128.0578, name: '치악산국립공원' },
-    '태백산국립공원': { lat: 37.0983, lon: 128.9178, name: '태백산국립공원' },
-    '무등산국립공원': { lat: 35.1347, lon: 126.9881, name: '무등산국립공원' },
-    '월출산국립공원': { lat: 34.7583, lon: 126.7078, name: '월출산국립공원' },
-    '다도해해상국립공원': { lat: 34.3583, lon: 126.7578, name: '다도해해상국립공원' },
-    '한려해상국립공원': { lat: 34.8583, lon: 128.4578, name: '한려해상국립공원' },
-    '태안해안국립공원': { lat: 36.7583, lon: 126.2978, name: '태안해안국립공원' },
-
-    // 추가 관광 명소
-    '부여백제문화단지': { lat: 36.2756, lon: 126.9100, name: '충남 부여 백제문화단지' },
-    '단양도담삼봉': { lat: 36.9845, lon: 128.3659, name: '충북 단양 도담삼봉' },
-    '속초해수욕장': { lat: 38.2070, lon: 128.5918, name: '강원 속초 해수욕장' },
-    '강릉경포대': { lat: 37.7883, lon: 128.9083, name: '강원 강릉 경포대' },
-    '평창올림픽파크': { lat: 37.6583, lon: 128.6778, name: '강원 평창 올림픽파크' }
-  };
+function getFallbackLocationCoordinates() {
+    return {
+        '서울': { lat: 37.5665, lon: 126.9780, name: '서울특별시' },
+        '제주': { lat: 33.4996, lon: 126.5312, name: '제주특별자치도' },
+        '제주시': { lat: 33.5097, lon: 126.5219, name: '제주시' },
+        '서귀포': { lat: 33.2541, lon: 126.5601, name: '서귀포시' },
+        '산방산': { lat: 33.2764, lon: 126.3197, name: '제주 산방산' }, // 사용자 요청에 따라 명시적 추가
+        '구리시': { lat: 37.5943, lon: 127.1296, name: '경기 구리시' }, // 사용자 요청에 따라 명시적 추가
+        '제주올레여행자센터': { lat: 33.2483, lon: 126.5649, name: '제주올레여행자센터' },
+        '서귀포버스터미널': { lat: 33.2546, lon: 126.5685, name: '서귀포버스터미널' }
+    };
 }
 
 /**
- * 지역명 정규화 및 검색
+ * 지역명을 위경도 좌표로 변환 (우선적으로 Kakao Local 검색 API 사용, 실패 시 하드코딩된 폴백 사용)
  * @param {string} query - 사용자 입력 지역명
- * @returns {Object} 매칭된 지역의 좌표 및 이름 정보
+ * @returns {Promise<Object>} 매칭된 지역의 좌표 및 이름 정보 {lat, lon, name}
  */
-function findLocationCoordinates(query) {
-    const locations = getLocationCoordinates();
+async function findLocationCoordinates(query) {
+    const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY; // Vercel 환경 변수에서 Kakao REST API 키 로드
 
-    // 정확한 매칭 우선
-    if (locations[query]) {
-        return locations[query];
+    const fallbackLocations = getFallbackLocationCoordinates();
+
+    // 1. 하드코딩된 폴백에서 정확한 매칭이 있는지 먼저 확인 (API 키가 없거나 API 호출 실패 시를 대비)
+    const exactFallbackMatch = fallbackLocations[query];
+    if (exactFallbackMatch) {
+        console.log(`✅ 폴백에서 정확한 지역 매칭: ${query} -> ${exactFallbackMatch.name}`);
+        return exactFallbackMatch;
     }
 
-    // 정규화된 검색
+    // 2. Kakao REST API 키가 설정되어 있다면 API 호출 시도
+    if (KAKAO_REST_API_KEY) {
+        try {
+            console.log(`🌐 Kakao Geocoding API로 "${query}" 검색 시도...`);
+            const kakaoResponse = await axios.get('https://dapi.kakao.com/v2/local/search/keyword.json', {
+                headers: { Authorization: `KakaoAK ${KAKAO_REST_API_KEY}` },
+                params: { query: query, size: 1 } // 가장 정확한 결과 1개만 요청
+            });
+
+            if (kakaoResponse.data && kakaoResponse.data.documents && kakaoResponse.data.documents.length > 0) {
+                const doc = kakaoResponse.data.documents[0];
+                const lat = parseFloat(doc.y);
+                const lon = parseFloat(doc.x);
+                const name = doc.place_name;
+                console.log(`✅ Kakao Geocoding API 성공: ${query} -> ${name} (위도: ${lat}, 경도: ${lon})`);
+                return { lat, lon, name };
+            } else {
+                console.warn(`⚠️ Kakao Geocoding API 결과 없음 for "${query}". 폴백 사용 시도.`);
+            }
+        } catch (error) {
+            console.error('❌ Kakao Geocoding API 호출 중 오류 발생:', {
+                message: error.message,
+                response: error.response?.data,
+                query: query
+            });
+            console.warn(`⚠️ Kakao Geocoding API 오류로 인해 폴백 사용 시도.`);
+        }
+    } else {
+        console.warn('⚠️ KAKAO_REST_API_KEY 환경 변수가 설정되지 않았습니다. Kakao Geocoding API를 사용할 수 없습니다. 폴백 사용 시도.');
+    }
+
+    // 3. Kakao API 실패 또는 키 부재 시, 폴백 목록에서 유사 매칭 시도
     const normalizedQuery = query.toLowerCase()
         .replace(/\s+/g, '')
         .replace(/[시군구읍면동리]/g, '')
         .replace(/특별자치도|광역시|특별자치시|특별시|도$/g, '');
 
-    // 키 기반 검색
-    for (const [key, coords] of Object.entries(locations)) {
+    for (const [key, coords] of Object.entries(fallbackLocations)) {
         const normalizedKey = key.toLowerCase()
             .replace(/\s+/g, '')
             .replace(/[시군구읍면동리]/g, '')
             .replace(/특별자치도|광역시|특별자치시|특별시|도$/g, '');
 
         if (normalizedKey.includes(normalizedQuery) || normalizedQuery.includes(normalizedKey)) {
-            console.log(`지역명 매칭: ${query} -> ${key} (${coords.name})`);
+            console.log(`⚠️ 폴백 지역명으로 유사 매칭: ${query} -> ${key} (${coords.name})`);
             return coords;
         }
     }
 
-    // 이름 기반 검색
-    for (const [key, coords] of Object.entries(locations)) {
-        const normalizedName = coords.name.toLowerCase()
-            .replace(/\s+/g, '')
-            .replace(/[시군구읍면동리]/g, '');
-
-        if (normalizedName.includes(normalizedQuery) || normalizedQuery.includes(normalizedName)) {
-            console.log(`이름 매칭: ${query} -> ${coords.name}`);
-            return coords;
-        }
-    }
-
-    // 기본값: 서울 (전국 관광을 위한 기본값)
-    console.log(`매칭 실패, 기본값 사용: ${query} -> ${DEFAULT_REGION}`);
-    return locations[DEFAULT_REGION];
+    // 4. 모든 시도 실패 시 기본 지역 반환
+    console.warn(`❌ "${query}"에 대한 위치를 찾을 수 없습니다. 기본값 "${DEFAULT_REGION}" 사용.`);
+    return fallbackLocations[DEFAULT_REGION];
 }
 
 /**
@@ -651,10 +304,19 @@ function processCompleteWeatherData(items, kst) {
 
         // 일별 최저/최고 기온 및 최대 강수확률 추출
         if (category === 'TMN' && value) {
-            forecasts[date].dailyData.temperatureMin = parseFloat(value);
+            // TMN은 첫 날 0600에만 존재하며, 그 이후는 TMX만 존재.
+            // 유효한 TMN 값만 사용.
+            const tmnValue = parseFloat(value);
+            if (forecasts[date].dailyData.temperatureMin === null || tmnValue < forecasts[date].dailyData.temperatureMin) {
+                forecasts[date].dailyData.temperatureMin = tmnValue;
+            }
         }
         if (category === 'TMX' && value) {
-            forecasts[date].dailyData.temperatureMax = parseFloat(value);
+            // TMX는 첫 날 1500에만 존재.
+            const tmxValue = parseFloat(value);
+            if (forecasts[date].dailyData.temperatureMax === null || tmxValue > forecasts[date].dailyData.temperatureMax) {
+                forecasts[date].dailyData.temperatureMax = tmxValue;
+            }
         }
         if (category === 'POP' && value) {
             const pop = parseFloat(value);
@@ -708,8 +370,9 @@ function extractCompleteWeatherData(dayForecast, date) {
 
         // 기온 정보 (완전)
         temperature: data.TMP ? Math.round(parseFloat(data.TMP)) : null,
-        temperatureMin: dailyData.temperatureMin ? Math.round(dailyData.temperatureMin) : null,
-        temperatureMax: dailyData.temperatureMax ? Math.round(dailyData.temperatureMax) : null,
+        // TMN, TMX는 일별 데이터에서 가져옴 (보통 새벽/오후 값으로만 존재)
+        temperatureMin: dailyData.temperatureMin !== null ? Math.round(dailyData.temperatureMin) : null,
+        temperatureMax: dailyData.temperatureMax !== null ? Math.round(dailyData.temperatureMax) : null,
         temperatureUnit: '°C',
         temperatureDescription: getTemperatureDescription(data.TMP),
 
@@ -914,9 +577,9 @@ function getWeatherAdvice(data) {
     // 강수 관련 조언
     if (pty && pty !== '0') {
         const precipType = WEATHER_CODES.PTY[pty];
-        if (precipType.includes('비')) advice.push('☔ 우산 또는 우비 준비하세요');
-        if (precipType.includes('눈')) advice.push('⛄ 눈 예보, 미끄럼 주의하세요');
-        if (precipType.includes('폭우')) advice.push('🌊 폭우 주의! 저지대 침수 조심');
+        if (precipType && precipType.includes('비')) advice.push('☔ 우산 또는 우비 준비하세요');
+        if (precipType && precipType.includes('눈')) advice.push('⛄ 눈 예보, 미끄럼 주의하세요');
+        if (precipType && precipType.includes('폭우')) advice.push('� 폭우 주의! 저지대 침수 조심');
     } else if (pop >= 60) {
         advice.push('🌧️ 강수 가능성 높음, 우산 준비 권장');
     } else if (pop >= 30) {
@@ -946,7 +609,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
         dates.push(date);
     }
 
-    const baseMessage = errorMessage ? `⚠️ 오류: ${errorMessage}` : '⚠️ WEATHER_API_KEY 설정 필요 - 샘플 데이터';
+    const baseMessage = errorMessage ? `⚠️ 오류: ${errorMessage}` : '⚠️ API 키 설정 또는 네트워크 문제 - 샘플 데이터';
     const sampleTemps = [20, 22, 21];
     const sampleSkies = ['1', '3', '4'];
     const samplePrecips = ['0', '0', '1'];
@@ -1067,11 +730,6 @@ function generateCompleteSampleData(region, errorMessage = null) {
  * @param {Object} req - 요청 객체
  * @param {Object} res - 응답 객체
  */
-/**
- * 메인 서버리스 핸들러 함수
- * @param {Object} req - 요청 객체
- * @param {Object} res - 응답 객체
- */
 module.exports = async function handler(req, res) {
     // CORS 설정
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -1092,7 +750,6 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        // nx, ny 파라미터 추가
         const { region = DEFAULT_REGION, lat, lon, nx, ny, detailed = 'true' } = req.query;
         const weatherApiKey = process.env.WEATHER_API_KEY;
 
@@ -1102,12 +759,12 @@ module.exports = async function handler(req, res) {
             timestamp: new Date().toISOString()
         });
 
-        // API 키 확인 및 샘플 데이터 제공 로직 (기존 유지)
+        // API 키 확인 및 샘플 데이터 제공 로직
         if (!weatherApiKey) {
-            console.warn('⚠️ WEATHER_API_KEY 환경 변수가 설정되지 않았습니다.');
+            console.warn('⚠️ WEATHER_API_KEY 환경 변수가 설정되지 않았습니다. 샘플 데이터를 제공합니다.');
             return res.status(200).json({
                 success: true,
-                data: generateCompleteSampleData(region),
+                data: generateCompleteSampleData(region, 'WEATHER_API_KEY 미설정'),
                 warning: 'WEATHER_API_KEY가 설정되지 않아 샘플 데이터를 제공합니다.',
                 environment: 'development',
                 apiInfo: {
@@ -1118,7 +775,7 @@ module.exports = async function handler(req, res) {
                 locationInfo: {
                     requested: region,
                     matched: '샘플 데이터용 기본값',
-                    fullName: '서울특별시',
+                    fullName: '샘플 지역',
                     source: '샘플 데이터'
                 }
             });
@@ -1126,8 +783,9 @@ module.exports = async function handler(req, res) {
 
         let coordinates;
         let locationInfo;
+        let targetLat, targetLon;
 
-        // nx, ny가 직접 제공된 경우 (최우선)
+        // 1. nx, ny가 직접 제공된 경우 (최우선)
         if (nx && ny) {
             const nxValue = parseInt(nx);
             const nyValue = parseInt(ny);
@@ -1135,89 +793,92 @@ module.exports = async function handler(req, res) {
             if (isNaN(nxValue) || isNaN(nyValue)) {
                 throw new Error('잘못된 격자 좌표 형식입니다.');
             }
-
             coordinates = { nx: nxValue, ny: nyValue };
             locationInfo = {
                 requested: `격자좌표 (${nx}, ${ny})`,
                 matched: `격자좌표 (${nx}, ${ny})`,
-                fullName: `격자 X:${nx}, Y:${ny}`,
+                fullName: `격자 X:${nxValue}, Y:${nyValue}`,
                 coordinates: coordinates,
                 source: '직접 격자 좌표'
             };
-
             console.log('격자 좌표 직접 사용:', coordinates);
-        }
-        // 위경도가 직접 제공된 경우
+        } 
+        // 2. 위경도가 직접 제공된 경우
         else if (lat && lon) {
-            const latitude = parseFloat(lat);
-            const longitude = parseFloat(lon);
+            targetLat = parseFloat(lat);
+            targetLon = parseFloat(lon);
 
-            if (isNaN(latitude) || isNaN(longitude)) {
+            if (isNaN(targetLat) || isNaN(targetLon)) {
                 throw new Error('잘못된 위경도 형식입니다.');
             }
-
-            coordinates = latLonToGrid(latitude, longitude);
+            coordinates = latLonToGrid(targetLat, targetLon);
             locationInfo = {
                 requested: `${lat}, ${lon}`,
                 matched: `위경도 (${lat}, ${lon})`,
                 fullName: `위도 ${lat}, 경도 ${lon}`,
                 coordinates: coordinates,
-                source: '직접 좌표'
+                latLon: { lat: targetLat, lon: targetLon },
+                source: '직접 위경도'
             };
-
             console.log('위경도 변환 완료:', { lat, lon, grid: coordinates });
         } 
-        // 지역명으로 검색
+        // 3. 지역명으로 검색 (새로운 findLocationCoordinates 사용)
         else {
-            const location = findLocationCoordinates(region);
-            coordinates = latLonToGrid(location.lat, location.lon);
+            const locationResult = await findLocationCoordinates(region);
+            targetLat = locationResult.lat;
+            targetLon = locationResult.lon;
+            coordinates = latLonToGrid(targetLat, targetLon);
             locationInfo = {
                 requested: region,
-                matched: location.name,
-                fullName: location.name,
+                matched: locationResult.name,
+                fullName: locationResult.name,
                 coordinates: coordinates,
-                latLon: { lat: location.lat, lon: location.lon },
-                source: '지역명 검색'
+                latLon: { lat: targetLat, lon: targetLon },
+                source: '지역명 검색 (Kakao API/Fallback)'
             };
-
-            console.log('지역명 검색 완료:', { region, location: location.name, grid: coordinates });
+            console.log('지역명 검색 완료:', { region, location: locationResult.name, grid: coordinates });
         }
 
         // 한국 표준시(KST) 기준 시간 계산
         const now = new Date();
         const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
 
-        // 기상청 API 발표 시각 계산
+        // 기상청 API 발표 시각 계산 (가장 최신 발표 시간 기준)
         let baseTime = '';
-        const hour = kst.getHours();
-        if (hour >= 23 || hour < 2) baseTime = '2300';
-        else if (hour < 5) baseTime = '0200';
-        else if (hour < 8) baseTime = '0500';
-        else if (hour < 11) baseTime = '0800';
-        else if (hour < 14) baseTime = '1100';
-        else if (hour < 17) baseTime = '1400';
-        else if (hour < 20) baseTime = '1700';
-        else baseTime = '2000';
-
         let baseDate = kst.toISOString().slice(0, 10).replace(/-/g, '');
+        const currentHour = kst.getHours();
+        const currentMinute = kst.getMinutes();
 
-        // 자정 전후 시간 처리
-        if (hour < 2 && baseTime === '2300') {
+        // 기상청 API 발표 시간 (매 3시간 간격, 02, 05, 08, 11, 14, 17, 20, 23시 정각)
+        // 발표 후 약 10분 정도 지나야 데이터가 안정적으로 올라옴
+        const validBaseTimes = [2, 5, 8, 11, 14, 17, 20, 23];
+        let foundBaseTime = false;
+
+        for (let i = validBaseTimes.length - 1; i >= 0; i--) {
+            const bt = validBaseTimes[i];
+            // 현재 시간보다 같거나 이른 발표 시간 중, 이미 발표된 시간 (발표 시각 + 10분 이후)
+            if (currentHour > bt || (currentHour === bt && currentMinute >= 10)) {
+                baseTime = String(bt).padStart(2, '0') + '00';
+                foundBaseTime = true;
+                break;
+            }
+        }
+
+        // 만약 새벽 2시 발표 시간 이전이라면, 전날 23시 데이터를 사용
+        if (!foundBaseTime) {
+            baseTime = '2300';
             const yesterday = new Date(kst.getTime() - 24 * 60 * 60 * 1000);
             baseDate = yesterday.toISOString().slice(0, 10).replace(/-/g, '');
         }
 
-        // 캐시 확인
+        // 캐시 키 생성 및 확인
         const cacheKey = `complete_${coordinates.nx}_${coordinates.ny}_${baseDate}_${baseTime}`;
         const cachedData = weatherCache.get(cacheKey);
 
-        if (cachedData && Date.now() - cachedData.timestamp < 30 * 60 * 1000) {
+        if (cachedData && Date.now() - cachedData.timestamp < 30 * 60 * 1000) { // 30분 캐시 유효
             console.log('✅ 캐시된 데이터 사용:', cacheKey);
-
-            // 지역 정보 업데이트
             const responseData = { ...cachedData.data };
             responseData.locationInfo = locationInfo; // 현재 요청에 맞는 locationInfo로 덮어쓰기
-
             return res.status(200).json(responseData);
         }
 
@@ -1233,7 +894,7 @@ module.exports = async function handler(req, res) {
         const response = await axios.get('http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst', {
             params: {
                 serviceKey: weatherApiKey,
-                numOfRows: 300,
+                numOfRows: 300, // 충분한 데이터 로드
                 pageNo: 1,
                 dataType: 'JSON',
                 base_date: baseDate,
@@ -1241,7 +902,7 @@ module.exports = async function handler(req, res) {
                 nx: coordinates.nx,
                 ny: coordinates.ny
             },
-            timeout: 10000,
+            timeout: 10000, // 10초 타임아웃
             headers: {
                 'User-Agent': 'HealingK-Complete-Weather-Service/2.0'
             }
@@ -1249,7 +910,9 @@ module.exports = async function handler(req, res) {
 
         // API 응답 검증
         if (!response.data?.response?.body?.items?.item) {
-            throw new Error('기상청 API 응답에 날씨 데이터가 없습니다.');
+            const resultCode = response.data?.response?.header?.resultCode || 'UNKNOWN';
+            const resultMsg = response.data?.response?.header?.resultMsg || '응답 데이터 없음';
+            throw new Error(`기상청 API 응답에 날씨 데이터가 없거나 형식이 올바르지 않습니다. (코드: ${resultCode}, 메시지: ${resultMsg})`);
         }
 
         const resultCode = response.data.response.header.resultCode;
@@ -1263,6 +926,11 @@ module.exports = async function handler(req, res) {
 
         // 완전한 날씨 데이터 처리
         const weatherData = processCompleteWeatherData(items, kst);
+
+        // weatherData가 비어있을 경우 (데이터가 없거나 파싱 오류)
+        if (!weatherData || weatherData.length === 0) {
+            throw new Error('기상청 API 데이터 파싱 실패 또는 유효한 날씨 정보 없음.');
+        }
 
         console.log('✅ 완전한 날씨 데이터 처리 완료:', weatherData.length, '일');
 
@@ -1278,8 +946,7 @@ module.exports = async function handler(req, res) {
             windSpeed: currentWeather.windSpeed,
             locationInfo: locationInfo,
             timestamp: new Date().toISOString(),
-            // 상세 정보도 포함 (필요시 사용)
-            fullData: detailed === 'true' ? weatherData : undefined
+            fullData: detailed === 'true' ? weatherData : undefined // 상세 정보도 포함 (필요시 사용)
         };
 
         // 캐시 저장
@@ -1299,7 +966,7 @@ module.exports = async function handler(req, res) {
         return res.status(200).json(simpleResponse);
 
     } catch (error) {
-        console.error('❌ 완전한 날씨 API 오류:', {
+        console.error('❌ 완전한 날씨 API 오류 발생:', {
             message: error.message,
             code: error.code,
             response: error.response?.data,
@@ -1319,23 +986,20 @@ module.exports = async function handler(req, res) {
             console.error('🌐 네트워크 오류 - 응답 없음');
         }
 
-        // 에러 발생 시 간단한 응답 형식
+        // 에러 발생 시 샘플 데이터 반환 (오류 메시지 포함)
         return res.status(200).json({
-            success: false,
+            success: false, // 실패로 표시
             error: true,
             errorMessage: error.message,
-            temperature: '--',
-            weather: '정보 없음',
-            humidity: '--',
-            windSpeed: '--',
+            data: generateCompleteSampleData(req.query.region || DEFAULT_REGION, error.message), // 샘플 데이터 반환
             locationInfo: {
-                requested: req.query.nx || req.query.region || DEFAULT_REGION,
-                matched: '오류로 인한 기본값',
-                fullName: '오류',
-                source: '오류 처리'
+                requested: req.query.region || req.query.nx || req.query.lat || DEFAULT_REGION,
+                matched: '오류 발생',
+                fullName: '오류로 정보 없음',
+                source: '오류 처리 (샘플 데이터)'
             },
             timestamp: new Date().toISOString(),
-            warning: '실시간 날씨 정보를 가져올 수 없습니다.'
+            warning: '실시간 날씨 정보를 가져오는 데 실패하여 샘플 데이터를 표시합니다.'
         });
     }
 };
