@@ -1,96 +1,52 @@
 const axios = require('axios');
 
-// Vercel 서버리스용 캐시
+// Vercel 서버리스용 캐시 (성능 개선 및 API 호출 빈도 관리)
 let weatherCache = new Map();
 
-// 완전한 기상청 날씨 코드 매핑 (이 부분은 기상청 데이터 해석에 필요하므로 유지합니다.)
+// 기상청 날씨 코드 매핑 (SKY: 하늘상태, PTY: 강수형태)
 const WEATHER_CODES = {
-  // 하늘상태 (SKY) - 기상청 공식 전체 코드
   SKY: {
-    '1': '맑음',
-    '2': '구름조금',
-    '3': '구름많음',
-    '4': '흐림',
-    '5': '매우흐림',
-    '6': '흐리고비',
-    '7': '흐리고눈',
-    '8': '흐리고비/눈',
-    '9': '흐리고소나기',
-    '10': '안개'
+    '1': '맑음', '2': '구름조금', '3': '구름많음', '4': '흐림',
+    '5': '매우흐림', '6': '흐리고비', '7': '흐리고눈', '8': '흐리고비/눈',
+    '9': '흐리고소나기', '10': '안개'
   },
-  
-  // 강수형태 (PTY) - 기상청 공식 전체 코드
   PTY: {
-    '0': '없음',
-    '1': '비',
-    '2': '비/눈',
-    '3': '눈',
-    '4': '소나기',
-    '5': '빗방울',
-    '6': '빗방울/눈날림',
-    '7': '눈날림',
-    '8': '진눈깨비',
-    '9': '우박',
-    '10': '이슬비',
-    '11': '뇌우',
-    '12': '폭우',
-    '13': '폭설'
+    '0': '없음', '1': '비', '2': '비/눈', '3': '눈', '4': '소나기',
+    '5': '빗방울', '6': '빗방울/눈날림', '7': '눈날림', '8': '진눈깨비',
+    '9': '우박', '10': '이슬비', '11': '뇌우', '12': '폭우', '13': '폭설'
   },
   
   // 강수확률 (POP) - 단계별 설명
   POP: {
-    '0': '0% (강수 없음)',
-    '10': '10% (거의 없음)',
-    '20': '20% (낮음)',
-    '30': '30% (약간 있음)',
-    '40': '40% (보통)',
-    '50': '50% (보통)',
-    '60': '60% (높음)',
-    '70': '70% (높음)',
-    '80': '80% (매우 높음)',
-    '90': '90% (매우 높음)',
-    '100': '100% (확실)'
+    '0': '0% (강수 없음)', '10': '10% (거의 없음)', '20': '20% (낮음)',
+    '30': '30% (약간 있음)', '40': '40% (보통)', '50': '50% (보통)',
+    '60': '60% (높음)', '70': '70% (높음)', '80': '80% (매우 높음)',
+    '90': '90% (매우 높음)', '100': '100% (확실)'
   },
   
   // 강수량 (PCP) - 세부 단계
   PCP: {
-    '강수없음': '0mm',
-    '1mm 미만': '1mm 미만 (이슬비)',
-    '1': '1mm (약한 비)',
-    '2': '2mm (약한 비)',
-    '3': '3mm (약한 비)',
-    '4': '4mm (약한 비)',
-    '5': '5mm (보통 비)',
-    '10': '10mm (강한 비)',
-    '15': '15mm (강한 비)',
-    '20': '20mm (강한 비)',
-    '25': '25mm (매우 강한 비)',
-    '30': '30mm (매우 강한 비)',
-    '40': '40mm (폭우)',
-    '50': '50mm (폭우)',
-    '60': '60mm (폭우)',
-    '70': '70mm (폭우)',
-    '80': '80mm (폭우)',
-    '90': '90mm (폭우)',
+    '강수없음': '0mm', '1mm 미만': '1mm 미만 (이슬비)',
+    '1': '1mm (약한 비)', '2': '2mm (약한 비)',
+    '3': '3mm (약한 비)', '4': '4mm (약한 비)',
+    '5': '5mm (보통 비)', '10': '10mm (강한 비)',
+    '15': '15mm (강한 비)', '20': '20mm (강한 비)',
+    '25': '25mm (매우 강한 비)', '30': '30mm (매우 강한 비)',
+    '40': '40mm (폭우)', '50': '50mm (폭우)',
+    '60': '60mm (폭우)', '70': '70mm (폭우)',
+    '80': '80mm (폭우)', '90': '90mm (폭우)',
     '100': '100mm 이상 (폭우)'
   },
   
   // 적설량 (SNO) - 세부 단계
   SNO: {
-    '적설없음': '0cm',
-    '1cm 미만': '1cm 미만 (가벼운 눈)',
-    '1': '1cm (가벼운 눈)',
-    '2': '2cm (가벼운 눈)',
-    '3': '3cm (가벼운 눈)',
-    '4': '4cm (가벼운 눈)',
-    '5': '5cm (보통 눈)',
-    '10': '10cm (많은 눈)',
-    '15': '15cm (많은 눈)',
-    '20': '20cm (많은 눈)',
-    '25': '25cm (폭설)',
-    '30': '30cm (폭설)',
-    '40': '40cm (폭설)',
-    '50': '50cm 이상 (폭설)'
+    '적설없음': '0cm', '1cm 미만': '1cm 미만 (가벼운 눈)',
+    '1': '1cm (가벼운 눈)', '2': '2cm (가벼운 눈)',
+    '3': '3cm (가벼운 눈)', '4': '4cm (가벼운 눈)',
+    '5': '5cm (보통 눈)', '10': '10cm (많은 눈)',
+    '15': '15cm (많은 눈)', '20': '20cm (많은 눈)',
+    '25': '25cm (폭설)', '30': '30cm (폭설)',
+    '40': '40cm (폭설)', '50': '50cm 이상 (폭설)'
   },
   
   // 파고 (WAV) - 완전한 파도 높이 매핑
@@ -179,6 +135,7 @@ function latLonToGrid(lat, lon) {
 /**
  * 필수 지역명에 대한 하드코딩된 좌표 (API 실패 시 폴백용)
  * 이 목록은 최소한으로 유지하며, 대부분의 검색은 Kakao API를 통해 이루어집니다.
+ * 이 리스트의 "name" 필드는 Kakao API 결과의 place_name과도 매칭될 수 있도록 가능한 정확하게 기재합니다.
  */
 function getFallbackLocationCoordinates() {
     return {
@@ -186,10 +143,25 @@ function getFallbackLocationCoordinates() {
         '제주': { lat: 33.4996, lon: 126.5312, name: '제주특별자치도' },
         '제주시': { lat: 33.5097, lon: 126.5219, name: '제주시' },
         '서귀포': { lat: 33.2541, lon: 126.5601, name: '서귀포시' },
-        '산방산': { lat: 33.2764, lon: 126.3197, name: '제주 산방산' }, // 사용자 요청에 따라 명시적 추가
-        '구리시': { lat: 37.5943, lon: 127.1296, name: '경기 구리시' }, // 사용자 요청에 따라 명시적 추가
+        '산방산': { lat: 33.2764, lon: 126.3197, name: '제주 산방산' },
+        '구리시': { lat: 37.5943, lon: 127.1296, name: '경기 구리시' },
         '제주올레여행자센터': { lat: 33.2483, lon: 126.5649, name: '제주올레여행자센터' },
-        '서귀포버스터미널': { lat: 33.2546, lon: 126.5685, name: '서귀포버스터미널' }
+        '서귀포버스터미널': { lat: 33.2546, lon: 126.5685, name: '서귀포버스터미널' },
+        '외돌개': { lat: 33.2386, lon: 126.5413, name: '외돌개' },
+        '법환포구': { lat: 33.2366, lon: 126.5165, name: '법환포구' },
+        '법환동': { lat: 33.2427, lon: 126.5165, name: '제주 서귀포시 법환동' }, // 명시적으로 추가
+        '중앙동': { lat: 33.2482, lon: 126.5657, name: '제주 서귀포시 중앙동' },
+        '정방동': { lat: 33.2514, lon: 126.5707, name: '제주 서귀포시 정방동' },
+        '천지동': { lat: 33.2492, lon: 126.5623, name: '제주 서귀포시 천지동' },
+        '동홍동': { lat: 33.2588, lon: 126.5739, name: '제주 서귀포시 동홍동' },
+        '서홍동': { lat: 33.2575, lon: 126.5501, name: '제주 서귀포시 서홍동' },
+        '대륜동': { lat: 33.2384, lon: 126.5385, name: '제주 서귀포시 대륜동' },
+        '대천동': { lat: 33.2559, lon: 126.4950, name: '제주 서귀포시 대천동' },
+        '중문동': { lat: 33.2545, lon: 126.4103, name: '제주 서귀포시 중문동' },
+        '예래동': { lat: 33.2505, lon: 126.3685, name: '제주 서귀포시 예래동' },
+        '강정동': { lat: 33.2507, lon: 126.5054, name: '제주 서귀포시 강정동' },
+        '하효동': { lat: 33.2625, lon: 126.6023, name: '제주 서귀포시 하효동' },
+        '색달동': { lat: 33.2482, lon: 126.4026, name: '제주 서귀포시 색달동' }
     };
 }
 
@@ -199,15 +171,16 @@ function getFallbackLocationCoordinates() {
  * @returns {Promise<Object>} 매칭된 지역의 좌표 및 이름 정보 {lat, lon, name}
  */
 async function findLocationCoordinates(query) {
-    const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY; // Vercel 환경 변수에서 Kakao REST API 키 로드
+    const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY;
 
     const fallbackLocations = getFallbackLocationCoordinates();
 
-    // 1. 하드코딩된 폴백에서 정확한 매칭이 있는지 먼저 확인 (API 키가 없거나 API 호출 실패 시를 대비)
-    const exactFallbackMatch = fallbackLocations[query];
+    // 1. 하드코딩된 폴백에서 '정확한' 지역 매칭이 있는지 먼저 확인
+    // (trim()을 사용하여 공백 문제 방지)
+    const exactFallbackMatch = Object.keys(fallbackLocations).find(key => key.trim() === query.trim());
     if (exactFallbackMatch) {
-        console.log(`✅ 폴백에서 정확한 지역 매칭: ${query} -> ${exactFallbackMatch.name}`);
-        return exactFallbackMatch;
+        console.log(`✅ 폴백에서 정확한 지역 매칭: '${query}' -> '${fallbackLocations[exactFallbackMatch].name}'`);
+        return fallbackLocations[exactFallbackMatch];
     }
 
     // 2. Kakao REST API 키가 설정되어 있다면 API 호출 시도
@@ -216,16 +189,34 @@ async function findLocationCoordinates(query) {
             console.log(`🌐 Kakao Geocoding API로 "${query}" 검색 시도...`);
             const kakaoResponse = await axios.get('https://dapi.kakao.com/v2/local/search/keyword.json', {
                 headers: { Authorization: `KakaoAK ${KAKAO_REST_API_KEY}` },
-                params: { query: query, size: 1 } // 가장 정확한 결과 1개만 요청
+                params: { query: query, size: 15 } // 더 많은 결과 받아서 필터링
             });
 
             if (kakaoResponse.data && kakaoResponse.data.documents && kakaoResponse.data.documents.length > 0) {
-                const doc = kakaoResponse.data.documents[0];
-                const lat = parseFloat(doc.y);
-                const lon = parseFloat(doc.x);
-                const name = doc.place_name;
-                console.log(`✅ Kakao Geocoding API 성공: ${query} -> ${name} (위도: ${lat}, 경도: ${lon})`);
+                let bestDoc = null;
+
+                // 2-1. 정확한 place_name 일치 또는 행정구역(AD5) 우선 선택
+                for (const doc of kakaoResponse.data.documents) {
+                    // 쿼리와 place_name이 정확히 일치하거나, 행정구역 코드인 경우
+                    if (doc.place_name.trim() === query.trim() || doc.category_group_code === 'AD5') {
+                        bestDoc = doc;
+                        console.log(`✨ Kakao Geocoding API: '${query}'에 대한 최적 결과 선택 (이름 일치 또는 행정구역): ${doc.place_name}`);
+                        break;
+                    }
+                }
+
+                // 2-2. 최적의 문서가 없다면, 첫 번째 문서 사용
+                if (!bestDoc) {
+                    bestDoc = kakaoResponse.data.documents[0];
+                    console.log(`⚠️ Kakao Geocoding API: 최적 결과 부재, 첫 번째 결과 사용: ${bestDoc.place_name}`);
+                }
+
+                const lat = parseFloat(bestDoc.y);
+                const lon = parseFloat(bestDoc.x);
+                const name = bestDoc.place_name;
+                console.log(`✅ Kakao Geocoding API 성공: '${query}' -> '${name}' (위도: ${lat}, 경도: ${lon})`);
                 return { lat, lon, name };
+
             } else {
                 console.warn(`⚠️ Kakao Geocoding API 결과 없음 for "${query}". 폴백 사용 시도.`);
             }
@@ -244,17 +235,17 @@ async function findLocationCoordinates(query) {
     // 3. Kakao API 실패 또는 키 부재 시, 폴백 목록에서 유사 매칭 시도
     const normalizedQuery = query.toLowerCase()
         .replace(/\s+/g, '')
-        .replace(/[시군구읍면동리]/g, '')
-        .replace(/특별자치도|광역시|특별자치시|특별시|도$/g, '');
+        .replace(/(시|군|구|읍|면|동|리)$/g, '')
+        .replace(/(특별시|광역시|특별자치시|특별자치도|도)$/g, '');
 
     for (const [key, coords] of Object.entries(fallbackLocations)) {
         const normalizedKey = key.toLowerCase()
             .replace(/\s+/g, '')
-            .replace(/[시군구읍면동리]/g, '')
-            .replace(/특별자치도|광역시|특별자치시|특별시|도$/g, '');
+            .replace(/(시|군|구|읍|면|동|리)$/g, '')
+            .replace(/(특별시|광역시|특별자치시|특별자치도|도)$/g, '');
 
         if (normalizedKey.includes(normalizedQuery) || normalizedQuery.includes(normalizedKey)) {
-            console.log(`⚠️ 폴백 지역명으로 유사 매칭: ${query} -> ${key} (${coords.name})`);
+            console.log(`⚠️ 폴백 지역명으로 유사 매칭: '${query}' -> '${key}' (${coords.name})`);
             return coords;
         }
     }
@@ -302,18 +293,17 @@ function processCompleteWeatherData(items, kst) {
 
         forecasts[date].times[time][category] = value;
 
-        // 일별 최저/최고 기온 및 최대 강수확률 추출
+        // 일별 최저/최고 기온 및 최대 강수확률 추출 (TMN, TMX는 특정 시각에만 제공됨)
         if (category === 'TMN' && value) {
-            // TMN은 첫 날 0600에만 존재하며, 그 이후는 TMX만 존재.
-            // 유효한 TMN 값만 사용.
             const tmnValue = parseFloat(value);
+            // TMN은 보통 첫날의 0600에만 존재
             if (forecasts[date].dailyData.temperatureMin === null || tmnValue < forecasts[date].dailyData.temperatureMin) {
                 forecasts[date].dailyData.temperatureMin = tmnValue;
             }
         }
         if (category === 'TMX' && value) {
-            // TMX는 첫 날 1500에만 존재.
             const tmxValue = parseFloat(value);
+            // TMX는 보통 첫날의 1500에만 존재
             if (forecasts[date].dailyData.temperatureMax === null || tmxValue > forecasts[date].dailyData.temperatureMax) {
                 forecasts[date].dailyData.temperatureMax = tmxValue;
             }
@@ -334,6 +324,28 @@ function processCompleteWeatherData(items, kst) {
             dayData.dayLabel = index === 0 ? '오늘' : index === 1 ? '내일' : '모레';
             dayData.dayIndex = index;
             result.push(dayData);
+        }
+    });
+
+    // TMN/TMX 값이 없는 경우 시간별 데이터에서 최저/최고 추출 (모든 날짜에 대해)
+    result.forEach(day => {
+        if (day.temperatureMin === null || day.temperatureMax === null) {
+            let minTemp = Infinity;
+            let maxTemp = -Infinity;
+            let foundTemp = false;
+
+            day.hourlyData.forEach(hourly => {
+                if (hourly.temperature !== null) {
+                    minTemp = Math.min(minTemp, hourly.temperature);
+                    maxTemp = Math.max(maxTemp, hourly.temperature);
+                    foundTemp = true;
+                }
+            });
+
+            if (foundTemp) {
+                if (day.temperatureMin === null) day.temperatureMin = minTemp;
+                if (day.temperatureMax === null) day.temperatureMax = maxTemp;
+            }
         }
     });
 
@@ -413,8 +425,8 @@ function extractCompleteWeatherData(dayForecast, date) {
         waveHeightDescription: WEATHER_CODES.WAV[data.WAV] || '정보없음',
 
         // 추가 상세 정보
-        uvIndex: data.UVI || null, // 자외선지수 (있는 경우)
-        visibility: data.VIS || null, // 가시거리 (있는 경우)
+        uvIndex: data.UVI || null,
+        visibility: data.VIS || null,
 
         // 종합 날씨 상태
         weatherStatus: getOverallWeatherStatus(data),
@@ -436,7 +448,7 @@ function extractCompleteWeatherData(dayForecast, date) {
 
 // **기온에 따른 설명 반환**
 function getTemperatureDescription(temp) {
-    if (!temp) return '정보없음';
+    if (temp === null || temp === undefined) return '정보없음';
     const t = parseFloat(temp);
     if (t <= -20) return '혹한 (매우 추움)';
     if (t <= -10) return '한파 (매우 추움)';
@@ -479,7 +491,7 @@ function processSnowAmount(sno) {
 
 // **습도에 따른 설명 반환**
 function getHumidityDescription(humidity) {
-    if (!humidity) return '정보없음';
+    if (humidity === null || humidity === undefined) return '정보없음';
     const h = parseInt(humidity);
     if (h <= 20) return '매우 건조';
     if (h <= 40) return '건조';
@@ -490,7 +502,7 @@ function getHumidityDescription(humidity) {
 
 // **풍속에 따른 설명 반환**
 function getWindSpeedDescription(windSpeed) {
-    if (!windSpeed) return '정보없음';
+    if (windSpeed === null || windSpeed === undefined) return '정보없음';
     const ws = parseFloat(windSpeed);
     if (ws < 1) return '0-1m/s (고요)';
     if (ws < 2) return '1-2m/s (실바람)';
@@ -509,7 +521,7 @@ function getWindSpeedDescription(windSpeed) {
 
 // **풍향 각도에 따른 16방위 설명 반환**
 function getWindDirectionFromDegree(degree) {
-    if (!degree && degree !== 0) return '정보없음';
+    if (degree === null || degree === undefined) return '정보없음';
 
     const deg = parseFloat(degree);
     const normalizedDeg = ((deg % 360) + 360) % 360;
@@ -579,7 +591,7 @@ function getWeatherAdvice(data) {
         const precipType = WEATHER_CODES.PTY[pty];
         if (precipType && precipType.includes('비')) advice.push('☔ 우산 또는 우비 준비하세요');
         if (precipType && precipType.includes('눈')) advice.push('⛄ 눈 예보, 미끄럼 주의하세요');
-        if (precipType && precipType.includes('폭우')) advice.push('� 폭우 주의! 저지대 침수 조심');
+        if (precipType && precipType.includes('폭우')) advice.push('🚨 폭우 주의! 저지대 침수 조심');
     } else if (pop >= 60) {
         advice.push('🌧️ 강수 가능성 높음, 우산 준비 권장');
     } else if (pop >= 30) {
@@ -972,19 +984,6 @@ module.exports = async function handler(req, res) {
             response: error.response?.data,
             stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
-
-        // 에러 타입별 상세 로깅
-        if (error.code === 'ECONNABORTED') {
-            console.error('⏰ API 요청 타임아웃 발생');
-        } else if (error.response) {
-            console.error('🚫 API 응답 오류:', {
-                status: error.response.status,
-                statusText: error.response.statusText,
-                data: error.response.data
-            });
-        } else if (error.request) {
-            console.error('🌐 네트워크 오류 - 응답 없음');
-        }
 
         // 에러 발생 시 샘플 데이터 반환 (오류 메시지 포함)
         return res.status(200).json({
