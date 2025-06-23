@@ -676,12 +676,6 @@ function processCompleteWeatherData(items, kst) {
   return result;
 }
 
-/**
- * 완전한 일별 날씨 데이터 추출
- * @param {Object} dayForecast - 일별 예
-복사
- * 완전한 일별 날씨 데이터 추출 계속
-Copy/**
  * 완전한 일별 날씨 데이터 추출
  * @param {Object} dayForecast - 일별 예보 데이터
  * @param {string} date - 날짜
@@ -1279,10 +1273,8 @@ module.exports = async function handler(req, res) {
     const items = response.data.response.body.items.item || [];
     console.log('📊 받은 기상 데이터 항목 수:', items.length);
     
-    // 완전한
-복사
- // 완전한 계속
-Copy    // 완전한 날씨 데이터 처리
+   // 완전한 날씨 데이터 처리
+
     const weatherData = processCompleteWeatherData(items, kst);
     
     console.log('✅ 완전한 날씨 데이터 처리 완료:', weatherData.length, '일');
