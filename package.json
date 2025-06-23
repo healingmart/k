@@ -1,10 +1,25 @@
 {
   "name": "tourism-api",
   "version": "1.0.0",
+  "description": "한국관광공사 API를 위한 서버리스 함수",
+  "main": "tourism.js",
   "engines": {
     "node": ">=18.0.0"
   },
-  "dependencies": {
-    "xml2js": "^0.6.2"
-  }
+  "scripts": {
+    "start": "node tourism.js",
+    "dev": "node tourism.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tourism",
+    "korea",
+    "api",
+    "serverless",
+    "vercel"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
 }
