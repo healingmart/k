@@ -1067,6 +1067,11 @@ function generateCompleteSampleData(region, errorMessage = null) {
  * @param {Object} req - 요청 객체
  * @param {Object} res - 응답 객체
  */
+/**
+ * 메인 서버리스 핸들러 함수
+ * @param {Object} req - 요청 객체
+ * @param {Object} res - 응답 객체
+ */
 module.exports = async function handler(req, res) {
     // CORS 설정
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -1087,15 +1092,12 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        // 기본 지역을 '서울'로 설정 (전국 관광 목적)
-        const { region = DEFAULT_REGION, lat, lon, detailed = 'true' } = req.query;
+        // nx, ny 파라미터 추가
+        const { region = DEFAULT_REGION, lat, lon, nx, ny, detailed = 'true' } = req.query;
         const weatherApiKey = process.env.WEATHER_API_KEY;
 
         console.log('완전한 날씨 API 요청:', {
-            region,
-            lat,
-            lon,
-            detailed,
+            region, lat, lon, nx, ny, detailed,
             hasWeatherApiKey: !!weatherApiKey,
             timestamp: new Date().toISOString()
         });
@@ -1103,7 +1105,6 @@ module.exports = async function handler(req, res) {
         // API 키 확인 및 샘플 데이터 제공 로직 (기존 유지)
         if (!weatherApiKey) {
             console.warn('⚠️ WEATHER_API_KEY 환경 변수가 설정되지 않았습니다.');
-            // 샘플 데이터의 locationInfo.fullName도 '서울특별시'로 일관성 있게 변경
             return res.status(200).json({
                 success: true,
                 data: generateCompleteSampleData(region),
@@ -1114,7 +1115,7 @@ module.exports = async function handler(req, res) {
                     timestamp: new Date().toISOString(),
                     region: region
                 },
-                locationInfo: { // 오류 시 반환되는 최상위 locationInfo도 '서울특별시'로 변경
+                locationInfo: {
                     requested: region,
                     matched: '샘플 데이터용 기본값',
                     fullName: '서울특별시',
@@ -1126,8 +1127,28 @@ module.exports = async function handler(req, res) {
         let coordinates;
         let locationInfo;
 
+        // nx, ny가 직접 제공된 경우 (최우선)
+        if (nx && ny) {
+            const nxValue = parseInt(nx);
+            const nyValue = parseInt(ny);
+
+            if (isNaN(nxValue) || isNaN(nyValue)) {
+                throw new Error('잘못된 격자 좌표 형식입니다.');
+            }
+
+            coordinates = { nx: nxValue, ny: nyValue };
+            locationInfo = {
+                requested: `격자좌표 (${nx}, ${ny})`,
+                matched: `격자좌표 (${nx}, ${ny})`,
+                fullName: `격자 X:${nx}, Y:${ny}`,
+                coordinates: coordinates,
+                source: '직접 격자 좌표'
+            };
+
+            console.log('격자 좌표 직접 사용:', coordinates);
+        }
         // 위경도가 직접 제공된 경우
-        if (lat && lon) {
+        else if (lat && lon) {
             const latitude = parseFloat(lat);
             const longitude = parseFloat(lon);
 
@@ -1145,8 +1166,9 @@ module.exports = async function handler(req, res) {
             };
 
             console.log('위경도 변환 완료:', { lat, lon, grid: coordinates });
-        } else {
-            // 지역명으로 검색
+        } 
+        // 지역명으로 검색
+        else {
             const location = findLocationCoordinates(region);
             coordinates = latLonToGrid(location.lat, location.lon);
             locationInfo = {
@@ -1244,27 +1266,25 @@ module.exports = async function handler(req, res) {
 
         console.log('✅ 완전한 날씨 데이터 처리 완료:', weatherData.length, '일');
 
-        // 최종 응답 데이터 구성
-        const responseData = {
+        // 현재 날씨 데이터 추출 (첫 번째 요소가 오늘)
+        const currentWeather = weatherData[0];
+
+        // 간단한 응답 형식 (프론트엔드 요구사항에 맞춤)
+        const simpleResponse = {
             success: true,
-            data: weatherData,
+            temperature: currentWeather.temperature,
+            weather: currentWeather.weatherStatus,
+            humidity: currentWeather.humidity,
+            windSpeed: currentWeather.windSpeed,
             locationInfo: locationInfo,
-            apiInfo: {
-                source: '기상청 단기예보 API',
-                baseDate: baseDate,
-                baseTime: baseTime,
-                timestamp: new Date().toISOString(),
-                apiKeyUsed: 'WEATHER_API_KEY',
-                totalCategories: Object.keys(WEATHER_CODES).length,
-                dataPoints: items.length,
-                version: '2.0-complete'
-            },
-            weatherCodes: detailed === 'true' ? WEATHER_CODES : undefined
+            timestamp: new Date().toISOString(),
+            // 상세 정보도 포함 (필요시 사용)
+            fullData: detailed === 'true' ? weatherData : undefined
         };
 
         // 캐시 저장
         weatherCache.set(cacheKey, {
-            data: responseData,
+            data: simpleResponse,
             timestamp: Date.now()
         });
 
@@ -1276,7 +1296,7 @@ module.exports = async function handler(req, res) {
         }
 
         console.log('🎉 완전한 날씨 API 응답 성공');
-        return res.status(200).json(responseData);
+        return res.status(200).json(simpleResponse);
 
     } catch (error) {
         console.error('❌ 완전한 날씨 API 오류:', {
@@ -1299,26 +1319,23 @@ module.exports = async function handler(req, res) {
             console.error('🌐 네트워크 오류 - 응답 없음');
         }
 
-        // 에러 발생 시에도 완전한 샘플 데이터 반환
+        // 에러 발생 시 간단한 응답 형식
         return res.status(200).json({
             success: false,
             error: true,
             errorMessage: error.message,
-            data: generateCompleteSampleData(req.query.region || DEFAULT_REGION, error.message),
-            locationInfo: { // 오류 시 반환되는 최상위 locationInfo도 '서울특별시'로 변경
-                requested: req.query.region || DEFAULT_REGION,
+            temperature: '--',
+            weather: '정보 없음',
+            humidity: '--',
+            windSpeed: '--',
+            locationInfo: {
+                requested: req.query.nx || req.query.region || DEFAULT_REGION,
                 matched: '오류로 인한 기본값',
-                fullName: '서울특별시',
+                fullName: '오류',
                 source: '오류 처리'
             },
-            apiInfo: {
-                source: '오류 시 샘플 데이터',
-                timestamp: new Date().toISOString(),
-                environment: process.env.NODE_ENV || 'production',
-                version: '2.0-complete-error',
-                errorHandled: true
-            },
-            warning: '실시간 날씨 정보를 가져올 수 없어 샘플 데이터를 제공합니다.'
+            timestamp: new Date().toISOString(),
+            warning: '실시간 날씨 정보를 가져올 수 없습니다.'
         });
     }
 };
