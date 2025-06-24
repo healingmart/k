@@ -3495,3 +3495,10 @@ function getLocationCoordinates() {
         '서귀포시': { lat: 33.2505, lon: 126.5658, name: '제주특별자치도 서귀포시' }
     };
 }
+
+
+
+// Export 추가
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = getLocationCoordinates;
+}
