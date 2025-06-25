@@ -717,4 +717,33 @@ export function updateMetadata() {
   return METADATA;
 }
 
+// CommonJS 호환성을 위한 추가
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    locationCoordinates,
+    locationData: locationCoordinates,
+    getLocationCoordinates,
+    PRIORITY_WEIGHTS,
+    POPULATION_PRIORITY,
+    findAllMatches,
+    searchLocations: (query, page = 1, pageSize = 10) => {
+      const allMatches = findAllMatches(query);
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      
+      return {
+        results: allMatches.slice(start, end),
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(allMatches.length / pageSize),
+          totalResults: allMatches.length
+        }
+      };
+    },
+    findMatchingLocation: (coords) => findNearestLocation(coords.lat, coords.lon),
+    latLonToGrid: (lat, lon) => {
+      // 위의 latLonToGrid 함수 내용
+    }
+  };
+}
 
