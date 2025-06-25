@@ -396,7 +396,7 @@ function checkRateLimit(ip, limit = 100, windowMs = 60 * 1000) { // 기본 1분�
 /**
  * 기상청 API 응답 데이터를 가공하여 3일간의 완전한 날씨 정보 반환
  * @param {Array<WeatherForecastItem>} items - 기상청 API에서 반환된 날씨 데이터 항목 배열
- * @param {Date} kst - 한국 표준시 Date 객체
+ * @param {Date} kst - 한국 표준시 Date 객체 (현재 시각 기준)
  * @returns {Array<DailyWeatherData>} 가공된 3일간의 날씨 데이터 배열
  */
 function processCompleteWeatherData(items, kst) {
@@ -454,7 +454,8 @@ function processCompleteWeatherData(items, kst) {
     const result = [];
     [today, tomorrow, dayAfter].forEach((date, index) => {
         if (forecasts[date]) {
-            const dayData = extractCompleteWeatherData(forecasts[date], date);
+            // kst (현재 시각)를 extractCompleteWeatherData에 전달하여 가장 가까운 예보 시간을 찾도록 함
+            const dayData = extractCompleteWeatherData(forecasts[date], date, kst); 
             dayData.dayLabel = index === 0 ? '오늘' : index === 1 ? '내일' : '모레';
             dayData.dayIndex = index;
             
@@ -472,29 +473,51 @@ function processCompleteWeatherData(items, kst) {
  * 일별 날씨 데이터에서 필요한 정보 추출 및 가공
  * @param {Object} dayForecast - 특정 일자의 날씨 예측 데이터
  * @param {string} date - 날짜 (YYYYMMDD 형식)
+ * @param {Date} kst - 한국 표준시 Date 객체 (현재 시각 기준)
  * @returns {DailyWeatherData} 가공된 일별 날씨 데이터
  */
-function extractCompleteWeatherData(dayForecast, date) {
+function extractCompleteWeatherData(dayForecast, date, kst) {
     const times = dayForecast.times;
     const dailyData = dayForecast.dailyData;
 
-    // 대표 시간 선택 (14시 우선, 없으면 12-15시 사이, 그 다음 가장 가까운 시간)
-    const timeKeys = Object.keys(times).sort();
-    let representativeTime = timeKeys.find(t => t === '1400') ||
-        timeKeys.find(t => t >= '1200' && t <= '1500') ||
-        timeKeys[Math.floor(timeKeys.length / 2)];
+    const timeKeys = Object.keys(times).sort(); // 예보 시간들 (예: ["0200", "0500", "0800", ..., "2300"])
 
-    if (!representativeTime && timeKeys.length > 0) {
-        representativeTime = timeKeys[0];
+    const currentTotalMinutes = kst.getHours() * 60 + kst.getMinutes();
+    
+    let bestRepresentativeTime = null;
+    let minAbsDiffMinutes = Infinity;
+    
+    // 현재 시각과 가장 가까운 예보 시간을 찾습니다.
+    timeKeys.forEach(fcstTimeStr => {
+        const fcstHour = parseInt(fcstTimeStr.substring(0, 2), 10);
+        const fcstMinute = parseInt(fcstTimeStr.substring(2, 4), 10);
+        const fcstTotalMinutes = fcstHour * 60 + fcstMinute;
+        
+        const absDiff = Math.abs(currentTotalMinutes - fcstTotalMinutes);
+
+        if (absDiff < minAbsDiffMinutes) {
+            minAbsDiffMinutes = absDiff;
+            bestRepresentativeTime = fcstTimeStr;
+        } else if (absDiff === minAbsDiffMinutes) {
+            // 동점일 경우, 더 늦은 시간 (현재 시각에 더 가깝거나, 다음 예보 중 더 이른 시간)을 선택합니다.
+            if (parseInt(fcstTimeStr) > parseInt(bestRepresentativeTime)) {
+                bestRepresentativeTime = fcstTimeStr;
+            }
+        }
+    });
+
+    // 데이터가 없는 경우를 대비한 폴백 (첫 번째 예보 시간)
+    if (!bestRepresentativeTime && timeKeys.length > 0) {
+        bestRepresentativeTime = timeKeys[0];
     }
-
-    const data = representativeTime ? times[representativeTime] : {};
+    
+    const data = bestRepresentativeTime ? times[bestRepresentativeTime] : {};
 
     // 완전한 날씨 정보 생성
     return {
         date: date,
         dateFormatted: `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`,
-        representativeTime: representativeTime,
+        representativeTime: bestRepresentativeTime, // 동적으로 선택된 대표 시간
 
         // 기온 정보 (완전)
         temperature: data.TMP ? Math.round(parseFloat(data.TMP)) : null,
@@ -1439,7 +1462,7 @@ module.exports = async function handler(req, res) {
         if (Object.keys(locationData).length > 0 && process.env.WEATHER_API_KEY) {
             await preloadPopularLocations(); // 인기 지역 사전 캐싱
         } else {
-            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜁니다 (locationData 없음 또는 API 키 없음).');
+            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜝니다 (locationData 없음 또는 API 키 없음).');
         }
         global.weatherServiceInitialized = true; // 플래그 설정
     }
