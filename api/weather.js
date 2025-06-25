@@ -520,9 +520,9 @@ function extractCompleteWeatherData(dayForecast, date, kst) {
         representativeTime: bestRepresentativeTime, // 동적으로 선택된 대표 시간
 
         // 기온 정보 (완전)
-        temperature: data.TMP ? parseFloat(data.TMP).toFixed(1) : null,
-        temperatureMin: dailyData.temperatureMin ? parseFloat(dailyData.temperatureMin).toFixed(1) : null,
-        temperatureMax: dailyData.temperatureMax ? parseFloat(dailyData.temperatureMax).toFixed(1) : null,
+        temperature: data.TMP ? Math.round(parseFloat(data.TMP)) : null,
+        temperatureMin: dailyData.temperatureMin ? Math.round(dailyData.temperatureMin) : null,
+        temperatureMax: dailyData.temperatureMax ? Math.round(dailyData.temperatureMax) : null,
         temperatureUnit: '°C',
         temperatureDescription: getTemperatureDescription(data.TMP),
 
@@ -574,7 +574,7 @@ function extractCompleteWeatherData(dayForecast, date, kst) {
         hourlyData: Object.keys(times).map(time => ({
             time: time,
             timeFormatted: `${time.slice(0, 2)}:${time.slice(2, 4)}`,
-            temperature: times[time].TMP ? parseFloat(times[time].TMP).toFixed(1) : null,
+            temperature: times[time].TMP ? Math.round(parseFloat(times[time].TMP)) : null,
             sky: WEATHER_CODES.SKY[times[time].SKY] || '정보없음',
             precipitation: WEATHER_CODES.PTY[times[time].PTY] || '없음',
             precipitationProbability: times[time].POP ? parseInt(times[time].POP) : 0,
@@ -773,9 +773,9 @@ function generateCompleteSampleData(region, errorMessage = null) {
         dayIndex: index,
         representativeTime: '1400',
 
-        temperature: errorMessage ? null : sampleTemps[index].toFixed(1),
-        temperatureMin: errorMessage ? null : (sampleTemps[index] - 5).toFixed(1),
-        temperatureMax: errorMessage ? null : (sampleTemps[index] + 5).toFixed(1),
+        temperature: errorMessage ? null : Math.round(sampleTemps[index]),
+        temperatureMin: errorMessage ? null : Math.round(sampleTemps[index] - 5),
+        temperatureMax: errorMessage ? null : Math.round(sampleTemps[index] + 5),
         temperatureUnit: '°C',
         temperatureDescription: errorMessage ? '정보없음' : getTemperatureDescription(sampleTemps[index]),
 
@@ -829,7 +829,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
             {
                 time: '0600',
                 timeFormatted: '06:00',
-                temperature: (sampleTemps[index] - 3).toFixed(1),
+                temperature: Math.round(sampleTemps[index] - 3),
                 sky: WEATHER_CODES.SKY[sampleSkies[index]],
                 precipitation: WEATHER_CODES.PTY[samplePrecips[index]],
                 precipitationProbability: [10, 30, 60][index],
@@ -839,7 +839,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
             {
                 time: '1200',
                 timeFormatted: '12:00',
-                temperature: sampleTemps[index].toFixed(1),
+                temperature: Math.round(sampleTemps[index]),
                 sky: WEATHER_CODES.SKY[sampleSkies[index]],
                 precipitation: WEATHER_CODES.PTY[samplePrecips[index]],
                 precipitationProbability: [10, 30, 60][index],
@@ -849,7 +849,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
             {
                 time: '1800',
                 timeFormatted: '18:00',
-                temperature: (sampleTemps[index] - 2).toFixed(1),
+                temperature: Math.round(sampleTemps[index] - 2),
                 sky: WEATHER_CODES.SKY[sampleSkies[index]],
                 precipitation: WEATHER_CODES.PTY[samplePrecips[index]],
                 precipitationProbability: [10, 30, 60][index],
@@ -1007,7 +1007,7 @@ function validateWeatherData(data) {
 async function preloadPopularLocations() {
     // locationData는 이제 항상 객체로 존재합니다.
     if (Object.keys(locationData).length === 0) { 
-        logger.warn('locationData가 로드되지 않아 인기 지역 사전 캐싱을 건너뜁니다.');
+        logger.warn('locationData가 로드되지 않아 인기 지역 사전 캐싱을 건너뜜니다.');
         return;
     }
 
@@ -1015,7 +1015,7 @@ async function preloadPopularLocations() {
     const weatherApiKey = process.env.WEATHER_API_KEY;
 
     if (!weatherApiKey) {
-        logger.warn('WEATHER_API_KEY가 없어 인기 지역 사전 캐싱을 건너뜁니다.');
+        logger.warn('WEATHER_API_KEY가 없어 인기 지역 사전 캐싱을 건너뜜니다.');
         return;
     }
 
@@ -1462,7 +1462,7 @@ module.exports = async function handler(req, res) {
         if (Object.keys(locationData).length > 0 && process.env.WEATHER_API_KEY) {
             await preloadPopularLocations(); // 인기 지역 사전 캐싱
         } else {
-            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜁니다 (locationData 없음 또는 API 키 없음).');
+            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜜니다 (locationData 없음 또는 API 키 없음).');
         }
         global.weatherServiceInitialized = true; // 플래그 설정
     }
