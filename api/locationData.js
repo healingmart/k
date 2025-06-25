@@ -60,7 +60,8 @@ const latLonToGrid = (lat, lon) => {
 };
 
 /**
- * 전국의 지역 정보를 담는 데이터 객체.
+ * 전국의 지역 정보를 담는 최종 데이터 객체.
+ * 이 객체는 즉시 실행 함수를 통해 초기화됩니다.
  * key는 검색에 사용될 지역명 (별칭 포함), value는 해당 지역의 상세 정보 객체입니다.
  *
  * 각 지역 정보 객체의 속성:
@@ -175,7 +176,14 @@ const locationData = (() => {
         '통영 케이블카': 680, '거제 외도': 670,
 
         // 기타 국립공원
-        '지리산국립공원': 800, '북한산국립공원': 790, '계룡산국립공원': 780
+        '지리산국립공원': 800, '북한산국립공원': 790, '계룡산국립공원': 780,
+        // 관광지명 추가
+        '성산일출봉': 700, // 성산읍보다 약간 낮은 우선순위 (관광지는 보통 행정구역보다 넓은 범위로 검색되지 않으므로)
+        '한라산': 800,
+        '제주공항': 920,
+        '서귀포 매일올레시장': 650,
+        '협재해수욕장': 600,
+        '새별오름': 580
     };
 
 
@@ -439,7 +447,8 @@ const locationData = (() => {
         lat: 33.3800, lon: 126.8900, name: '제주특별자치시 서귀포시 성산읍', type: '읍', admin_parent: '제주특별자치시 서귀포시',
         legal_divisions: [
             '성산리', '고성리', '온평리', '신풍리', '수산리', '신천리', '삼달리', '오조리', '시흥리'
-        ], aliases: [], priority_score: priorityMap['성산읍']
+        ], aliases: ['성산일출봉'], // 성산일출봉을 성산읍의 별칭으로 추가
+        priority_score: priorityMap['성산읍']
     });
     addLocation('안덕면', {
         lat: 33.2500, lon: 126.3100, name: '제주특별자치시 서귀포시 안덕면', type: '면', admin_parent: '제주특별자치시 서귀포시',
@@ -453,3 +462,318 @@ const locationData = (() => {
             '표선리', '세화리', '가시리', '성읍리', '하천리', '토산리'
         ], aliases: [], priority_score: priorityMap['표선면']
     });
+
+    // =============================================================
+    // 전국 주요 도시 및 지역 데이터 추가 (weather.js에서 이관)
+    // 서울특별시
+    addLocation('서울특별시', { lat: 37.5665, lon: 126.9780, name: '서울특별시', type: '광역자치단체', aliases: ['서울', '서울시'], priority_score: priorityMap['서울특별시'] });
+    addLocation('종로구', { lat: 37.5735, lon: 126.9788, name: '서울특별시 종로구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['종로구'] });
+    addLocation('중구서울', { lat: 37.5641, lon: 126.9979, name: '서울특별시 중구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['중구'], priority_score: priorityMap['중구'] });
+    addLocation('용산구', { lat: 37.5326, lon: 126.9905, name: '서울특별시 용산구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['용산구'] });
+    addLocation('성동구', { lat: 37.5635, lon: 127.0365, name: '서울특별시 성동구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['성동구'] });
+    addLocation('광진구', { lat: 37.5384, lon: 127.0822, name: '서울특별시 광진구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['광진구'] });
+    addLocation('동대문구', { lat: 37.5744, lon: 127.0394, name: '서울특별시 동대문구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['동대문구'] });
+    addLocation('중랑구', { lat: 37.6063, lon: 127.0925, name: '서울특별시 중랑구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['중랑구'] });
+    addLocation('성북구', { lat: 37.5894, lon: 127.0167, name: '서울특별시 성북구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['성북구'] });
+    addLocation('강북구', { lat: 37.6397, lon: 127.0256, name: '서울특별시 강북구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['강북구'] });
+    addLocation('도봉구', { lat: 37.6688, lon: 127.0471, name: '서울특별시 도봉구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['도봉구'] });
+    addLocation('노원구', { lat: 37.6541, lon: 127.0568, name: '서울특별시 노원구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['노원구'] });
+    addLocation('은평구', { lat: 37.6176, lon: 126.9227, name: '서울특별시 은평구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['은평구'] });
+    addLocation('서대문구', { lat: 37.5791, lon: 126.9368, name: '서울특별시 서대문구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['서대문구'] });
+    addLocation('마포구', { lat: 37.5615, lon: 126.9088, name: '서울특별시 마포구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['마포구'] });
+    addLocation('양천구', { lat: 37.5173, lon: 126.8665, name: '서울특별시 양천구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['양천구'] });
+    addLocation('강서구', { lat: 37.5509, lon: 126.8495, name: '서울특별시 강서구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['강서구'] });
+    addLocation('구로구', { lat: 37.4954, lon: 126.8874, name: '서울특별시 구로구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['구로구'] });
+    addLocation('금천구', { lat: 37.4571, lon: 126.9009, name: '서울특별시 금천구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['금천구'] });
+    addLocation('영등포구', { lat: 37.5262, lon: 126.9095, name: '서울특별시 영등포구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['영등포구'] });
+    addLocation('동작구', { lat: 37.5124, lon: 126.9392, name: '서울특별시 동작구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['동작구'] });
+    addLocation('관악구', { lat: 37.4784, lon: 126.9517, name: '서울특별시 관악구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['관악구'] });
+    addLocation('서초구', { lat: 37.4837, lon: 127.0324, name: '서울특별시 서초구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['서초구'] });
+    addLocation('강남구', { lat: 37.5172, lon: 127.0473, name: '서울특별시 강남구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['강남구'] });
+    addLocation('송파구', { lat: 37.5145, lon: 127.1054, name: '서울특별시 송파구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['송파구'] });
+    addLocation('강동구', { lat: 37.5298, lon: 127.1269, name: '서울특별시 강동구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['강동구'] });
+    addLocation('명동', { lat: 37.5610, lon: 126.9860, name: '서울특별시 중구 명동', type: '법정동', admin_parent: '서울특별시 중구', aliases: [], priority_score: priorityMap['명동'] });
+    addLocation('홍대', { lat: 37.5577, lon: 126.9248, name: '서울특별시 마포구 서교동', type: '별칭', admin_parent: '서울특별시 마포구', aliases: ['홍대입구'], priority_score: priorityMap['홍대'] });
+    addLocation('강남', { lat: 37.4981, lon: 127.0276, name: '서울특별시 강남구 역삼동', type: '별칭', admin_parent: '서울특별시 강남구', aliases: ['강남역'], priority_score: priorityMap['강남'] });
+    addLocation('이태원', { lat: 37.5345, lon: 126.9934, name: '서울특별시 용산구 이태원동', type: '법정동', admin_parent: '서울특별시 용산구', aliases: [], priority_score: priorityMap['이태원'] });
+    addLocation('잠실', { lat: 37.5116, lon: 127.1000, name: '서울특별시 송파구 잠실동', type: '법정동', admin_parent: '서울특별시 송파구', aliases: ['잠실역'], priority_score: priorityMap['잠실'] });
+    addLocation('여의도', { lat: 37.5222, lon: 126.9242, name: '서울특별시 영등포구 여의도동', type: '법정동', admin_parent: '서울특별시 영등포구', aliases: [], priority_score: priorityMap['여의도'] });
+    addLocation('신촌', { lat: 37.5598, lon: 126.9423, name: '서울특별시 서대문구 신촌동', type: '법정동', admin_parent: '서울특별시 서대문구', aliases: [], priority_score: priorityMap['신촌'] });
+    addLocation('동대문', { lat: 37.5714, lon: 127.0094, name: '서울특별시 종로구 종로6가', type: '별칭', admin_parent: '서울특별시 종로구', aliases: ['동대문시장'], priority_score: priorityMap['동대문'] });
+    addLocation('종로', { lat: 37.5700, lon: 126.9790, name: '서울특별시 종로구 종로1가', type: '별칭', admin_parent: '서울특별시 종로구', aliases: ['종각'], priority_score: priorityMap['종로'] });
+
+
+    // 부산광역시
+    addLocation('부산광역시', { lat: 35.1796, lon: 129.0756, name: '부산광역시', type: '광역자치단체', aliases: ['부산', '부산시'], priority_score: priorityMap['부산광역시'] });
+    addLocation('해운대구', { lat: 35.1633, lon: 129.1659, name: '부산광역시 해운대구', type: '기초자치단체', admin_parent: '부산광역시', aliases: [], priority_score: priorityMap['해운대구'] });
+    addLocation('광안리', { lat: 35.1539, lon: 129.1179, name: '부산광역시 수영구 광안동', type: '별칭', admin_parent: '부산광역시 수영구', aliases: ['광안리해수욕장'], priority_score: priorityMap['광안리'] });
+    addLocation('서면', { lat: 35.1585, lon: 129.0601, name: '부산광역시 부산진구 부전동', type: '별칭', admin_parent: '부산광역시 부산진구', aliases: ['서면역'], priority_score: priorityMap['서면'] });
+    addLocation('남포동', { lat: 35.1017, lon: 129.0270, name: '부산광역시 중구 남포동', type: '법정동', admin_parent: '부산광역시 중구', aliases: [], priority_score: priorityMap['남포동'] });
+    addLocation('태종대', { lat: 35.0505, lon: 129.0963, name: '부산광역시 영도구 동삼동', type: '별칭', admin_parent: '부산광역시 영도구', aliases: ['태종대유원지'], priority_score: priorityMap['태종대'] });
+    addLocation('기장군', { lat: 35.2435, lon: 129.2173, name: '부산광역시 기장군', type: '기초자치단체', admin_parent: '부산광역시', aliases: [], priority_score: priorityMap['기장군'] });
+
+
+    // 대구광역시
+    addLocation('대구광역시', { lat: 35.8722, lon: 128.6014, name: '대구광역시', type: '광역자치단체', aliases: ['대구', '대구시'], priority_score: priorityMap['대구광역시'] });
+    addLocation('동성로', { lat: 35.8690, lon: 128.5940, name: '대구광역시 중구 동성로', type: '별칭', admin_parent: '대구광역시 중구', aliases: [], priority_score: priorityMap['동성로'] });
+
+
+    // 인천광역시
+    addLocation('인천광역시', { lat: 37.4563, lon: 126.7052, name: '인천광역시', type: '광역자치단체', aliases: ['인천', '인천시'], priority_score: priorityMap['인천광역시'] });
+    addLocation('송도', { lat: 37.3800, lon: 126.6370, name: '인천광역시 연수구 송도동', type: '별칭', admin_parent: '인천광역시 연수구', aliases: ['송도국제도시'], priority_score: priorityMap['송도'] });
+    addLocation('월미도', { lat: 37.4720, lon: 126.6080, name: '인천광역시 중구 북성동1가', type: '별칭', admin_parent: '인천광역시 중구', aliases: ['월미도공원'], priority_score: priorityMap['월미도'] });
+    addLocation('강화군', { lat: 37.7476, lon: 126.4173, name: '인천광역시 강화군', type: '기초자치단체', admin_parent: '인천광역시', aliases: [], priority_score: priorityMap['강화군'] });
+    addLocation('을왕리', { lat: 37.4699, lon: 126.3400, name: '인천광역시 중구 을왕동', type: '별칭', admin_parent: '인천광역시 중구', aliases: ['을왕리해수욕장'], priority_score: priorityMap['을왕리'] });
+
+
+    // 광주광역시
+    addLocation('광주광역시', { lat: 35.1600, lon: 126.8514, name: '광주광역시', type: '광역자치단체', aliases: ['광주', '광주시'], priority_score: priorityMap['광주광역시'] });
+    addLocation('무등산', { lat: 35.1000, lon: 126.9600, name: '광주광역시 동구 운림동', type: '별칭', admin_parent: '광주광역시 동구', aliases: ['무등산국립공원'], priority_score: priorityMap['무등산'] });
+
+
+    // 대전광역시
+    addLocation('대전광역시', { lat: 36.3504, lon: 127.3845, name: '대전광역시', type: '광역자치단체', aliases: ['대전', '대전시'], priority_score: priorityMap['대전광역시'] });
+    addLocation('유성구', { lat: 36.3524, lon: 127.3423, name: '대전광역시 유성구', type: '기초자치단체', admin_parent: '대전광역시', aliases: [], priority_score: priorityMap['유성구'] });
+
+
+    // 울산광역시
+    addLocation('울산광역시', { lat: 35.5384, lon: 129.3113, name: '울산광역시', type: '광역자치단체', aliases: ['울산', '울산시'], priority_score: priorityMap['울산광역시'] });
+
+
+    // 세종특별자치시
+    addLocation('세종특별자치시', { lat: 36.4800, lon: 127.2890, name: '세종특별자치시', type: '광역자치단체', aliases: ['세종', '세종시'], priority_score: priorityMap['세종특별자치시'] });
+
+
+    // 경기도 주요 도시 (일부)
+    addLocation('수원시', { lat: 37.2635, lon: 127.0286, name: '경기도 수원시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['수원시'] });
+    addLocation('성남시', { lat: 37.4385, lon: 127.1373, name: '경기도 성남시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['성남시'] });
+    addLocation('용인시', { lat: 37.2350, lon: 127.2287, name: '경기도 용인시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['용인시'] });
+    addLocation('안양시', { lat: 37.3943, lon: 126.9568, name: '경기도 안양시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['안양시'] });
+    addLocation('안산시', { lat: 37.3223, lon: 126.8200, name: '경기도 안산시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['안산시'] });
+    addLocation('고양시', { lat: 37.6586, lon: 126.8320, name: '경기도 고양시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['고양시'] });
+    addLocation('화성시', { lat: 37.2000, lon: 126.8000, name: '경기도 화성시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['화성시'] });
+    addLocation('평택시', { lat: 36.9900, lon: 127.1000, name: '경기도 평택시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['평택시'] });
+    addLocation('남양주시', { lat: 37.6360, lon: 127.2100, name: '경기도 남양주시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['남양주시'] });
+    addLocation('부천시', { lat: 37.5030, lon: 126.7640, name: '경기도 부천시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['부천시'] });
+
+
+    // 강원특별자치도 (일부)
+    addLocation('강원특별자치도', { lat: 37.8850, lon: 127.7340, name: '강원특별자치도', type: '광역자치단체', aliases: ['강원도'], priority_score: priorityMap['강원특별자치도'] });
+    addLocation('춘천시', { lat: 37.8850, lon: 127.7340, name: '강원특별자치도 춘천시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: [], priority_score: priorityMap['춘천시'] });
+    addLocation('원주시', { lat: 37.3480, lon: 127.9200, name: '강원특별자치도 원주시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: [], priority_score: priorityMap['원주시'] });
+    addLocation('강릉시', { lat: 37.7518, lon: 128.8751, name: '강원특별자치도 강릉시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: [], priority_score: priorityMap['강릉시'] });
+    addLocation('속초시', { lat: 38.2000, lon: 128.5800, name: '강원특별자치도 속초시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: [], priority_score: priorityMap['속초시'] });
+    addLocation('설악산국립공원', { lat: 38.1180, lon: 128.4600, name: '설악산국립공원', type: '별칭', admin_parent: '강원특별자치도 속초시', aliases: ['설악산'], priority_score: priorityMap['설악산국립공원'] });
+    addLocation('오대산국립공원', { lat: 37.7900, lon: 128.5500, name: '오대산국립공원', type: '별칭', admin_parent: '강원특별자치도 평창군', aliases: ['오대산'], priority_score: priorityMap['오대산국립공원'] });
+    addLocation('정동진', { lat: 37.6900, lon: 129.0200, name: '강원특별자치도 강릉시 강동면 정동진리', type: '별칭', admin_parent: '강원특별자치도 강릉시', aliases: [], priority_score: priorityMap['정동진'] });
+
+
+    // 충청북도 (일부)
+    addLocation('충청북도', { lat: 36.6350, lon: 127.4910, name: '충청북도', type: '광역자치단체', aliases: ['충북'], priority_score: priorityMap['충청북도'] });
+    addLocation('청주시', { lat: 36.6420, lon: 127.4890, name: '충청북도 청주시', type: '기초자치단체', admin_parent: '충청북도', aliases: [], priority_score: priorityMap['청주시'] });
+    addLocation('충주시', { lat: 36.9690, lon: 127.9310, name: '충청북도 충주시', type: '기초자치단체', admin_parent: '충청북도', aliases: [], priority_score: priorityMap['충주시'] });
+    addLocation('제천시', { lat: 37.1300, lon: 128.2000, name: '충청북도 제천시', type: '기초자치단체', admin_parent: '충청북도', aliases: [], priority_score: priorityMap['제천시'] });
+
+
+    // 충청남도 (일부)
+    addLocation('충청남도', { lat: 36.5180, lon: 126.8000, name: '충청남도', type: '광역자치단체', aliases: ['충남'], priority_score: priorityMap['충청남도'] });
+    addLocation('천안시', { lat: 36.8140, lon: 127.1500, name: '충청남도 천안시', type: '기초자치단체', admin_parent: '충청남도', aliases: [], priority_score: priorityMap['천안시'] });
+    addLocation('공주시', { lat: 36.4690, lon: 127.1190, name: '충청남도 공주시', type: '기초자치단체', admin_parent: '충청남도', aliases: [], priority_score: priorityMap['공주시'] });
+    addLocation('보령시', { lat: 36.3800, lon: 126.6100, name: '충청남도 보령시', type: '기초자치단체', admin_parent: '충청남도', aliases: [], priority_score: priorityMap['보령시'] });
+    addLocation('태안군', { lat: 36.7500, lon: 126.3000, name: '충청남도 태안군', type: '기초자치단체', admin_parent: '충청남도', aliases: [], priority_score: priorityMap['태안군'] });
+    addLocation('태안 안면도', { lat: 36.5000, lon: 126.3500, name: '충청남도 태안군 안면읍', type: '별칭', admin_parent: '충청남도 태안군', aliases: ['안면도'], priority_score: priorityMap['태안 안면도'] });
+
+
+    // 전라북도 (일부)
+    addLocation('전라북도', { lat: 35.8200, lon: 127.1100, name: '전라북도', type: '광역자치단체', aliases: ['전북'], priority_score: priorityMap['전라북도'] });
+    addLocation('전주시', { lat: 35.8200, lon: 127.1100, name: '전라북도 전주시', type: '기초자치단체', admin_parent: '전라북도', aliases: [], priority_score: priorityMap['전주시'] });
+    addLocation('군산시', { lat: 35.9700, lon: 126.7200, name: '전라북도 군산시', type: '기초자치단체', admin_parent: '전라북도', aliases: [], priority_score: priorityMap['군산시'] });
+    addLocation('익산시', { lat: 35.9400, lon: 126.9400, name: '전라북도 익산시', type: '기초자치단체', admin_parent: '전라북도', aliases: [], priority_score: priorityMap['익산시'] });
+    addLocation('전주 한옥마을', { lat: 35.8150, lon: 127.1500, name: '전라북도 전주시 완산구 교동', type: '별칭', admin_parent: '전라북도 전주시', aliases: ['한옥마을'], priority_score: priorityMap['전주 한옥마을'] });
+    addLocation('내장산', { lat: 35.4800, lon: 126.9000, name: '전라북도 정읍시 내장동', type: '별칭', admin_parent: '전라북도 정읍시', aliases: ['내장산국립공원'], priority_score: priorityMap['내장산'] });
+
+
+    // 전라남도 (일부)
+    addLocation('전라남도', { lat: 34.8100, lon: 126.4000, name: '전라남도', type: '광역자치단체', aliases: ['전남'], priority_score: priorityMap['전라남도'] });
+    addLocation('목포시', { lat: 34.8000, lon: 126.3900, name: '전라남도 목포시', type: '기초자치단체', admin_parent: '전라남도', aliases: [], priority_score: priorityMap['목포시'] });
+    addLocation('여수시', { lat: 34.7600, lon: 127.6600, name: '전라남도 여수시', type: '기초자치단체', admin_parent: '전라남도', aliases: [], priority_score: priorityMap['여수시'] });
+    addLocation('순천시', { lat: 34.9500, lon: 127.5300, name: '전라남도 순천시', type: '기초자치단체', admin_parent: '전라남도', aliases: [], priority_score: priorityMap['순천시'] });
+    addLocation('여수 엑스포', { lat: 34.7570, lon: 127.7410, name: '전라남도 여수시 덕충동', type: '별칭', admin_parent: '전라남도 여수시', aliases: ['여수엑스포'], priority_score: priorityMap['여수 엑스포'] });
+    addLocation('보성 녹차밭', { lat: 34.7600, lon: 127.3500, name: '전라남도 보성군 보성읍 녹차로', type: '별칭', admin_parent: '전라남도 보성군', aliases: ['보성녹차밭'], priority_score: priorityMap['보성 녹차밭'] });
+
+
+    // 경상북도 (일부)
+    addLocation('경상북도', { lat: 36.5750, lon: 128.5050, name: '경상북도', type: '광역자치단체', aliases: ['경북'], priority_score: priorityMap['경상북도'] });
+    addLocation('포항시', { lat: 36.0300, lon: 129.3600, name: '경상북도 포항시', type: '기초자치단체', admin_parent: '경상북도', aliases: [], priority_score: priorityMap['포항시'] });
+    addLocation('경주시', { lat: 35.8500, lon: 129.2100, name: '경상북도 경주시', type: '기초자치단체', admin_parent: '경상북도', aliases: [], priority_score: priorityMap['경주시'] });
+    addLocation('안동시', { lat: 36.5680, lon: 128.7290, name: '경상북도 안동시', type: '기초자치단체', admin_parent: '경상북도', aliases: [], priority_score: priorityMap['안동시'] });
+    addLocation('경주 역사유적지구', { lat: 35.8300, lon: 129.2200, name: '경상북도 경주시 인교동', type: '별칭', admin_parent: '경상북도 경주시', aliases: ['불국사', '첨성대'], priority_score: priorityMap['경주 역사유적지구'] });
+    addLocation('안동 하회마을', { lat: 36.5300, lon: 128.2600, name: '경상북도 안동시 풍천면 하회리', type: '별칭', admin_parent: '경상북도 안동시', aliases: ['하회마을'], priority_score: priorityMap['안동 하회마을'] });
+
+
+    // 경상남도 (일부)
+    addLocation('경상남도', { lat: 35.2380, lon: 128.6920, name: '경상남도', type: '광역자치단체', aliases: ['경남'], priority_score: priorityMap['경상남도'] });
+    addLocation('창원시', { lat: 35.2200, lon: 128.6800, name: '경상남도 창원시', type: '기초자치단체', admin_parent: '경상남도', aliases: [], priority_score: priorityMap['창원시'] });
+    addLocation('진주시', { lat: 35.1900, lon: 128.0800, name: '경상남도 진주시', type: '기초자치단체', admin_parent: '경상남도', aliases: [], priority_score: priorityMap['진주시'] });
+    addLocation('통영시', { lat: 34.8400, lon: 128.4300, name: '경상남도 통영시', type: '기초자치단체', admin_parent: '경상남도', aliases: [], priority_score: priorityMap['통영시'] });
+    addLocation('통영 케이블카', { lat: 34.8400, lon: 128.4000, name: '경상남도 통영시 도남동', type: '별칭', admin_parent: '경상남도 통영시', aliases: ['미륵산케이블카'], priority_score: priorityMap['통영 케이블카'] });
+    addLocation('거제 외도', { lat: 34.7800, lon: 128.7000, name: '경상남도 거제시 일운면 와현리', type: '별칭', admin_parent: '경상남도 거제시', aliases: ['외도보타니아'], priority_score: priorityMap['거제 외도'] });
+
+    // 기타 국립공원
+    addLocation('지리산국립공원', { lat: 35.3360, lon: 127.7300, name: '지리산국립공원', type: '별칭', aliases: ['지리산'], priority_score: priorityMap['지리산국립공원'] });
+    addLocation('북한산국립공원', { lat: 37.6500, lon: 126.9700, name: '북한산국립공원', type: '별칭', aliases: ['북한산'], priority_score: priorityMap['북한산국립공원'] });
+    addLocation('계룡산국립공원', { lat: 36.3500, lon: 127.2800, name: '계룡산국립공원', type: '별칭', aliases: ['계룡산'], priority_score: priorityMap['계룡산국립공원'] });
+
+
+    // 데이터 로드 확인용 통계 및 메타데이터
+    const METADATA = {
+        totalLocations: Object.keys(data).length,
+        lastUpdated: new Date().toISOString(),
+        coverage: {
+            cities: new Set(Object.values(data).filter(loc => loc.type === '광역자치단체' || loc.type === '기초자치단체').map(loc => loc.name)).size,
+            adminDivisions: new Set(Object.values(data).filter(loc => loc.type === '행정동' || loc.type === '읍' || loc.type === '면').map(loc => loc.name)).size
+        }
+    };
+
+    return {
+        locationData: data, // 실제 데이터 객체
+        latLonToGrid,
+        
+        /**
+         * 검색어를 기반으로 지역을 검색하고 페이지네이션을 적용합니다.
+         * @param {string} searchTerm - 검색어
+         * @param {number} page - 요청 페이지 번호 (1부터 시작)
+         * @param {number} pageSize - 페이지당 항목 수
+         * @returns {{results: Array<Object>, pagination: Object}} 검색 결과 및 페이지네이션 정보
+         */
+        searchLocations: (searchTerm, page = 1, pageSize = 10) => {
+            const normalizedSearch = searchTerm.trim().toLowerCase();
+            const filtered = [];
+
+            // 먼저 모든 매칭되는 지역을 찾고, priority_score로 정렬 (findAllMatches와 유사)
+            for (const key in data) {
+                const location = data[key];
+                const keyLower = key.toLowerCase();
+                const nameLower = location.name.toLowerCase();
+
+                if (nameLower.includes(normalizedSearch) ||
+                    keyLower.includes(normalizedSearch) ||
+                    (location.aliases && location.aliases.some(alias => alias.toLowerCase().includes(normalizedSearch))) ||
+                    (location.legal_divisions && location.legal_divisions.some(ld => ld.toLowerCase().includes(normalizedSearch)))
+                ) {
+                    filtered.push({ ...location, key: key, priority: location.priority_score || 0 });
+                }
+            }
+
+            // 우선순위가 높은 순으로 정렬
+            filtered.sort((a, b) => b.priority - a.priority);
+
+            const totalResults = filtered.length;
+            const totalPages = Math.ceil(totalResults / pageSize);
+            const startIndex = (page - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+
+            const results = filtered.slice(startIndex, endIndex);
+
+            return {
+                results: results,
+                pagination: {
+                    currentPage: page,
+                    pageSize: pageSize,
+                    totalResults: totalResults,
+                    totalPages: totalPages
+                }
+            };
+        },
+
+        /**
+         * 좌표에 가장 가까운 행정 구역을 찾습니다. (간단한 근접성 판단)
+         * 이 함수는 정밀한 지리 공간 분석이 아닌, 가장 가까운 `locationData` 항목을 찾습니다.
+         * @param {{lat: number, lon: number}} coords - 위도 및 경도
+         * @returns {Object|null} 가장 가까운 지역 객체 또는 null
+         */
+        findMatchingLocation: (coords) => {
+            let closestLocation = null;
+            let minDistance = Infinity;
+
+            for (const key in data) {
+                const loc = data[key];
+                // 광역/기초자치단체, 행정동, 읍, 면만 대상 (관광지 등은 제외)
+                if (loc.type && ['광역자치단체', '기초자치단체', '행정동', '읍', '면'].includes(loc.type)) {
+                    const distance = Math.sqrt(
+                        Math.pow(coords.lat - loc.lat, 2) +
+                        Math.pow(coords.lon - loc.lon, 2)
+                    );
+
+                    // 거리가 같을 경우 priority_score가 높은 것을 선택
+                    if (distance < minDistance || (distance === minDistance && loc.priority_score > (closestLocation ? closestLocation.priority_score : 0))) {
+                        minDistance = distance;
+                        closestLocation = loc;
+                    }
+                }
+            }
+            return closestLocation;
+        },
+
+        /**
+         * 검색어를 기반으로 매칭되는 모든 지역을 찾고 우선순위에 따라 정렬합니다.
+         * 이 함수는 searchLocations와 유사하지만, 페이지네이션 없이 모든 매칭 결과를 반환합니다.
+         * @param {string} searchTerm - 검색어
+         * @returns {Array<Object>} 매칭되는 지역 객체 배열
+         */
+        findAllMatches: (searchTerm) => {
+            const normalizedSearch = searchTerm.trim().toLowerCase();
+            const matches = [];
+
+            for (const key in data) {
+                const location = data[key];
+                const keyLower = key.toLowerCase();
+                const nameLower = location.name.toLowerCase();
+
+                // 이름, 키 또는 별칭, 법정동/리 목록에 검색어가 포함되는 경우
+                if (nameLower.includes(normalizedSearch) ||
+                    keyLower.includes(normalizedSearch) ||
+                    (location.aliases && location.aliases.some(alias => alias.toLowerCase().includes(normalizedSearch))) ||
+                    (location.legal_divisions && location.legal_divisions.some(ld => ld.toLowerCase().includes(normalizedSearch)))
+                ) {
+                    // 깊은 복사를 통해 원본 객체 변경 방지 및 `key`와 `priority` 추가
+                    matches.push({ ...location, key: key, priority: location.priority_score || 0 });
+                }
+            }
+
+            // 우선순위가 높은 순으로 정렬
+            return matches.sort((a, b) => {
+                const priorityA = a.priority_score !== undefined ? a.priority_score : 0;
+                const priorityB = b.priority_score !== undefined ? b.priority_score : 0;
+
+                if (priorityA !== priorityB) {
+                    return priorityB - priorityA;
+                }
+                // 우선순위가 같으면 이름으로 정렬
+                return a.name.localeCompare(b.name);
+            });
+        },
+
+        // 기타 유틸리티 함수 (예: 통계, 메타데이터 등)
+        getStatistics: () => {
+            let totalLocations = Object.keys(data).length;
+            let byType = {};
+            let byLevel = {};
+
+            for (const key in data) {
+                const loc = data[key];
+                byType[loc.type] = (byType[loc.type] || 0) + 1;
+                // '시', '군', '구', '읍', '면', '동', '리' 등으로 분류 가능
+                const lastWord = loc.name.split(' ').pop();
+                byLevel[lastWord] = (byLevel[lastWord] || 0) + 1;
+            }
+
+            return { totalLocations, byType, byLevel };
+        },
+        getMetadata: () => METADATA,
+        // (필요 시) 메타데이터 업데이트 함수 등 추가 가능
+    };
+})(); // 즉시 실행 함수로 locationData 객체 생성 및 초기화
+
+// CommonJS 모듈 내보내기
+module.exports = locationData;
