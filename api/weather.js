@@ -633,10 +633,12 @@ function calculateSensoryTemperature(temperature, humidity, windSpeed) {
 
     let feelsLike;
     if (temp >= 10) {
-        // 습도 고려한 더위 체감 (기상청과 유사한 간략화 공식)
-        feelsLike = temp + (rh - 40) * 0.1;
+        // 습도 고려한 더위 체감
+        // 기존: temp + (rh - 40) * 0.1
+        // 수정: 습도 영향 계수를 0.07로 완화하여 더 실제적인 체감온도 반영
+        feelsLike = temp + (rh - 40) * 0.07;
     } else {
-        // 바람 고려한 추위 체감 (기상청과 유사한 간략화 공식)
+        // 바람 고려한 추위 체감
         feelsLike = temp - ws * 1.5;
     }
     
@@ -1564,7 +1566,7 @@ module.exports = async function handler(req, res) {
         if (Object.keys(locationData).length > 0 && process.env.WEATHER_API_KEY) {
             await preloadPopularLocations(); // 인기 지역 사전 캐싱
         } else {
-            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜜니다 (locationData 없음 또는 API 키 없음).');
+            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜁니다 (locationData 없음 또는 API 키 없음).');
         }
         global.weatherServiceInitialized = true; // 플래그 설정
     }
