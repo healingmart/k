@@ -5,11 +5,25 @@ const axios = require('axios');
 let locationModule = {}; // 기본값: 빈 객체
 
 try {
-    // locationData.js 파일에서 필요한 데이터를 CommonJS 방식으로 import
-    locationModule = require('./locationData.js');
+    const loadedModule = require('./locationData.js');
+    // Ensure loadedModule is an object before assigning, otherwise keep the fallback
+    if (typeof loadedModule === 'object' && loadedModule !== null) {
+        locationModule = loadedModule;
+    } else {
+        // If the module somehow exports null/undefined/non-object, treat it as an error
+        throw new Error('locationData.js did not export a valid object or exported null/undefined.');
+    }
 } catch (error) {
     // locationData.js 로드 실패 시 에러 로깅 및 폴백 객체 설정
     logger.error('locationData.js를 로드하는 데 실패했습니다. 지역 검색 및 좌표 변환 기능이 제한됩니다.', error);
+    // Ensure locationModule is an object before trying to set properties
+    // This check is primarily defensive in case locationModule was somehow reassigned to non-object
+    // before or within the try block in a way not immediately apparent.
+    if (typeof locationModule !== 'object' || locationModule === null) {
+        locationModule = {};
+    }
+    
+    // Set fallback properties explicitly on locationModule
     locationModule.locationData = {}; // 빈 데이터 객체
     locationModule.searchLocations = (q, p, s) => ({ results: [], pagination: { currentPage: p, totalPages: 0, totalResults: 0 } });
     locationModule.findMatchingLocation = (coords) => null;
@@ -21,7 +35,7 @@ try {
             '제주특별자치도': { lat: 33.4996, lon: 126.5312, name: '제주특별자치도', type: '광역자치단체', priority_score: 1000 }
         };
         const normalizedQuery = q.trim().toLowerCase();
-        const results = Object.values(MAJOR_CITIES_FALLBACK).filter(loc => 
+        const results = Object.values(MAJOR_CITIES_FALLBACK).filter(loc =>
             loc.name.toLowerCase().includes(normalizedQuery) ||
             (loc.aliases && loc.aliases.some(alias => alias.toLowerCase().includes(normalizedQuery)))
         ).map(loc => ({ ...loc, key: loc.name, priority: loc.priority_score }));
@@ -31,7 +45,7 @@ try {
     locationModule.latLonToGrid = (lat, lon) => {
         logger.warn('locationData.js가 없어 기본 격자 좌표(서울)를 반환합니다.');
         // 서울시청 대략적인 격자 좌표 반환
-        return { nx: 60, ny: 127 }; 
+        return { nx: 60, ny: 127 };
     };
 }
 
@@ -684,7 +698,7 @@ function getWeatherAdvice(data) {
     // 기온 관련 조언
     if (temp !== null) {
         if (temp >= 35) advice.push('🌡️ 폭염 경보! 야외활동 자제하세요');
-        else if (temp >= 33) advice.push('🌡️ 폭염 주의! 충분한 수분 섭취하세요');
+        else if (temp >= 33) advice.push('🌡️️ 폭염 주의! 충분한 수분 섭취하세요');
         else if (temp >= 28) advice.push('☀️ 더운 날씨, 시원한 복장 추천');
         else if (temp <= -10) advice.push('🧊 한파 주의! 방한용품 필수');
         else if (temp <= 0) advice.push('❄️ 추운 날씨, 따뜻한 복장 필요');
@@ -857,11 +871,11 @@ function getPathname(req) {
 const calculateBaseTime = (hour) => {
   if (hour >= 23 || hour < 2) return '2300';
   if (hour < 5) return '0200';
-  if (hour < 8) return '0500';
-  if (hour < 11) return '0800';
-  if (hour < 14) return '1100';
-  if (hour < 17) return '1400';
-  if (hour < 20) return '1700';
+  if (hour < 8) return '0800';
+  if (hour < 11) return '1100';
+  if (hour < 14) return '1400';
+  if (hour < 17) return '1700';
+  if (hour < 20) return '2000';
   return '2000';
 };
 // =====================================================================
@@ -1424,7 +1438,7 @@ module.exports = async function handler(req, res) {
         if (Object.keys(locationData).length > 0 && process.env.WEATHER_API_KEY) {
             await preloadPopularLocations(); // 인기 지역 사전 캐싱
         } else {
-            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜝니다 (locationData 없음 또는 API 키 없음).');
+            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜁니다 (locationData 없음 또는 API 키 없음).');
         }
         global.weatherServiceInitialized = true; // 플래그 설정
     }
