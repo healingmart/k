@@ -1,6 +1,80 @@
 const axios = require('axios');
 
 // =====================================================================
+// 7. 로깅 시스템 개선: 통합 로거 객체 (12. 에러 로깅 개선 포함)
+// 3. 모니터링 강화를 위한 메트릭 추가
+const metrics = {
+    apiCalls: 0,
+    apiErrors: 0,
+    cacheHits: 0,
+    cacheMisses: 0,
+    rateLimited: 0,
+    avgResponseTime: 0, // 평균 응답 시간 (단순화된 누적 합계/카운트)
+    totalResponseTime: 0,
+    responseTimeCount: 0,
+    regionalRequests: {}, // 지역별 요청 통계 (예: { '서울특별시': 10, '제주시': 5 })
+    errorTypes: {},       // 에러 타입별 분류 (예: { 'API_ERROR_22': 3, 'LOCATION_NOT_FOUND': 1 })
+    // responseTimeHistogram: { '0-100ms': 0, '101-500ms': 0, '501-1000ms': 0, '>1000ms': 0 }, // 응답 시간 히스토그램 (더 복잡한 구현 필요)
+
+    // 메트릭 초기화
+    reset: () => {
+        metrics.apiCalls = 0;
+        metrics.apiErrors = 0;
+        metrics.cacheHits = 0;
+        metrics.cacheMisses = 0;
+        metrics.rateLimited = 0;
+        metrics.avgResponseTime = 0;
+        metrics.totalResponseTime = 0;
+        metrics.responseTimeCount = 0;
+        metrics.regionalRequests = {};
+        metrics.errorTypes = {};
+        // for (const key in metrics.responseTimeHistogram) metrics.responseTimeHistogram[key] = 0;
+    },
+    // 응답 시간 추가 및 평균 계산
+    addResponseTime: (duration) => {
+        metrics.totalResponseTime += duration;
+        metrics.responseTimeCount++;
+        metrics.avgResponseTime = metrics.totalResponseTime / metrics.responseTimeCount;
+        // if (duration <= 100) metrics.responseTimeHistogram['0-100ms']++;
+        // else if (duration <= 500) metrics.responseTimeHistogram['101-500ms']++;
+        // else if (duration <= 1000) metrics.responseTimeHistogram['501-1000ms']++;
+        // else metrics.responseTimeHistogram['>1000ms']++;
+    },
+    // 지역별 요청 증가
+    addRegionalRequest: (regionName) => {
+        metrics.regionalRequests[regionName] = (metrics.regionalRequests[regionName] || 0) + 1;
+    },
+    // 에러 타입별 증가
+    addErrorType: (errorCode) => {
+        metrics.errorTypes[errorCode] = (metrics.errorTypes[errorCode] || 0) + 1;
+    }
+};
+
+const logger = {
+  info: (message, data = {}) => {
+    console.log(`[INFO] ${new Date().toISOString()} - ${message}`, data);
+  },
+  warn: (message, data = {}) => {
+    console.warn(`[WARN] ${new Date().toISOString()} - ${message}`, data);
+  },
+  // 에러 로그 출력 (구조화된 로깅으로 개선)
+  error: (message, error, requestInfo = {}) => {
+    console.error(`[ERROR] ${new Date().toISOString()} - ${message}`, {
+      error: {
+        message: error.message,
+        code: error.code || 'UNKNOWN', 
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+      },
+      request: requestInfo, 
+      originalError: error 
+    });
+    metrics.apiErrors++; // 에러 발생 시 메트릭 증가
+    metrics.addErrorType(error.code || 'UNKNOWN'); // 에러 타입별 메트릭 증가
+  }
+};
+// =====================================================================
+
+// =====================================================================
 // 1. locationData.js 의존성 처리 (안전한 import와 폴백 처리)
 // locationModule의 모든 속성을 항상 유효한 기본값으로 초기화합니다.
 let locationModule = {
@@ -211,80 +285,6 @@ class WeatherAPIError extends Error {
     this.statusCode = statusCode;
   }
 }
-// =====================================================================
-
-// =====================================================================
-// 7. 로깅 시스템 개선: 통합 로거 객체 (12. 에러 로깅 개선 포함)
-// 3. 모니터링 강화를 위한 메트릭 추가
-const metrics = {
-    apiCalls: 0,
-    apiErrors: 0,
-    cacheHits: 0,
-    cacheMisses: 0,
-    rateLimited: 0,
-    avgResponseTime: 0, // 평균 응답 시간 (단순화된 누적 합계/카운트)
-    totalResponseTime: 0,
-    responseTimeCount: 0,
-    regionalRequests: {}, // 지역별 요청 통계 (예: { '서울특별시': 10, '제주시': 5 })
-    errorTypes: {},       // 에러 타입별 분류 (예: { 'API_ERROR_22': 3, 'LOCATION_NOT_FOUND': 1 })
-    // responseTimeHistogram: { '0-100ms': 0, '101-500ms': 0, '501-1000ms': 0, '>1000ms': 0 }, // 응답 시간 히스토그램 (더 복잡한 구현 필요)
-
-    // 메트릭 초기화
-    reset: () => {
-        metrics.apiCalls = 0;
-        metrics.apiErrors = 0;
-        metrics.cacheHits = 0;
-        metrics.cacheMisses = 0;
-        metrics.rateLimited = 0;
-        metrics.avgResponseTime = 0;
-        metrics.totalResponseTime = 0;
-        metrics.responseTimeCount = 0;
-        metrics.regionalRequests = {};
-        metrics.errorTypes = {};
-        // for (const key in metrics.responseTimeHistogram) metrics.responseTimeHistogram[key] = 0;
-    },
-    // 응답 시간 추가 및 평균 계산
-    addResponseTime: (duration) => {
-        metrics.totalResponseTime += duration;
-        metrics.responseTimeCount++;
-        metrics.avgResponseTime = metrics.totalResponseTime / metrics.responseTimeCount;
-        // if (duration <= 100) metrics.responseTimeHistogram['0-100ms']++;
-        // else if (duration <= 500) metrics.responseTimeHistogram['101-500ms']++;
-        // else if (duration <= 1000) metrics.responseTimeHistogram['501-1000ms']++;
-        // else metrics.responseTimeHistogram['>1000ms']++;
-    },
-    // 지역별 요청 증가
-    addRegionalRequest: (regionName) => {
-        metrics.regionalRequests[regionName] = (metrics.regionalRequests[regionName] || 0) + 1;
-    },
-    // 에러 타입별 증가
-    addErrorType: (errorCode) => {
-        metrics.errorTypes[errorCode] = (metrics.errorTypes[errorCode] || 0) + 1;
-    }
-};
-
-const logger = {
-  info: (message, data = {}) => {
-    console.log(`[INFO] ${new Date().toISOString()} - ${message}`, data);
-  },
-  warn: (message, data = {}) => {
-    console.warn(`[WARN] ${new Date().toISOString()} - ${message}`, data);
-  },
-  // 에러 로그 출력 (구조화된 로깅으로 개선)
-  error: (message, error, requestInfo = {}) => {
-    console.error(`[ERROR] ${new Date().toISOString()} - ${message}`, {
-      error: {
-        message: error.message,
-        code: error.code || 'UNKNOWN', 
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
-      },
-      request: requestInfo, 
-      originalError: error 
-    });
-    metrics.apiErrors++; // 에러 발생 시 메트릭 증가
-    metrics.addErrorType(error.code || 'UNKNOWN'); // 에러 타입별 메트릭 증가
-  }
-};
 // =====================================================================
 
 // =====================================================================
@@ -1439,7 +1439,7 @@ module.exports = async function handler(req, res) {
         if (Object.keys(locationData).length > 0 && process.env.WEATHER_API_KEY) {
             await preloadPopularLocations(); // 인기 지역 사전 캐싱
         } else {
-            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜝니다 (locationData 없음 또는 API 키 없음).');
+            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜁니다 (locationData 없음 또는 API 키 없음).');
         }
         global.weatherServiceInitialized = true; // 플래그 설정
     }
