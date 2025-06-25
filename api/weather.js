@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // =====================================================================
-// 7. 로깅 시스템 개선: 통합 로거 객체 (12. 에러 로깅 개선 포함)
+// 7. 로깅 개선: 통합 로거 객체 (12. 에러 로깅 개선 포함)
 // 3. 모니터링 강화를 위한 메트릭 추가
 const metrics = {
     apiCalls: 0,
@@ -520,9 +520,9 @@ function extractCompleteWeatherData(dayForecast, date, kst) {
         representativeTime: bestRepresentativeTime, // 동적으로 선택된 대표 시간
 
         // 기온 정보 (완전)
-        temperature: data.TMP ? Math.round(parseFloat(data.TMP)) : null,
-        temperatureMin: dailyData.temperatureMin ? Math.round(dailyData.temperatureMin) : null,
-        temperatureMax: dailyData.temperatureMax ? Math.round(dailyData.temperatureMax) : null,
+        temperature: data.TMP ? parseFloat(data.TMP).toFixed(1) : null,
+        temperatureMin: dailyData.temperatureMin ? parseFloat(dailyData.temperatureMin).toFixed(1) : null,
+        temperatureMax: dailyData.temperatureMax ? parseFloat(dailyData.temperatureMax).toFixed(1) : null,
         temperatureUnit: '°C',
         temperatureDescription: getTemperatureDescription(data.TMP),
 
@@ -574,7 +574,7 @@ function extractCompleteWeatherData(dayForecast, date, kst) {
         hourlyData: Object.keys(times).map(time => ({
             time: time,
             timeFormatted: `${time.slice(0, 2)}:${time.slice(2, 4)}`,
-            temperature: times[time].TMP ? Math.round(parseFloat(times[time].TMP)) : null,
+            temperature: times[time].TMP ? parseFloat(times[time].TMP).toFixed(1) : null,
             sky: WEATHER_CODES.SKY[times[time].SKY] || '정보없음',
             precipitation: WEATHER_CODES.PTY[times[time].PTY] || '없음',
             precipitationProbability: times[time].POP ? parseInt(times[time].POP) : 0,
@@ -773,9 +773,9 @@ function generateCompleteSampleData(region, errorMessage = null) {
         dayIndex: index,
         representativeTime: '1400',
 
-        temperature: errorMessage ? null : sampleTemps[index],
-        temperatureMin: errorMessage ? null : sampleTemps[index] - 5,
-        temperatureMax: errorMessage ? null : sampleTemps[index] + 5,
+        temperature: errorMessage ? null : sampleTemps[index].toFixed(1),
+        temperatureMin: errorMessage ? null : (sampleTemps[index] - 5).toFixed(1),
+        temperatureMax: errorMessage ? null : (sampleTemps[index] + 5).toFixed(1),
         temperatureUnit: '°C',
         temperatureDescription: errorMessage ? '정보없음' : getTemperatureDescription(sampleTemps[index]),
 
@@ -829,7 +829,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
             {
                 time: '0600',
                 timeFormatted: '06:00',
-                temperature: sampleTemps[index] - 3,
+                temperature: (sampleTemps[index] - 3).toFixed(1),
                 sky: WEATHER_CODES.SKY[sampleSkies[index]],
                 precipitation: WEATHER_CODES.PTY[samplePrecips[index]],
                 precipitationProbability: [10, 30, 60][index],
@@ -839,7 +839,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
             {
                 time: '1200',
                 timeFormatted: '12:00',
-                temperature: sampleTemps[index],
+                temperature: sampleTemps[index].toFixed(1),
                 sky: WEATHER_CODES.SKY[sampleSkies[index]],
                 precipitation: WEATHER_CODES.PTY[samplePrecips[index]],
                 precipitationProbability: [10, 30, 60][index],
@@ -849,7 +849,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
             {
                 time: '1800',
                 timeFormatted: '18:00',
-                temperature: sampleTemps[index] - 2,
+                temperature: (sampleTemps[index] - 2).toFixed(1),
                 sky: WEATHER_CODES.SKY[sampleSkies[index]],
                 precipitation: WEATHER_CODES.PTY[samplePrecips[index]],
                 precipitationProbability: [10, 30, 60][index],
@@ -971,7 +971,7 @@ function validateWeatherData(data) {
   const errors = [];
   
   // 기온 범위 검증 (-50°C ~ 60°C)
-  if (data.temperature !== null && (data.temperature < -50 || data.temperature > 60)) {
+  if (data.temperature !== null && (parseFloat(data.temperature) < -50 || parseFloat(data.temperature) > 60)) {
     errors.push(`비정상적인 기온: ${data.temperature}°C`);
   }
   
@@ -1462,7 +1462,7 @@ module.exports = async function handler(req, res) {
         if (Object.keys(locationData).length > 0 && process.env.WEATHER_API_KEY) {
             await preloadPopularLocations(); // 인기 지역 사전 캐싱
         } else {
-            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜝니다 (locationData 없음 또는 API 키 없음).');
+            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜁니다 (locationData 없음 또는 API 키 없음).');
         }
         global.weatherServiceInitialized = true; // 플래그 설정
     }
