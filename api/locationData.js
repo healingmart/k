@@ -1,4 +1,5 @@
- @file locationData.js
+/**
+ * @file locationData.js
  * @description 전국 (제주도 포함) 지역 정보를 담는 데이터 파일.
  * 특히 서울 지역의 위경도 및 격자 좌표는 '서울위경도 (2).txt' 최신 공식 데이터를 기반으로 완전히 통합됨.
  * 제주 지역의 위경도 좌표는 Google 검색 최신 정보를 기반으로 업데이트됨.
@@ -91,7 +92,7 @@ const locationData = (() => {
         // 서귀포시 행정동/읍/면 (상대적 중요도 및 인구수 고려, KMA 자주 사용 지역)
         '중문동': 900, '동홍동': 890, '서홍동': 880, '대륜동': 870,
         '천지동': 860, '정방동': 850, '중앙동': 840, '효돈동': 830,
-        '영천동': 820, '대천동': 810, '예래동': 800,
+        '영천동': 820, '대천동': 810, '예래동': 800, '법환동': 875, // 법환동 추가 및 우선순위 설정
         '성산읍': 730, '대정읍': 720, '남원읍': 710, '표선면': 700, '안덕면': 690,
 
         // 전국 주요 도시 및 지역 추가 (weather.js에서 이관)
@@ -189,8 +190,8 @@ const locationData = (() => {
      * @param {number} locationObj.lon - 경도
      * @param {'광역자치단체'|'기초자치단체'|'행정동'|'읍'|'면'|'법정동'|'별칭'} locationObj.type - 지역 유형
      * @param {string} [locationObj.admin_parent] - 상위 행정 구역의 공식 명칭
-     * @param {string[]} [locationObj.legal_divisions] - 해당 행정 구역이 관할하는 법정동/리 명칭 배열
-     * @param {string[]} [locationObj.aliases] - 검색을 위한 추가 별칭 배열
+     * @param {string[]} [legal_divisions] - 해당 행정 구역이 관할하는 법정동/리 명칭 배열
+     * @param {string[]} [aliases] - 검색을 위한 추가 별칭 배열
      */
     const addLocation = (locationObj) => {
         const { lat, lon, name, type, admin_parent, legal_divisions, aliases } = locationObj;
