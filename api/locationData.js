@@ -527,62 +527,65 @@ const locationData = (() => {
     addLocation({ name: '서울특별시 강동구 강일동', lat: 37.5670, lon: 127.1700, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['강일동'] });
 
 
+  // =============================================================
+    // 제주특별자치도 데이터
+    // 고객님 요청에 따라 서울 지역 데이터는 제외되었습니다.
 
-    addLocation({ name: '제주특별자치도', lat: 33.4312, lon: 126.5772, type: '광역자치단체', aliases: ['제주', '제주도'] }); // 제주도 중심
-    addLocation({ name: '제주특별자치시 제주시', lat: 33.5097, lon: 126.5219, type: '기초자치단체', admin_parent: '제주특별자치도', aliases: ['제주시'] }); // 제주시청 부근
-    addLocation({ name: '제주특별자치시 서귀포시', lat: 33.2540, lon: 126.5600, type: '기초자치단체', admin_parent: '제주특별자치도', aliases: ['서귀포', '서귀포시'] }); // 서귀포시청 부근
+    addLocation({ name: '제주특별자치도', lat: 33.3616, lon: 126.5292, type: '광역자치단체', aliases: ['제주도'] });
+    addLocation({ name: '제주시', lat: 33.5097, lon: 126.5219, type: '기초자치단체', admin_parent: '제주특별자치도' });
+    addLocation({ name: '서귀포시', lat: 33.2509, lon: 126.5646, type: '기초자치단체', admin_parent: '제주특별자치도' });
 
     // 제주시 행정동/읍/면
-    addLocation({ name: '제주특별자치시 제주시 일도1동', lat: 33.5130, lon: 126.5270, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['일도일동'] }); // 일도1동
-    addLocation({ name: '제주특별자치시 제주시 일도2동', lat: 33.5078, lon: 126.5362, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['일도이동'] }); // 일도2동
-    addLocation({ name: '제주특별자치시 제주시 이도1동', lat: 33.5060, lon: 126.5180, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['이도일동'] }); // 이도1동
-    addLocation({ name: '제주특별자치시 제주시 이도2동', lat: 33.4975, lon: 126.5337, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['이도이동', '도남동', '영평동', '오등동'], aliases: ['도남'] }); // 이도2동
-    addLocation({ name: '제주특별자치시 제주시 삼도1동', lat: 33.5113, lon: 126.5120, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['삼도일동'] }); // 삼도1동
-    addLocation({ name: '제주특별자치시 제주시 삼도2동', lat: 33.5090, lon: 126.5080, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['삼도이동'] }); // 삼도2동
-    addLocation({ name: '제주특별자치시 제주시 건입동', lat: 33.5140, lon: 126.5360, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['건입동'] }); // 건입동
-    addLocation({ name: '제주특별자치시 제주시 화북동', lat: 33.5210, lon: 126.5700, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['화북일동', '화북이동'] }); // 화북동
-    addLocation({ name: '제주특별자치시 제주시 삼양동', lat: 33.5260, lon: 126.6010, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['삼양일동', '삼양이동', '삼양삼동'] }); // 삼양동
-    addLocation({ name: '제주특별자치시 제주시 봉개동', lat: 33.4590, lon: 126.6190, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['봉개동'] }); // 봉개동
-    addLocation({ name: '제주특별자치시 제주시 아라동', lat: 33.4680, lon: 126.5490, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['아라일동', '아라이동'] }); // 아라동
-    addLocation({ name: '제주특별자치시 제주시 오라동', lat: 33.4800, lon: 126.4990, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['오라일동', '오라이동', '오라삼동'] }); // 오라동
-    addLocation({ name: '제주특별자치시 제주시 연동', lat: 33.4890, lon: 126.4900, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['연동'] }); // 연동
-    addLocation({ name: '제주특별자치시 제주시 노형동', lat: 33.4850, lon: 126.4670, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['노형동'] }); // 노형동
-    addLocation({ name: '제주특별자치시 제주시 외도동', lat: 33.5040, lon: 126.4490, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['외도일동', '외도이동', '외도삼동'] }); // 외도동
-    addLocation({ name: '제주특별자치시 제주시 이호동', lat: 33.5130, lon: 126.4710, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['이호일동', '이호이동'] }); // 이호동
-    addLocation({ name: '제주특별자치시 제주시 도두동', lat: 33.5160, lon: 126.4350, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['도두일동', '도두이동'] }); // 도두동
-    addLocation({ name: '제주특별자치시 제주시 애월읍', lat: 33.4560, lon: 126.3300, type: '읍', admin_parent: '제주특별자치시 제주시', legal_divisions: ['고내리', '고성리', '곽지리', '광령리', '구엄리', '금성리', '납읍리', '봉성리', '상가리', '상귀리', '소길리', '수산리', '애월리', '어음리', '신엄리', '유수암리'] }); // 애월읍
-    addLocation({ name: '제주특별자치시 제주시 한림읍', lat: 33.4140, lon: 126.2570, type: '읍', admin_parent: '제주특별자치시 제주시', legal_divisions: ['귀덕리', '금능리', '금악리', '대림리', '동명리', '명월리', '상대리', '상명리', '수원리', '옹포리', '월령리', '월림리', '한림리', '한수리', '협재리'] }); // 한림읍
-    addLocation({ name: '제주특별자치시 제주시 구좌읍', lat: 33.5180, lon: 126.8370, type: '읍', admin_parent: '제주특별자치시 제주시', legal_divisions: ['김녕리', '덕천리', '동복리', '상도리', '세화리', '송당리', '월정리', '종달리', '평대리', '하도리', '한동리', '행원리'] }); // 구좌읍
-    addLocation({ name: '제주특별자치시 제주시 조천읍', lat: 33.5320, lon: 126.6800, type: '읍', admin_parent: '제주특별자치시 제주시', legal_divisions: ['교래리', '대흘리', '북촌리', '선흘리', '신촌리', '신흥리', '와산리', '와흘리', '조천리', '함덕리'] }); // 조천읍
-    addLocation({ name: '제주특별자치시 제주시 한경면', lat: 33.3280, lon: 126.1730, type: '면', admin_parent: '제주특별자치시 제주시', legal_divisions: ['고산리', '금등리', '낙천리', '두모리', '신창리', '용수리', '저지리', '조수리', '청수리', '판포리'] }); // 한경면
-    addLocation({ name: '제주특별자치시 제주시 추자면', lat: 33.9500, lon: 126.3200, type: '면', admin_parent: '제주특별자치시 제주시', legal_divisions: ['대서리', '묵리', '신양리', '영흥리', '예초리'], aliases: ['추자'] }); // 추자면
-    addLocation({ name: '제주특별자치시 제주시 우도면', lat: 33.5040, lon: 126.9530, type: '면', admin_parent: '제주특별자치시 제주시', legal_divisions: ['연평리'], aliases: ['우도'] }); // 우도면
+    addLocation({ name: '연동', lat: 33.4862, lon: 126.4912, type: '행정동', admin_parent: '제주시', legal_divisions: ['연동'] });
+    addLocation({ name: '노형동', lat: 33.4891, lon: 126.4770, type: '행정동', admin_parent: '제주시', legal_divisions: ['노형동'] });
+    addLocation({ name: '아라동', lat: 33.4751, lon: 126.5448, type: '행정동', admin_parent: '제주시', legal_divisions: ['아라일동', '아라이동'] });
+    addLocation({ name: '이도2동', lat: 33.4939, lon: 126.5361, type: '행정동', admin_parent: '제주시', legal_divisions: ['이도이동'] });
+    addLocation({ name: '일도2동', lat: 33.5065, lon: 126.5332, type: '행정동', admin_parent: '제주시', legal_divisions: ['일도이동'] });
+    addLocation({ name: '삼양동', lat: 33.5309, lon: 126.5861, type: '행정동', admin_parent: '제주시', legal_divisions: ['삼양일동', '삼양이동', '삼양삼동'] });
+    addLocation({ name: '화북동', lat: 33.5222, lon: 126.5694, type: '행정동', admin_parent: '제주시', legal_divisions: ['화북일동', '화북이동'] });
+    addLocation({ name: '이도1동', lat: 33.4988, lon: 126.5250, type: '행정동', admin_parent: '제주시', legal_divisions: ['이도일동'] });
+    addLocation({ name: '일도1동', lat: 33.5085, lon: 126.5278, type: '행정동', admin_parent: '제주시', legal_divisions: ['일도일동'] });
+    addLocation({ name: '삼도1동', lat: 33.5133, lon: 126.5186, type: '행정동', admin_parent: '제주시', legal_divisions: ['삼도일동'] });
+    addLocation({ name: '삼도2동', lat: 33.5117, lon: 126.5147, type: '행정동', admin_parent: '제주시', legal_divisions: ['삼도이동'] });
+    addLocation({ name: '건입동', lat: 33.5146, lon: 126.5342, type: '행정동', admin_parent: '제주시', legal_divisions: ['건입동'] });
+    addLocation({ name: '오라동', lat: 33.4842, lon: 126.5056, type: '행정동', admin_parent: '제주시', legal_divisions: ['오라일동', '오라이동', '오라삼동'] });
+    addLocation({ name: '외도동', lat: 33.5139, lon: 126.4484, type: '행정동', admin_parent: '제주시', legal_divisions: ['외도일동', '외도이동', '외도삼동'] });
+    addLocation({ name: '이호동', lat: 33.5175, lon: 126.4764, type: '행정동', admin_parent: '제주시', legal_divisions: ['이호일동', '이호이동'] });
+    addLocation({ name: '도두동', lat: 33.5100, lon: 126.4670, type: '행정동', admin_parent: '제주시', legal_divisions: ['도두일동', '도두이동'] });
+    addLocation({ name: '봉개동', lat: 33.4560, lon: 126.5700, type: '행정동', admin_parent: '제주시', legal_divisions: ['봉개동'] });
+    addLocation({ name: '한림읍', lat: 33.4154, lon: 126.2690, type: '읍', admin_parent: '제주시', legal_divisions: ['한림리', '대림리', '동명리', '명월리', '상대리', '옹포리', '월림리', '재릉리', '협재리', '금악리', '상명리', '강구리'] });
+    addLocation({ name: '애월읍', lat: 33.4344, lon: 126.3559, type: '읍', admin_parent: '제주시', legal_divisions: ['애월리', '곽지리', '수산리', '고내리', '하가리', '신엄리', '봉성리', '소길리', '어음리', '유수암리', '광령리', '상귀리', '하귀리', '장전리', '납읍리', '용흥리', '상가리'] });
+    addLocation({ name: '구좌읍', lat: 33.5358, lon: 126.8398, type: '읍', admin_parent: '제주시', legal_divisions: ['김녕리', '덕천리', '동복리', '상도리', '세화리', '송당리', '월정리', '종달리', '평대리', '하도리', '한동리', '행원리'] });
+    addLocation({ name: '조천읍', lat: 33.5222, lon: 126.6579, type: '읍', admin_parent: '제주시', legal_divisions: ['조천리', '신촌리', '함덕리', '교래리', '대흘리', '선흘리', '북촌리', '와산리', '선교리'] });
+    addLocation({ name: '우도면', lat: 33.5074, lon: 126.9427, type: '면', admin_parent: '제주시', legal_divisions: ['천진리', '서광리', '오봉리', '고수목원'] });
+    addLocation({ name: '추자면', lat: 33.9515, lon: 126.2995, type: '면', admin_parent: '제주시', legal_divisions: ['대서리', '묵리', '신양리', '영흥리', '예초리'] });
+    addLocation({ name: '한경면', lat: 33.3275, lon: 126.1730, type: '면', admin_parent: '제주시', legal_divisions: ['고산리', '낙천리', '두모리', '판포리', '용수리', '신창리', '저지리', '청수리', '조수리', '금등리', '옹포리', '산포리', '대정리'] });
 
     // 서귀포시 행정동/읍/면
-    addLocation({ name: '제주특별자치시 서귀포시 정방동', lat: 33.2490, lon: 126.5690, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['서귀동'] }); // 정방동
-    addLocation({ name: '제주특별자치시 서귀포시 중앙동', lat: 33.2500, lon: 126.5630, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['서귀동'] }); // 중앙동
-    addLocation({ name: '제주특별자치시 서귀포시 천지동', lat: 33.2470, lon: 126.5560, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['서귀동', '정방동'] }); // 천지동
-    addLocation({ name: '제주특별자치시 서귀포시 효돈동', lat: 33.2800, lon: 126.6100, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['하효동', '신효동', '토평동'] }); // 효돈동
-    addLocation({ name: '제주특별자치시 서귀포시 영천동', lat: 33.2850, lon: 126.5800, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['토평동', '서귀동'] }); // 영천동
-    addLocation({ name: '제주특별자치시 서귀포시 동홍동', lat: 33.2700, lon: 126.5750, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['동홍동'] }); // 동홍동
-    addLocation({ name: '제주특별자치시 서귀포시 서홍동', lat: 33.2600, lon: 126.5400, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['서홍동'] }); // 서홍동
-    addLocation({ name: '제주특별자치시 서귀포시 대륜동', lat: 33.2450, lon: 126.5200, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['법환동', '서호동', '호근동', '강정동', '도순동', '월평동', '하원동'] }); // 대륜동
-    addLocation({ name: '제주특별자치시 서귀포시 대천동', lat: 33.2580, lon: 126.4900, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['강정동', '도순동', '영남동', '월평동'] }); // 대천동
-    addLocation({ name: '제주특별자치시 서귀포시 중문동', lat: 33.2440, lon: 126.4300, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['중문동', '대포동', '하원동', '회수동', '상예동', '하예동', '색달동'] }); // 중문동
-    addLocation({ name: '제주특별자치시 서귀포시 예래동', lat: 33.2480, lon: 126.3800, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['상예동', '하예동', '색달동'] }); // 예래동
-    addLocation({ name: '제주특별자치시 서귀포시 대정읍', lat: 33.2260, lon: 126.2570, type: '읍', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['하모리', '상모리', '신평리', '영락리', '무릉리', '보성리', '안성리', '구억리', '인성리', '일과리', '동일1리', '동일2리', '가파리', '마라리'] }); // 대정읍
-    addLocation({ name: '제주특별자치시 서귀포시 남원읍', lat: 33.2800, lon: 126.7300, type: '읍', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['남원리', '위미리', '태흥리', '한남리', '의귀리', '신례리', '하례리', '수망리'] }); // 남원읍
-    addLocation({ name: '제주특별자치시 서귀포시 성산읍', lat: 33.3800, lon: 126.8900, type: '읍', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['성산리', '고성리', '온평리', '신풍리', '수산리', '신천리', '삼달리', '오조리', '시흥리'], aliases: ['성산일출봉'] }); // 성산읍
-    addLocation({ name: '제주특별자치시 서귀포시 안덕면', lat: 33.2500, lon: 126.3100, type: '면', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['화순리', '감산리', '서광리', '동광리', '사계리', '창천리', '상창리', '광평리', '덕수리'] }); // 안덕면
-    addLocation({ name: '제주특별자치시 서귀포시 표선면', lat: 33.3000, lon: 126.8300, type: '면', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['표선리', '세화리', '가시리', '성읍리', '하천리', '토산리'] }); // 표선면
+    addLocation({ name: '중문동', lat: 33.2427, lon: 126.4287, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['중문동'] });
+    addLocation({ name: '동홍동', lat: 33.2599, lon: 126.5615, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['동홍동'] });
+    addLocation({ name: '서홍동', lat: 33.2599, lon: 126.5510, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['서홍동'] });
+    addLocation({ name: '대륜동', lat: 33.2428, lon: 126.5273, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['강정동', '도순동', '월평동', '하원동', '영남동', '법환동', '서호동', '호근동'] }); // 법환동 포함
+    addLocation({ name: '천지동', lat: 33.2492, lon: 126.5620, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['서귀동', '정방동'] });
+    addLocation({ name: '정방동', lat: 33.2498, lon: 126.5645, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['정방동'] });
+    addLocation({ name: '중앙동', lat: 33.2505, lon: 126.5592, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['서귀동'] });
+    addLocation({ name: '효돈동', lat: 33.2625, lon: 126.6025, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['하효동', '토평동', '신효동'] });
+    addLocation({ name: '영천동', lat: 33.2847, lon: 126.6346, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['영남동', '토평동'] });
+    addLocation({ name: '대천동', lat: 33.2750, lon: 126.4800, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['강정동', '도순동', '월평동', '하원동', '영남동'] });
+    addLocation({ name: '예래동', lat: 33.2520, lon: 126.3910, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['상예동', '하예동', '색달동'] });
+    addLocation({ name: '성산읍', lat: 33.4357, lon: 126.9189, type: '읍', admin_parent: '서귀포시', legal_divisions: ['성산리', '고성리', '수산리', '온평리', '신양리', '삼달리', '난산리', '신풍리', '시흥리'] });
+    addLocation({ name: '대정읍', lat: 33.2269, lon: 126.2626, type: '읍', admin_parent: '서귀포시', legal_divisions: ['하모리', '인성리', '모슬포', '상모리', '보성리', '구억리', '신평리', '안성리', '동일주리', '가파리', '마라리'] });
+    addLocation({ name: '남원읍', lat: 33.3082, lon: 126.7029, type: '읍', admin_parent: '서귀포시', legal_divisions: ['남원리', '위미리', '태흥리', '하례리', '신례리', '한남리', '의귀리', '수망리', '고망리'] });
+    addLocation({ name: '표선면', lat: 33.3516, lon: 126.8398, type: '면', admin_parent: '서귀포시', legal_divisions: ['표선리', '성읍리', '가시리', '세화리', '토산리', '하천리', '상천리'] });
+    addLocation({ name: '안덕면', lat: 33.2800, lon: 126.3270, type: '면', admin_parent: '서귀포시', legal_divisions: ['감산리', '창천리', '상창리', '광평리', '동광리', '덕수리', '화순리', '사계리', '서광리'] });
 
     // 관광지 및 기타 별칭 (주요 지점)
-    addLocation({ name: '성산일출봉', lat: 33.4584, lon: 126.9427, type: '별칭', admin_parent: '제주특별자치시 서귀포시 성산읍' }); // 성산일출봉 실제 좌표
-    addLocation({ name: '한라산', lat: 33.3616, lon: 126.5292, type: '별칭', admin_parent: '제주특별자치도', aliases: ['한라산국립공원'] }); // 한라산 실제 좌표
-    addLocation({ name: '제주공항', lat: 33.5071, lon: 126.4930, type: '별칭', admin_parent: '제주특별자치시 제주시', aliases: ['제주국제공항'] }); // 제주공항 실제 좌표
-    addLocation({ name: '서귀포 매일올레시장', lat: 33.2497, lon: 126.5658, type: '별칭', admin_parent: '제주특별자치시 서귀포시 중앙동' }); // 서귀포 매일올레시장 실제 좌표
-    addLocation({ name: '협재해수욕장', lat: 33.3948, lon: 126.2393, type: '별칭', admin_parent: '제주특별자치시 제주시 한림읍' }); // 협재해수욕장 실제 좌표
-    addLocation({ name: '새별오름', lat: 33.4140, lon: 126.3930, type: '별칭', admin_parent: '제주특별자치시 제주시 애월읍' }); // 새별오름 실제 좌표
+    addLocation({ name: '성산일출봉', lat: 33.4584, lon: 126.9427, type: '별칭', admin_parent: '서귀포시 성산읍' });
+    addLocation({ name: '한라산', lat: 33.3616, lon: 126.5292, type: '별칭', admin_parent: '제주특별자치도', aliases: ['한라산국립공원'] });
+    addLocation({ name: '제주공항', lat: 33.5114, lon: 126.4927, type: '별칭', admin_parent: '제주시', aliases: ['제주국제공항'] });
+    addLocation({ name: '서귀포 매일올레시장', lat: 33.2497, lon: 126.5658, type: '별칭', admin_parent: '서귀포시 중앙동' });
+    addLocation({ name: '협재해수욕장', lat: 33.3948, lon: 126.2393, type: '별칭', admin_parent: '제주시 한림읍' });
+    addLocation({ name: '새별오름', lat: 33.4140, lon: 126.3930, type: '별칭', admin_parent: '제주시 애월읍' });
 
 
 return {
