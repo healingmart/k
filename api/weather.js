@@ -1,10 +1,3 @@
-/**
- * @file weather.js
- * @description 기상청 날씨 API 연동 및 지역 검색을 위한 서버리스 함수.
- * Vercel 환경에 최적화되어 있으며, 캐싱, 에러 처리, 로깅, 성능 모니터링,
- * Rate Limiting, 데이터 검증 기능을 포함합니다.
- * locationData.js 파일을 로드하여 지역 정보를 활용합니다.
- */
 
 const axios = require('axios');
 // locationData.js 파일이 '새 텍스트 문서 (4).txt'에 있는 내용을 포함하므로 해당 경로를 정확히 참조합니다.
