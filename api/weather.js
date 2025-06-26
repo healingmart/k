@@ -1,10 +1,3 @@
-/**
- * @file weather.js
- * @description 기상청 날씨 API 연동 및 지역 검색을 위한 서버리스 함수.
- * 소넷2의 정확성(base_time, 체감온도, TMN/TMX, 강수량/적설량 범위)과
- * 제미나이2의 안정성(강력한 폴백, 상세 로깅, 캐시 정리 스케줄러, 확장된 날씨 코드 매핑)을
- * 결합한 최종 완성본입니다.
- */
 
 const axios = require('axios');
 
