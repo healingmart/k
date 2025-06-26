@@ -7,6 +7,8 @@
  */
 
 const axios = require('axios');
+// locationData 모듈 임포트
+const locationDataModule = require('./locationData.js');
 
 // =====================================================================
 // 7. 로깅 개선: 통합 로거 객체 (12. 에러 로깅 개선 포함)
@@ -532,7 +534,10 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
     let minTemp = Infinity;
     let maxTemp = -Infinity;
     let maxPop = 0;
+    let representativeSkyCode = data.SKY;
+    let representativePtyCode = data.PTY;
 
+    // 모든 시간별 데이터를 순회하며 PTY 및 POP, SKY를 종합적으로 판단
     timeKeys.forEach(timeKey => {
         const hourData = times[timeKey];
         if (hourData.TMP) {
@@ -542,9 +547,30 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
         }
         if (hourData.POP) {
             const pop = parseInt(hourData.POP);
-            if (pop > maxPop) maxPop = pop;
+            if (pop > maxPop) maxPop = pop; // 일별 최고 강수 확률
+        }
+
+        // PTY (강수 형태)가 '0'이 아니면 해당 PTY를 우선적으로 반영
+        // 그리고 그 PTY가 있는 시간대의 SKY도 함께 고려
+        if (hourData.PTY && hourData.PTY !== '0') {
+            representativePtyCode = hourData.PTY;
+            // 강수가 있다면 하늘 상태는 '흐림'으로 강제 설정 (기상청 표현 경향)
+            representativeSkyCode = '4'; // 흐림
+            return; // 강수가 있으니 더 이상 SKY/POP 조합을 볼 필요 없음
         }
     });
+
+    // 만약 하루 종일 PTY가 '0' (강수 없음)이었다면, POP과 SKY를 조합하여 최종 하늘 상태 결정
+    if (representativePtyCode === '0') {
+        if (maxPop >= 60) { // 강수 확률이 높으면 '흐림'
+            representativeSkyCode = '4';
+        } else if (maxPop >= 30) { // 강수 확률이 중간이면 '구름많음'
+            if (representativeSkyCode === '1' || representativeSkyCode === '2') { // 맑음/구름조금일 경우만
+                representativeSkyCode = '3';
+            }
+        }
+    }
+
 
     // 데이터가 유효하지 않을 경우 (Infinity 또는 -Infinity) null로 처리
     minTemp = minTemp === Infinity ? null : minTemp;
@@ -573,16 +599,16 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
         sensoryTemperatureDescription: sensoryTemp !== null ? getTemperatureDescription(sensoryTemp) : '정보없음',
         temperatureCompareYesterday: null, // 어제와의 비교: 현재 미구현 (이력 데이터 필요)
 
-        // 하늘 상태 (완전)
-        sky: getSkyDescription(data.SKY),
-        skyCode: data.SKY,
-        skyDescription: WEATHER_CODES.SKY[data.SKY] || '정보없음',
+        // 하늘 상태 (완전) - 조정된 SKY 코드 사용
+        sky: getSkyDescription(representativeSkyCode),
+        skyCode: representativeSkyCode,
+        skyDescription: WEATHER_CODES.SKY[representativeSkyCode] || '정보없음',
 
-        // 강수 정보 (완전)
-        precipitation: getPrecipitationDescription(data.PTY),
-        precipitationCode: data.PTY,
-        precipitationDescription: WEATHER_CODES.PTY[data.PTY] || '없음',
-        precipitationProbability: data.POP ? parseInt(data.POP) : 0,
+        // 강수 정보 (완전) - 조정된 PTY 코드 사용
+        precipitation: getPrecipitationDescription(representativePtyCode),
+        precipitationCode: representativePtyCode,
+        precipitationDescription: WEATHER_CODES.PTY[representativePtyCode] || '없음',
+        precipitationProbability: data.POP ? parseInt(data.POP) : 0, // 대표 시간 POP
         precipitationProbabilityMax: Math.round(maxPop), // 재집계된 최대 강수확률
         precipitationProbabilityDescription: WEATHER_CODES.POP[data.POP] || '0% (강수 없음)',
         precipitationAmount: processPrecipitationAmount(data.PCP),
@@ -616,8 +642,22 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
         visibility: data.VIS || null,
 
         // 종합 날씨 상태
-        weatherStatus: getOverallWeatherStatus(data),
-        weatherAdvice: getWeatherAdvice(data, locationFullName), // 날씨 조언에도 지역 정보 전달
+        weatherStatus: getOverallWeatherStatus({
+            TMP: data.TMP,
+            SKY: representativeSkyCode, // 조정된 SKY 코드 사용
+            PTY: representativePtyCode, // 조정된 PTY 코드 사용
+            POP: maxPop, // 일별 최대 POP 사용
+            WSD: data.WSD,
+            REH: data.REH
+        }),
+        weatherAdvice: getWeatherAdvice({
+            TMP: data.TMP,
+            SKY: representativeSkyCode, // 조정된 SKY 코드 사용
+            PTY: representativePtyCode, // 조정된 PTY 코드 사용
+            POP: maxPop, // 일별 최대 POP 사용
+            WSD: data.WSD,
+            REH: data.REH
+        }, locationFullName), // 날씨 조언에도 지역 정보 전달
 
         // 시간별 상세 데이터 (선택적으로 포함)
         hourlyData: Object.keys(times).map(time => {
@@ -637,7 +677,7 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
                 precipitationProbability: hourData.POP ? parseInt(hourData.POP) : 0,
                 humidity: hourData.REH ? parseInt(hourData.REH) : null,
                 windSpeed: hourlyWindSpeed ? hourlyWindSpeed.toFixed(1) : null,
-                windSpeedRange: hourlyWindSpeed ? `${Math.max(0, hourlyWindSpeed - 1).toFixed(1)}~${(hourlyWindSpeed + 2).toFixed(1)}m/s` : null,
+                windSpeedRange: hourlyWindSpeed ? `${Math.max(0, hourlyWindSpeed - 1).toFixed(1)}~${(parseFloat(hourlyWindSpeed) + 2).toFixed(1)}m/s` : null,
             };
         }).sort((a, b) => a.time.localeCompare(b.time))
     };
@@ -788,26 +828,38 @@ function getWindDirectionFromDegree(degree) {
     return directions[index];
 }
 
-// **주요 날씨 요소 기반 종합 날씨 상태 반환**
+/**
+ * 주요 날씨 요소 기반 종합 날씨 상태 반환
+ * SKY, PTY, POP 값을 복합적으로 고려하여 상태를 결정
+ * @param {Object} data - 특정 시간대의 날씨 데이터 (TMP, SKY, PTY, POP, WSD, REH 포함)
+ * @returns {string} 종합 날씨 상태 설명
+ */
 function getOverallWeatherStatus(data) {
     const temp = data.TMP ? parseFloat(data.TMP) : null;
-    const sky = data.SKY;
-    const pty = data.PTY;
-    const pop = data.POP ? parseInt(data.POP) : 0;
+    const sky = data.SKY; // 이미 조정된 SKY 코드
+    const pty = data.PTY; // 이미 조정된 PTY 코드
+    const pop = data.POP ? parseInt(data.POP) : 0; // 일별 최대 POP
 
+    // 강수형태(PTY)가 '0'이 아니면 강수 우선
     if (pty && pty !== '0') {
         const precipType = WEATHER_CODES.PTY[pty] || '강수';
+        // 강수확률에 따라 상세 설명 추가
         if (pop >= 80) return `${precipType} 확실`;
         if (pop >= 60) return `${precipType} 가능성 높음`;
         return `${precipType} 가능성 있음`;
     }
 
+    // PTY가 '0'일 경우 (강수 없음)
+    const skyDesc = WEATHER_CODES.SKY[sky] || '정보없음'; // 조정된 SKY 코드의 설명
+
+    // 강수 확률이 높으면 흐림/구름 많음으로 표시 (하늘 상태 코드와는 별개로 종합 상태에 반영)
     if (pop >= 60) {
-        return '강수 가능성 높음';
+        return `${skyDesc} (강수 가능성 높음)`;
+    } else if (pop >= 30) {
+        return `${skyDesc} (강수 가능성 있음)`;
     }
 
-    const skyDesc = WEATHER_CODES.SKY[sky] || '정보없음';
-
+    // 기온 관련 조언 (맑음, 구름 상태에서만)
     if (temp !== null) {
         if (temp >= 33) return `${skyDesc}, 폭염 주의`;
         if (temp >= 28) return `${skyDesc}, 더움`;
@@ -820,12 +872,14 @@ function getOverallWeatherStatus(data) {
     return skyDesc;
 }
 
+
 // **현재 날씨 데이터 기반 맞춤형 조언 반환 (제주 특성 반영)**
 function getWeatherAdvice(data, locationFullName) {
     const temp = data.TMP ? parseFloat(data.TMP) : null;
-    const pty = data.PTY;
-    const pop = data.POP ? parseInt(data.POP) : 0;
+    const pty = data.PTY; // 이미 조정된 PTY 코드
+    const pop = data.POP ? parseInt(data.POP) : 0; // 일별 최대 POP
     const wsd = data.WSD ? parseFloat(data.WSD) : 0;
+    const reh = data.REH ? parseInt(data.REH) : null;
     const isJeju = locationFullName.includes('제주');
 
     const advice = [];
@@ -843,8 +897,9 @@ function getWeatherAdvice(data, locationFullName) {
     // 강수 관련 조언
     if (pty && pty !== '0') {
         const precipType = WEATHER_CODES.PTY[pty];
-        if (precipType.includes('비')) advice.push('☔ 우산 또는 우비 준비하세요');
+        if (precipType.includes('비')) advice.push('☔ 비 예보, 우산 또는 우비 준비하세요');
         if (precipType.includes('눈')) advice.push('⛄ 눈 예보, 미끄럼 주의하세요');
+        if (precipType.includes('소나기')) advice.push('💦 소나기 가능성, 우산 휴대');
         if (precipType.includes('폭우')) advice.push('🌊 폭우 주의! 저지대 침수 조심');
     } else if (pop >= 60) {
         advice.push('🌧️ 강수 가능성 높음, 우산 준비 권장');
@@ -855,6 +910,12 @@ function getWeatherAdvice(data, locationFullName) {
     // 바람 관련 조언
     if (wsd >= 14) advice.push('💨 강풍 주의! 야외활동 조심하세요');
     else if (wsd >= 10) advice.push('🌬️ 바람이 강해요, 모자나 가벼운 물건 주의');
+
+    // 습도 관련 조언
+    if (reh !== null) {
+        if (reh >= 80) advice.push('💦 습한 날씨, 불쾌지수 높음');
+        else if (reh <= 30) advice.push('🔥 건조한 날씨, 화재 및 피부 건조 주의');
+    }
 
     // 제주 특성 조언 추가
     if (isJeju) {
@@ -889,7 +950,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
     const sampleHumidity = [60, 70, 80];
     const sampleWindSpeed = [2.5, 3.0, 3.5];
 
-    const defaultLocationFullName = '서울특별시';
+    const defaultLocationFullName = '서울특별시'; // 샘플 데이터의 기본 지역
 
     return dates.map((date, index) => {
         // 샘플 데이터의 hourlyData를 현재 시간 기준으로 재구성하여 representativeTime 계산에 활용
@@ -949,7 +1010,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
         // extractCompleteWeatherData와 동일한 로직으로 bestRepresentativeTime 선정
         let currentDayForecast = {
             times: {},
-            dailyData: {
+            dailyData: { // 샘플 데이터에서는 이 부분은 크게 중요하지 않음 (extractCompleteWeatherData에서 다시 계산)
                 temperatureMin: null,
                 temperatureMax: null,
                 precipitationProbabilityMax: 0
@@ -1003,6 +1064,9 @@ function generateCompleteSampleData(region, errorMessage = null) {
         let minTemp = Infinity;
         let maxTemp = -Infinity;
         let maxPop = 0;
+        let representativeSkyCodeForSample = data.SKY; // 샘플에서도 SKY, PTY 로직 적용
+        let representativePtyCodeForSample = data.PTY;
+
         hourlySampleData.forEach(item => {
             if (item.temperature !== null) {
                 if (item.temperature < minTemp) minTemp = item.temperature;
@@ -1011,7 +1075,24 @@ function generateCompleteSampleData(region, errorMessage = null) {
             if (item.precipitationProbability !== null) {
                 if (item.precipitationProbability > maxPop) maxPop = item.precipitationProbability;
             }
+
+            // 샘플 데이터에서도 PTY 우선 로직 적용
+            if (item.precipitation && item.precipitation !== '0') {
+                representativePtyCodeForSample = item.precipitation;
+                representativeSkyCodeForSample = '4'; // 강수 있으면 흐림
+            }
         });
+
+        if (representativePtyCodeForSample === '0') {
+            if (maxPop >= 60) {
+                representativeSkyCodeForSample = '4';
+            } else if (maxPop >= 30) {
+                if (representativeSkyCodeForSample === '1' || representativeSkyCodeForSample === '2') {
+                    representativeSkyCodeForSample = '3';
+                }
+            }
+        }
+
         minTemp = minTemp === Infinity ? null : minTemp;
         maxTemp = maxTemp === -Infinity ? null : maxTemp;
 
@@ -1032,13 +1113,13 @@ function generateCompleteSampleData(region, errorMessage = null) {
             sensoryTemperatureDescription: errorMessage ? '정보없음' : getTemperatureDescription(calculateSensoryTemperature(data.TMP, data.REH, data.WSD)),
             temperatureCompareYesterday: null,
 
-            sky: errorMessage ? '정보없음' : WEATHER_CODES.SKY[data.SKY],
-            skyCode: errorMessage ? null : data.SKY,
-            skyDescription: errorMessage ? '정보없음' : WEATHER_CODES.SKY[data.SKY],
+            sky: errorMessage ? '정보없음' : WEATHER_CODES.SKY[representativeSkyCodeForSample],
+            skyCode: errorMessage ? null : representativeSkyCodeForSample,
+            skyDescription: errorMessage ? '정보없음' : WEATHER_CODES.SKY[representativeSkyCodeForSample],
 
-            precipitation: errorMessage ? '정보없음' : WEATHER_CODES.PTY[data.PTY],
-            precipitationCode: errorMessage ? null : data.PTY,
-            precipitationDescription: WEATHER_CODES.PTY[data.PTY],
+            precipitation: errorMessage ? '정보없음' : WEATHER_CODES.PTY[representativePtyCodeForSample],
+            precipitationCode: errorMessage ? null : representativePtyCodeForSample,
+            precipitationDescription: WEATHER_CODES.PTY[representativePtyCodeForSample],
             precipitationProbability: errorMessage ? null : (data.POP ? parseInt(data.POP) : 0),
             precipitationProbabilityMax: errorMessage ? null : Math.round(maxPop),
             precipitationProbabilityDescription: WEATHER_CODES.POP[data.POP] || '0% (강수 없음)',
@@ -1066,8 +1147,22 @@ function generateCompleteSampleData(region, errorMessage = null) {
             uvIndex: null,
             visibility: null,
 
-            weatherStatus: errorMessage ? '정보없음' : getOverallWeatherStatus(data),
-            weatherAdvice: errorMessage ? '정보를 확인할 수 없습니다' : getWeatherAdvice(data, region),
+            weatherStatus: errorMessage ? '정보없음' : getOverallWeatherStatus({
+                TMP: data.TMP,
+                SKY: representativeSkyCodeForSample,
+                PTY: representativePtyCodeForSample,
+                POP: maxPop,
+                WSD: data.WSD,
+                REH: data.REH
+            }),
+            weatherAdvice: errorMessage ? '정보를 확인할 수 없습니다' : getWeatherAdvice({
+                TMP: data.TMP,
+                SKY: representativeSkyCodeForSample,
+                PTY: representativePtyCodeForSample,
+                POP: maxPop,
+                WSD: data.WSD,
+                REH: data.REH
+            }, region),
 
             hourlyData: errorMessage ? [] : hourlySampleData.map(item => ({
                 time: item.time,
@@ -1639,7 +1734,7 @@ async function handleWeatherRequest(req, res) {
                 base_date: baseDate,
                 base_time: baseTime,
                 nx: coordinates.nx,
-                ny: coordinates.ny
+                ny: ny
             },
             headers: {
                 'User-Agent': 'HealingK-Complete-Weather-Service/2.0'
@@ -1708,7 +1803,7 @@ async function handleWeatherRequest(req, res) {
         if (weatherCache.size > WEATHER_CONFIG.CACHE.MAX_ENTRIES) {
             const oldestKey = weatherCache.keys().next().value;
             weatherCache.delete(oldestKey);
-            logger.info('🧹 캐시 정리 완료', { currentCacheSize: weatherCache.size });
+            logger.info('� 캐시 정리 완료', { currentCacheSize: weatherCache.size });
         }
 
         logger.info('🎉 완전한 날씨 API 응답 성공');
@@ -1761,99 +1856,4 @@ function validateEnvironment() {
  * 메인 서버리스 핸들러 함수
  * 요청 URL 경로에 따라 적절한 API 핸들러 함수로 라우팅합니다.
  * @param {Object} req - 요청 객체
- * @param {Object} res - 응답 객체
- */
-module.exports = async function handler(req, res) {
-    // 서버 시작 시 한 번만 환경 변수 검증 및 사전 캐싱 실행
-    // (서버리스 환경에서는 콜드 스타트 시 매번 실행될 수 있음)
-    // locationData는 이제 CommonJS export로 직접 제공되므로,
-    // locationModule.locationData가 아닌 전역 스코프의 locationData 변수를 직접 참조합니다.
-    if (!global.weatherServiceInitialized) {
-        validateEnvironment(); // 환경 변수 검증
-        // locationData가 빈 객체({})이 아닌 경우에만 사전 캐싱을 시도합니다.
-        if (Object.keys(locationData).length > 0 && process.env.WEATHER_API_KEY) {
-            await preloadPopularLocations(); // 인기 지역 사전 캐싱
-        } else {
-            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜜니다 (locationData 없음 또는 API 키 없음).');
-        }
-        global.weatherServiceInitialized = true; // 플래그 설정
-    }
-
-    // 보안 헤더 추가
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    // res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains'); // HTTPS 강제, 개발 환경 주의
-
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-
-    if (req.method !== 'GET') {
-        return res.status(405).json({
-            success: false,
-            error: 'Method not allowed',
-            message: 'GET 요청만 지원됩니다.'
-        });
-    }
-
-    // Rate Limiting 적용 (클라이언트 IP 추출)
-    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    try {
-        // 프로덕션 환경에서만 실제 Rate Limit 적용
-        if (process.env.NODE_ENV === 'production' && clientIp) {
-            checkRateLimit(clientIp, 100, 60 * 1000); // 1분당 100회 요청 제한
-        }
-    } catch (error) {
-        if (error instanceof WeatherAPIError && error.code === 'RATE_LIMIT_EXCEEDED') {
-            logger.warn(`Rate Limit 초과: ${clientIp}`, { error_message: error.message });
-            return res.status(error.statusCode).json({
-                success: false,
-                error: error.message,
-                code: error.code
-            });
-        }
-        throw error; // 다른 예상치 못한 오류는 다시 throw
-    }
-
-    const pathname = getPathname(req);
-
-    if (pathname === '/api/health') {
-        logger.info('헬스체크 요청 수신');
-        return res.json({
-            status: 'healthy',
-            timestamp: new Date().toISOString(),
-            version: '2.0-complete',
-            cacheSize: weatherCache.size,
-            metrics: { // 모니터링 강화: 메트릭 정보 포함
-                apiCalls: metrics.apiCalls,
-                apiErrors: metrics.apiErrors,
-                cacheHits: metrics.cacheHits,
-                cacheMisses: metrics.cacheMisses,
-                rateLimited: metrics.rateLimited,
-                avgResponseTimeMs: metrics.avgResponseTime.toFixed(2),
-                regionalRequests: metrics.regionalRequests, // 지역별 요청 통계
-                errorTypes: metrics.errorTypes, // 에러 타입별 분류
-                // responseTimeHistogram: metrics.responseTimeHistogram // 응답 시간 히스토그램 (활성화 시)
-            },
-            config: {
-                hasApiKey: !!process.env.WEATHER_API_KEY,
-                environment: process.env.NODE_ENV || 'production',
-                cacheTtlMinutes: WEATHER_CONFIG.CACHE.TTL_MINUTES,
-                apiTimeoutMs: WEATHER_CONFIG.API.TIMEOUT,
-                apiMaxRetries: WEATHER_CONFIG.API.MAX_RETRIES
-            },
-            uptime: process.uptime ? `${process.uptime().toFixed(2)}s` : 'N/A'
-        });
-    }
-
-    if (pathname === '/api/search-locations') {
-        return handleLocationSearch(req, res);
-    }
-
-    return handleWeatherRequest(req, res);
-};
+ * @param {Object} res - 응답�
