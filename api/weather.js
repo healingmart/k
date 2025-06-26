@@ -1896,3 +1896,60 @@ module.exports = async function handler(req, res) {
             message: 'GET 요청만 지원됩니다.'
         });
     }
+
+    // Rate Limiting 적용 (클라이언트 IP 추출)
+    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    try {
+        // 프로덕션 환경에서만 실제 Rate Limit 적용
+        if (process.env.NODE_ENV === 'production' && clientIp) {
+            checkRateLimit(clientIp, 100, 60 * 1000); // 1분당 100회 요청 제한
+        }
+    } catch (error) {
+        if (error instanceof WeatherAPIError && error.code === 'RATE_LIMIT_EXCEEDED') {
+            logger.warn(`Rate Limit 초과: ${clientIp}`, { error_message: error.message });
+            return res.status(error.statusCode).json({
+                success: false,
+                error: error.message,
+                code: error.code
+            });
+        }
+        throw error; // 다른 예상치 못한 오류는 다시 throw
+    }
+
+    const pathname = getPathname(req);
+
+    if (pathname === '/api/health') {
+        logger.info('헬스체크 요청 수신');
+        return res.json({
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            version: '2.0-complete',
+            cacheSize: weatherCache.size,
+            metrics: { // 모니터링 강화: 메트릭 정보 포함
+                apiCalls: metrics.apiCalls,
+                apiErrors: metrics.apiErrors,
+                cacheHits: metrics.cacheHits,
+                cacheMisses: metrics.cacheMisses,
+                rateLimited: metrics.rateLimited,
+                avgResponseTimeMs: metrics.avgResponseTime.toFixed(2),
+                regionalRequests: metrics.regionalRequests, // 지역별 요청 통계
+                errorTypes: metrics.errorTypes, // 에러 타입별 분류
+                // responseTimeHistogram: metrics.responseTimeHistogram // 응답 시간 히스토그램 (활성화 시)
+            },
+            config: {
+                hasApiKey: !!process.env.WEATHER_API_KEY,
+                environment: process.env.NODE_ENV || 'production',
+                cacheTtlMinutes: WEATHER_CONFIG.CACHE.TTL_MINUTES,
+                apiTimeoutMs: WEATHER_CONFIG.API.TIMEOUT,
+                apiMaxRetries: WEATHER_CONFIG.API.MAX_RETRIES
+            },
+            uptime: process.uptime ? `${process.uptime().toFixed(2)}s` : 'N/A'
+        });
+    }
+
+    if (pathname === '/api/search-locations') {
+        return handleLocationSearch(req, res);
+    }
+
+    return handleWeatherRequest(req, res);
+};
