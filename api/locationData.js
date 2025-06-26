@@ -585,8 +585,7 @@ const locationData = (() => {
     addLocation({ name: '새별오름', lat: 33.4140, lon: 126.3930, type: '별칭', admin_parent: '제주특별자치시 제주시 애월읍' }); // 새별오름 실제 좌표
 
 
-
-    return {
+return {
         /**
          * 이름을 기반으로 지역 정보를 조회합니다.
          * @param {string} name - 조회할 지역의 이름 또는 별칭
