@@ -626,7 +626,8 @@ function extractCompleteWeatherData(dayForecast, dateString, kst, locationFullNa
     const currentWindSpeed = data.WSD ? parseFloat(data.WSD) : null;
     const currentVector = data.VEC ? parseFloat(data.VEC) : null;
     const currentWave = data.WAV ? parseFloat(data.WAV) : null;
-    const currentVisibility = data.VVV ? parseFloat(data.VVV) : null;
+    // VVV (시정) 값이 유효한지 확인하고 비정상적인 값(-900 이하 또는 900 이상)은 null 처리
+    const currentVisibility = (data.VVV !== undefined && !isNaN(parseFloat(data.VVV)) && parseFloat(data.VVV) > -900 && parseFloat(data.VVV) < 900) ? parseFloat(data.VVV) : null;
     const currentPcp = data.PCP;
     const currentSno = data.SNO;
 
@@ -728,7 +729,7 @@ function extractCompleteWeatherData(dayForecast, dateString, kst, locationFullNa
         waveHeightDescription: WEATHER_CODES.WAV[String(getWaveHeightCode(currentWave))] || '정보없음',
 
         uvIndex: null, // API에서 제공되지 않음
-        visibility: currentVisibility,
+        visibility: currentVisibility, // 수정된 VVV 값 처리 적용
 
         weatherStatus: weatherStatus,
         weatherAdvice: weatherAdvice,
@@ -780,7 +781,7 @@ function createEmptyWeatherData(date) {
         waveHeight: null,
         waveHeightDescription: '정보없음',
         uvIndex: null,
-        visibility: null,
+        visibility: null, // 비정상 값 처리 후 null로 설정
         weatherStatus: '정보없음',
         weatherAdvice: '정보를 확인할 수 없습니다',
         hourlyData: []
@@ -1155,6 +1156,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
         const currentWindSpeed = data.WSD;
         const currentVector = 225; // 샘플용 풍향
         const currentWave = null;
+        // 샘플 데이터에서는 시정을 null로 처리
         const currentVisibility = null;
         const currentPcp = data.PTY === '1' ? '5' : '강수없음';
         const currentSno = data.PTY === '3' ? '1' : '적설없음';
@@ -1223,8 +1225,8 @@ function generateCompleteSampleData(region, errorMessage = null) {
             waveHeight: currentWave,
             waveHeightDescription: WEATHER_CODES.WAV[String(getWaveHeightCode(currentWave))] || '정보없음',
             uvIndex: null,
-            visibility: currentVisibility,
-
+            visibility: currentVisibility, // 샘플에서는 null 처리
+            
             weatherStatus: getOverallWeatherStatus(data),
             weatherAdvice: getWeatherAdvice(data, region),
 
@@ -1254,6 +1256,11 @@ function validateWeatherData(data) {
     if (data.precipitationProbability !== null && (data.precipitationProbability < 0 || data.precipitationProbability > 100)) {
         errors.push(`비정상적인 강수확률: ${data.precipitationProbability}%`);
     }
+    // VVV (시정) 값이 유효하지 않은 경우를 에러로 기록
+    if (data.visibility !== null && (parseFloat(data.visibility) < -900 || parseFloat(data.visibility) > 900)) {
+        errors.push(`비정상적인 시정: ${data.visibility}`);
+    }
+
 
     if (errors.length > 0) {
         logger.warn('날씨 데이터 검증 경고', { errors, data });
@@ -1786,7 +1793,8 @@ module.exports = async function handler(req, res) {
                 '성능 모니터링 및 IP 기반 Rate Limiting',
                 '상세한 풍속 및 풍향 설명',
                 '제주 지역 특성 반영',
-                '로딩 실패 시 강력한 locationData 폴백'
+                '로딩 실패 시 강력한 locationData 폴백',
+                '시정(VVV) 데이터 유효성 검사 및 비정상 값 처리 강화' // 새로운 개선점 추가
             ],
             uptime: process.uptime ? `${process.uptime().toFixed(2)}s` : 'N/A'
         });
