@@ -1,1146 +1,448 @@
+/**
+ * @file locationData.js
+ * @description 전국의 행정 구역 및 주요 지역 데이터를 관리하는 모듈.
+ *              데이터 구조를 최적화하여 검색 정확도와 효율성을 높였습니다.
+ *              행정동/읍/면을 기본 단위로 하며, 법정동/리 및 별칭 검색을 지원합니다.
+ * @version 2.0 (Optimized & Integrated)
+ * @last-modified 2025-06-26
+ */
 
-const axios = require('axios');
+/**
+ * 위경도를 기상청 격자 좌표로 변환하는 함수.
+ * @param {number} lat - 위도
+ * @param {number} lon - 경도
+ * @returns {{nx: number, ny: number}} 격자 좌표 객체
+ */
+const latLonToGrid = (lat, lon) => {
+    const RE = 6371.00877;
+    const GRID = 5.0;
+    const SLAT1 = 30.0;
+    const SLAT2 = 60.0;
+    const OLON = 126.0;
+    const OLAT = 38.0;
+    const XO = 43;
+    const YO = 136;
 
-// ===================================================================== 
-// 환경 변수 및 상수 설정
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+    const DEGRAD = Math.PI / 180.0;
+    const re = RE / GRID;
+    const slat1 = SLAT1 * DEGRAD;
+    const slat2 = SLAT2 * DEGRAD;
+    const olon = OLON * DEGRAD;
+    const olat = OLAT * DEGRAD;
 
-const WEATHER_CONFIG = {
-    API: {
-        BASE_URL: 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst',
-        TIMEOUT: IS_PRODUCTION ? 8000 : 10000,
-        MAX_RETRIES: IS_PRODUCTION ? 5 : 3
-    },
-    CACHE: {
-        TTL_MINUTES: IS_PRODUCTION ? 60 : 30,
-        MAX_ENTRIES: 100
-    },
-    DEFAULTS: {
-        REGION: '서울특별시',
-        PAGE_SIZE: 10
-    }
-};
+    let sn = Math.tan(Math.PI * 0.25 + slat2 * 0.5) / Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+    sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn);
 
-// 기상청 공식 예보 발표 시각 (문서 기준)
-const FORECAST_SCHEDULE = {
-    SHORT_TERM: [
-        { hour: 2, minute: 10, base: '0200' },
-        { hour: 5, minute: 10, base: '0500' },
-        { hour: 8, minute: 10, base: '0800' },
-        { hour: 11, minute: 10, base: '1100' },
-        { hour: 14, minute: 10, base: '1400' },
-        { hour: 17, minute: 10, base: '1700' },
-        { hour: 20, minute: 10, base: '2000' },
-        { hour: 23, minute: 10, base: '2300' }
-    ]
-};
+    let sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+    sf = Math.pow(sf, sn) * Math.cos(slat1) / sn;
 
-// ===================================================================== 
-// 메트릭 및 로깅 시스템
-const metrics = {
-    apiCalls: 0,
-    apiErrors: 0,
-    cacheHits: 0,
-    cacheMisses: 0,
-    rateLimited: 0,
-    coordinateConversions: 0,
-    missingValueDetections: 0,
-    seaAreaMasking: 0,
-    avgResponseTime: 0,
-    totalResponseTime: 0,
-    responseTimeCount: 0,
-    regionalRequests: {},
-    errorTypes: {},
+    let ro = re * sf / Math.pow(Math.tan(Math.PI * 0.25 + olat * 0.5), sn);
 
-    reset: () => {
-        Object.keys(metrics).forEach(key => {
-            if (typeof metrics[key] === 'number') metrics[key] = 0;
-            if (typeof metrics[key] === 'object') metrics[key] = {};
-        });
-    },
+    const ra = re * sf / Math.pow(Math.tan(Math.PI * 0.25 + lat * DEGRAD * 0.5), sn);
+    let theta = lon * DEGRAD - olon;
 
-    addResponseTime: (duration) => {
-        metrics.totalResponseTime += duration;
-        metrics.responseTimeCount++;
-        metrics.avgResponseTime = metrics.totalResponseTime / metrics.responseTimeCount;
-    },
-
-    addRegionalRequest: (regionName) => {
-        metrics.regionalRequests[regionName] = (metrics.regionalRequests[regionName] || 0) + 1;
-    },
-
-    addErrorType: (errorCode) => {
-        metrics.errorTypes[errorCode] = (metrics.errorTypes[errorCode] || 0) + 1;
-    }
-};
-
-const logger = {
-    info: (message, data = {}) => {
-        console.log(`[INFO] ${new Date().toISOString()} - ${message}`, data);
-    },
-    warn: (message, data = {}) => {
-        console.warn(`[WARN] ${new Date().toISOString()} - ${message}`, data);
-    },
-    error: (message, error, requestInfo = {}) => {
-        console.error(`[ERROR] ${new Date().toISOString()} - ${message}`, {
-            error: {
-                message: error.message,
-                code: error.code || 'UNKNOWN',
-                stack: IS_PRODUCTION ? undefined : error.stack
-            },
-            request: requestInfo,
-            originalError: error
-        });
-        metrics.apiErrors++;
-        metrics.addErrorType(error.code || 'UNKNOWN');
-    }
-};
-
-// ===================================================================== 
-// 기상청 공식 좌표 변환 (문서 C 코드 완전 이식)
-class KMAGridConverter {
-    constructor() {
-        this.RE = 6371.00877;
-        this.GRID = 5.0;
-        this.SLAT1 = 30.0;
-        this.SLAT2 = 60.0;
-        this.OLON = 126.0;
-        this.OLAT = 38.0;
-        this.XO = 210 / this.GRID;
-        this.YO = 675 / this.GRID;
-        
-        this.initialized = false;
-        this.PI = Math.asin(1.0) * 2.0;
-        this.DEGRAD = this.PI / 180.0;
-        this.RADDEG = 180.0 / this.PI;
-    }
-
-    latLonToGrid(lat, lon) {
-        metrics.coordinateConversions++;
-        
-        if (!this.initialized) {
-            this._initializeProjection();
-        }
-
-        const ra = this.re * this.sf / Math.pow(Math.tan(this.PI * 0.25 + lat * this.DEGRAD * 0.5), this.sn);
-        let theta = lon * this.DEGRAD - this.olon;
-        
-        if (theta > this.PI) theta -= 2.0 * this.PI;
-        if (theta < -this.PI) theta += 2.0 * this.PI;
-        theta *= this.sn;
-
-        const x = ra * Math.sin(theta) + this.XO;
-        const y = this.ro - ra * Math.cos(theta) + this.YO;
-
-        const nx = Math.floor(x + 1.5);
-        const ny = Math.floor(y + 1.5);
-
-        logger.info('좌표 변환 완료', { 
-            input: { lat, lon }, 
-            output: { nx, ny },
-            intermediate: { x: x.toFixed(3), y: y.toFixed(3) }
-        });
-
-        return { nx, ny };
-    }
-
-    gridToLatLon(nx, ny) {
-        if (!this.initialized) {
-            this._initializeProjection();
-        }
-
-        const x = nx - 1;
-        const y = ny - 1;
-        
-        const xn = x - this.XO;
-        const yn = this.ro - y + this.YO;
-        const ra = Math.sqrt(xn * xn + yn * yn);
-        
-        let alat = Math.pow((this.re * this.sf / ra), (1.0 / this.sn));
-        alat = 2.0 * Math.atan(alat) - this.PI * 0.5;
-        
-        let theta;
-        if (Math.abs(xn) <= 0.0) {
-            theta = 0.0;
-        } else {
-            if (Math.abs(yn) <= 0.0) {
-                theta = this.PI * 0.5;
-                if (xn < 0.0) theta = -theta;
-            } else {
-                theta = Math.atan2(xn, yn);
-            }
-        }
-        
-        const alon = theta / this.sn + this.olon;
-        
-        return {
-            lat: alat * this.RADDEG,
-            lon: alon * this.RADDEG
-        };
-    }
-
-    _initializeProjection() {
-        const slat1 = this.SLAT1 * this.DEGRAD;
-        const slat2 = this.SLAT2 * this.DEGRAD;
-        this.olon = this.OLON * this.DEGRAD;
-        const olat = this.OLAT * this.DEGRAD;
-        
-        this.re = this.RE / this.GRID;
-        
-        this.sn = Math.tan(this.PI * 0.25 + slat2 * 0.5) / Math.tan(this.PI * 0.25 + slat1 * 0.5);
-        this.sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(this.sn);
-        
-        this.sf = Math.tan(this.PI * 0.25 + slat1 * 0.5);
-        this.sf = Math.pow(this.sf, this.sn) * Math.cos(slat1) / this.sn;
-        
-        this.ro = Math.tan(this.PI * 0.25 + olat * 0.5);
-        this.ro = this.re * this.sf / Math.pow(this.ro, this.sn);
-        
-        this.initialized = true;
-        logger.info('기상청 좌표 변환 시스템 초기화 완료');
-    }
-}
-
-const gridConverter = new KMAGridConverter();
-
-// ===================================================================== 
-// 기상청 공식 날씨 코드 매핑 (문서 기준)
-const WEATHER_CODES = {
-    SKY: {
-        '1': '맑음',
-        '3': '구름많음', 
-        '4': '흐림'
-    },
-    PTY: {
-        '0': '없음',
-        '1': '비',
-        '2': '비/눈',
-        '3': '눈',
-        '4': '소나기'
-    },
-    POP: {
-        '0': '0% (강수 없음)',
-        '10': '10% (거의 없음)',
-        '20': '20% (낮음)',
-        '30': '30% (약간 있음)',
-        '40': '40% (보통)',
-        '50': '50% (보통)',
-        '60': '60% (높음)',
-        '70': '70% (높음)',
-        '80': '80% (매우 높음)',
-        '90': '90% (매우 높음)',
-        '100': '100% (확실)'
-    }
-};
-
-// 기상청 API 에러 메시지 매핑 (문서 완전 기준)
-const API_ERROR_MESSAGES = {
-    '00': 'NORMAL_SERVICE',
-    '01': '애플리케이션 에러',
-    '02': 'DB 에러', 
-    '03': '데이터 없음',
-    '04': 'HTTP 에러',
-    '05': '서비스 연결 실패',
-    '10': '잘못된 요청 파라미터',
-    '11': '필수요청 파라미터가 없음',
-    '12': '해당 오픈API서비스가 없거나 폐기됨',
-    '20': '서비스 접근 거부',
-    '21': '일시적으로 사용할 수 없는 서비스 키',
-    '22': '서비스 요청 제한횟수 초과',
-    '30': '등록되지 않은 서비스 키',
-    '31': '기한만료된 서비스 키',
-    '32': '등록되지 않은 IP',
-    '33': '서명되지 않은 호출',
-    '99': '기타 에러'
-};
-
-// ===================================================================== 
-// 캐시 시스템
-let weatherCache = new Map();
-
-const cleanupCache = () => {
-    const now = Date.now();
-    const ttlMs = WEATHER_CONFIG.CACHE.TTL_MINUTES * 60 * 1000;
-    let cleanedCount = 0;
-
-    for (const [key, entry] of weatherCache.entries()) {
-        if (now - entry.timestamp > ttlMs) {
-            weatherCache.delete(key);
-            cleanedCount++;
-        }
-    }
-
-    if (weatherCache.size > WEATHER_CONFIG.CACHE.MAX_ENTRIES) {
-        const sortedEntries = [...weatherCache.entries()]
-            .sort((a, b) => a[1].timestamp - b[1].timestamp);
-        
-        const toRemove = sortedEntries.slice(0, weatherCache.size - WEATHER_CONFIG.CACHE.MAX_ENTRIES);
-        toRemove.forEach(([key]) => {
-            weatherCache.delete(key);
-            cleanedCount++;
-        });
-    }
-
-    if (cleanedCount > 0) {
-        logger.info(`🧹 캐시 정리 완료: ${cleanedCount}개 항목 제거, 현재 크기: ${weatherCache.size}`);
-    }
-};
-
-if (IS_PRODUCTION) {
-    setInterval(cleanupCache, WEATHER_CONFIG.CACHE.TTL_MINUTES * 60 * 1000);
-}
-
-// ===================================================================== 
-// 커스텀 에러 클래스
-class WeatherAPIError extends Error {
-    constructor(message, code, statusCode = 500) {
-        super(message);
-        this.name = 'WeatherAPIError';
-        this.code = code;
-        this.statusCode = statusCode;
-    }
-}
-
-// ===================================================================== 
-// 유틸리티 함수들
-
-const calculateBaseDateTime = (kst) => {
-    const hour = kst.getHours();
-    const minute = kst.getMinutes();
-    const currentTimeInMinutes = hour * 60 + minute;
-
-    let baseTime = '2300';
-    let baseDate = new Date(kst);
-
-    for (let i = FORECAST_SCHEDULE.SHORT_TERM.length - 1; i >= 0; i--) {
-        const { hour: standardHour, minute: standardMinute, base } = FORECAST_SCHEDULE.SHORT_TERM[i];
-        const standardTimeInMinutes = standardHour * 60 + standardMinute;
-
-        if (currentTimeInMinutes >= standardTimeInMinutes) {
-            baseTime = base;
-            break;
-        }
-    }
-
-    if (baseTime === '2300' && currentTimeInMinutes < (2 * 60 + 10)) {
-        baseDate.setDate(baseDate.getDate() - 1);
-    }
+    if (theta > Math.PI) theta -= 2.0 * Math.PI;
+    if (theta < -Math.PI) theta += 2.0 * Math.PI;
+    theta *= sn;
 
     return {
-        baseDate: baseDate.getFullYear() + 
-                 ('0' + (baseDate.getMonth() + 1)).slice(-2) + 
-                 ('0' + baseDate.getDate()).slice(-2),
-        baseTime: baseTime
+        nx: Math.floor(ra * Math.sin(theta) + XO + 0.5),
+        ny: Math.floor(ro - ra * Math.cos(theta) + YO + 0.5)
     };
 };
 
-const isMissingValue = (value) => {
-    if (value === null || value === undefined || value === '') return true;
-    
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) return true;
-    
-    const isMissing = numValue >= 900 || numValue <= -900;
-    if (isMissing) {
-        metrics.missingValueDetections++;
-        logger.warn('Missing 값 감지', { value, numValue });
-    }
-    
-    return isMissing;
-};
+/**
+ * 전국의 지역 정보를 담는 최종 데이터 객체.
+ * 즉시 실행 함수(IIFE)를 통해 초기화되며, 데이터 무결성과 검색 효율성을 보장합니다.
+ */
+const locationModule = (() => {
+    const locationData = {}; // Key: 고유 식별자 (e.g., '서울특별시_종로구_청운효자동'), Value: 지역 정보 객체
+    const searchIndex = {};  // Key: 검색어 (e.g., '청운효자동'), Value: 고유 식별자 배열
 
-const isSeaArea = (nx, ny) => {
-    const isOutOfBounds = nx < 1 || nx > 149 || ny < 1 || ny > 253;
-    const isLikelySea = (nx < 20 || nx > 130) || (ny < 20 || ny > 230);
-    
-    if (isOutOfBounds || isLikelySea) {
-        metrics.seaAreaMasking++;
-        return true;
-    }
-    
-    return false;
-};
-
-const processPrecipitationAmount = (pcp) => {
-    if (!pcp || pcp === '강수없음' || pcp === '-' || pcp === 'null' || pcp === '0') {
-        return '강수없음';
-    }
-    
-    if (pcp === '1mm 미만') return '1mm 미만';
-    
-    const f = parseFloat(pcp);
-    if (isNaN(f)) return pcp;
-    
-    if (f < 1.0) return "1mm 미만";
-    else if (f >= 1.0 && f < 30.0) return `${f}mm`;
-    else if (f >= 30.0 && f < 50.0) return "30.0~50.0mm";
-    else return "50.0mm 이상";
-};
-
-const processSnowAmount = (sno) => {
-    if (!sno || sno === '적설없음' || sno === '-' || sno === 'null' || sno === '0') {
-        return '적설없음';
-    }
-    
-    if (sno === '1cm 미만') return '1cm 미만';
-    
-    const f = parseFloat(sno);
-    if (isNaN(f)) return sno;
-    
-    if (f < 0.5) return "0.5cm 미만";
-    else if (f >= 0.5 && f < 5.0) return `${f}cm`;
-    else return "5.0cm 이상";
-};
-
-const getWindDirection16 = (degree) => {
-    if (degree === null || isNaN(degree)) return '정보없음';
-    
-    const convertedValue = Math.floor((degree + 22.5 * 0.5) / 22.5);
-    
-    const directions16 = [
-        'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
-        'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'
-    ];
-    
-    const index = convertedValue % 16;
-    return directions16[index];
-};
-
-const calculateSensoryTemperature = (temperature, humidity, windSpeed) => {
-    if (isMissingValue(temperature) || isMissingValue(windSpeed)) {
-        return null;
-    }
-
-    const T = parseFloat(temperature);
-    const WS = parseFloat(windSpeed);
-    const RH = humidity !== null && !isMissingValue(humidity) ? parseFloat(humidity) : 50;
-
-    let feelsLike;
-
-    if (T <= 10 && WS >= 1.3) {
-        const V_kmh = WS * 3.6;
-        feelsLike = 13.12 + (0.6215 * T) - (11.37 * Math.pow(V_kmh, 0.16)) + 
-                   (0.3965 * T * Math.pow(V_kmh, 0.16));
-    } else if (T >= 33 && RH >= 40) {
-        feelsLike = -0.2442 + (0.55399 * T) + (0.45535 * RH) - (0.0022 * T * RH) + 
-                   (0.00278 * T * T) + (3.0 * Math.pow(10, -6) * T * T * RH) - 
-                   (5.481717 * Math.pow(10, -2) * Math.sqrt(RH));
-    } else {
-        feelsLike = T;
-        if (RH > 70) feelsLike += (RH - 70) * 0.02;
-        if (WS > 3) feelsLike -= (WS - 3) * 0.5;
-    }
-
-    if (feelsLike > T + 10) feelsLike = T + 10;
-    if (feelsLike < T - 15) feelsLike = T - 15;
-    if (feelsLike < -50) feelsLike = -50;
-    if (feelsLike > 50) feelsLike = 50;
-
-    return isNaN(feelsLike) ? null : feelsLike.toFixed(1);
-};
-
-// ===================================================================== 
-// 날씨 데이터 처리 함수
-
-const processWeatherData = (items, kst, locationName, coordinates) => {
-    const forecasts = {};
-    const isSeaLocation = isSeaArea(coordinates.nx, coordinates.ny);
-    
-    const targetDates = [];
-    for (let i = 0; i < 3; i++) {
-        const date = new Date(kst.getTime() + i * 24 * 60 * 60 * 1000);
-        targetDates.push(date.toISOString().slice(0, 10).replace(/-/g, ''));
-    }
-
-    items.forEach(item => {
-        const date = item.fcstDate;
-        const time = item.fcstTime;
-        const category = item.category;
-        let value = item.fcstValue;
-
-        if (isMissingValue(value)) {
-            value = null;
-        }
-
-        if (isSeaLocation && ['TMP', 'TMN', 'TMX', 'POP', 'PCP', 'SNO', 'REH'].includes(category)) {
-            value = null;
-            logger.warn('해상 지역 마스킹 처리', { category, originalValue: item.fcstValue });
-        }
-
-        if (!forecasts[date]) {
-            forecasts[date] = { times: {} };
-        }
-        if (!forecasts[date].times[time]) {
-            forecasts[date].times[time] = {};
-        }
-        
-        forecasts[date].times[time][category] = value;
-    });
-
-    const result = [];
-
-    targetDates.forEach((dateString, index) => {
-        let dayData;
-        
-        if (forecasts[dateString] && Object.keys(forecasts[dateString].times).length > 0) {
-            dayData = extractDayWeatherData(forecasts[dateString], dateString, kst, locationName, isSeaLocation);
-        } else {
-            logger.warn(`날짜 ${dateString}에 대한 데이터가 없어 빈 데이터를 생성합니다.`);
-            dayData = createEmptyWeatherData(dateString);
-        }
-
-        dayData.dayLabel = ['오늘', '내일', '모레'][index];
-        dayData.dayIndex = index;
-        dayData.isSeaArea = isSeaLocation;
-        
-        result.push(dayData);
-    });
-
-    return result;
-};
-
-const extractDayWeatherData = (dayForecast, dateString, kst, locationName, isSeaLocation) => {
-    const times = dayForecast.times;
-    const timeKeys = Object.keys(times).sort();
-    
-    if (timeKeys.length === 0) {
-        return createEmptyWeatherData(dateString);
-    }
-
-    const isToday = dateString === kst.toISOString().slice(0, 10).replace(/-/g, '');
-    const currentKstHours = kst.getHours();
-    const currentKstMinutes = kst.getMinutes();
-    const currentTimeInMinutes = currentKstHours * 60 + currentKstMinutes;
-
-    let representativeTime = timeKeys[0];
-
-    if (isToday) {
-        for (const timeKey of timeKeys) {
-            const timeInMinutes = parseInt(timeKey.slice(0, 2)) * 60 + parseInt(timeKey.slice(2, 4));
-            if (timeInMinutes >= currentTimeInMinutes) {
-                representativeTime = timeKey;
-                break;
-            }
-        }
-    }
-
-    const data = times[representativeTime];
-
-    // TMN/TMX 우선 처리
-    let minTemp = null;
-    let maxTemp = null;
-    let maxPop = 0;
-
-    Object.values(times).forEach(hourData => {
-        if (hourData.TMN !== null && hourData.TMN !== undefined) {
-            minTemp = parseFloat(hourData.TMN);
-        }
-        if (hourData.TMX !== null && hourData.TMX !== undefined) {
-            maxTemp = parseFloat(hourData.TMX);
-        }
-        if (hourData.POP) {
-            const pop = parseInt(hourData.POP);
-            if (!isNaN(pop) && pop > maxPop) maxPop = pop;
-        }
-    });
-
-    // TMN/TMX가 없으면 TMP에서 계산
-    if (minTemp === null || maxTemp === null) {
-        let tempMin = Infinity;
-        let tempMax = -Infinity;
-
-        timeKeys.forEach(timeKey => {
-            const hourData = times[timeKey];
-            if (hourData.TMP !== null && hourData.TMP !== undefined) {
-                const temp = parseFloat(hourData.TMP);
-                if (!isNaN(temp)) {
-                    tempMin = Math.min(tempMin, temp);
-                    tempMax = Math.max(tempMax, temp);
-                }
-            }
-        });
-
-        if (minTemp === null && tempMin !== Infinity) {
-            minTemp = tempMin;
-        }
-        if (maxTemp === null && tempMax !== -Infinity) {
-            maxTemp = tempMax;
-        }
-    }
-
-    // 시간별 데이터 생성
-    const hourlyData = timeKeys.map(time => {
-        const hourData = times[time];
-        const temp = hourData.TMP ? parseFloat(hourData.TMP) : null;
-        const humidity = hourData.REH ? parseInt(hourData.REH) : null;
-        const windSpeed = hourData.WSD ? parseFloat(hourData.WSD) : null;
-        const windDirection = hourData.VEC ? parseFloat(hourData.VEC) : null;
-
-        return {
-            time: time,
-            timeFormatted: `${time.slice(0, 2)}:${time.slice(2, 4)}`,
-            temperature: temp ? Math.round(temp) : null,
-            sensoryTemperature: calculateSensoryTemperature(temp, humidity, windSpeed),
-            sky: WEATHER_CODES.SKY[hourData.SKY] || '정보없음',
-            skyCode: hourData.SKY,
-            precipitation: WEATHER_CODES.PTY[hourData.PTY] || '없음',
-            precipitationCode: hourData.PTY,
-            precipitationProbability: hourData.POP ? parseInt(hourData.POP) : 0,
-            precipitationAmount: processPrecipitationAmount(hourData.PCP),
-            snowAmount: processSnowAmount(hourData.SNO),
-            humidity: humidity,
-            windSpeed: windSpeed ? windSpeed.toFixed(1) : null,
-            windDirection: getWindDirection16(windDirection),
-            windDirectionDegree: windDirection,
-            waveHeight: hourData.WAV ? parseFloat(hourData.WAV) : null
-        };
-    });
-
-    // 대표 데이터 구성
-    const currentTemp = data.TMP ? parseFloat(data.TMP) : null;
-    const currentHumidity = data.REH ? parseInt(data.REH) : null;
-    const currentWindSpeed = data.WSD ? parseFloat(data.WSD) : null;
-    const currentWindDirection = data.VEC ? parseFloat(data.VEC) : null;
-
-    return {
-        date: dateString,
-        dateFormatted: `${dateString.slice(0, 4)}-${dateString.slice(4, 6)}-${dateString.slice(6, 8)}`,
-        representativeTime: representativeTime,
-        
-        temperature: currentTemp ? Math.round(currentTemp) : null,
-        temperatureMin: minTemp ? Math.round(minTemp) : null,
-        temperatureMax: maxTemp ? Math.round(maxTemp) : null,
-        temperatureUnit: '°C',
-        sensoryTemperature: calculateSensoryTemperature(currentTemp, currentHumidity, currentWindSpeed),
-        
-        sky: WEATHER_CODES.SKY[data.SKY] || '정보없음',
-        skyCode: data.SKY,
-        
-        precipitation: WEATHER_CODES.PTY[data.PTY] || '없음',
-        precipitationCode: data.PTY,
-        precipitationProbability: data.POP ? parseInt(data.POP) : 0,
-        precipitationProbabilityMax: maxPop,
-        precipitationAmount: processPrecipitationAmount(data.PCP),
-        snowAmount: processSnowAmount(data.SNO),
-        
-        windSpeed: currentWindSpeed ? currentWindSpeed.toFixed(1) : null,
-        windSpeedUnit: 'm/s',
-        windDirection: getWindDirection16(currentWindDirection),
-        windDirectionDegree: currentWindDirection,
-        
-        humidity: currentHumidity,
-        humidityUnit: '%',
-        waveHeight: data.WAV ? parseFloat(data.WAV) : null,
-        visibility: data.VVV ? parseFloat(data.VVV) : null,
-        
-        hourlyData: hourlyData,
-        isSeaArea: isSeaLocation
+    const priorityMap = {
+        '광역자치단체': 1000,
+        '기초자치단체': 900,
+        '행정동': 800, '읍': 800, '면': 800,
+        '법정동': 700, '리': 700,
+        '별칭': 600,
+        // 특정 지역에 대한 가중치
+        '서울특별시': 1050, '제주특별자치도': 1050, '부산광역시': 1020,
+        '강남구': 950, '해운대구': 950, '제주시': 950, '서귀포시': 950,
+        '강남역': 850, '홍대': 850, '성산일출봉': 850,
     };
-};
-
-const createEmptyWeatherData = (dateString) => {
-    return {
-        date: dateString,
-        dateFormatted: `${dateString.slice(0, 4)}-${dateString.slice(4, 6)}-${dateString.slice(6, 8)}`,
-        representativeTime: null,
-        temperature: null,
-        temperatureMin: null,
-        temperatureMax: null,
-        temperatureUnit: '°C',
-        sensoryTemperature: null,
-        sky: '정보없음',
-        skyCode: null,
-        precipitation: '정보없음',
-        precipitationCode: null,
-        precipitationProbability: 0,
-        precipitationProbabilityMax: 0,
-        precipitationAmount: '강수없음',
-        snowAmount: '적설없음',
-        windSpeed: null,
-        windSpeedUnit: 'm/s',
-        windDirection: '정보없음',
-        windDirectionDegree: null,
-        humidity: null,
-        humidityUnit: '%',
-        waveHeight: null,
-        visibility: null,
-        hourlyData: [],
-        isSeaArea: false
+    
+    /**
+     * 검색 인덱스에 키워드와 고유 ID를 추가하는 헬퍼 함수.
+     * @param {string} keyword - 인덱싱할 검색어
+     * @param {string} uniqueId - 지역 데이터의 고유 식별자
+     */
+    const addToIndex = (keyword, uniqueId) => {
+        const normalizedKey = keyword.toLowerCase().replace(/\s+/g, '');
+        if (!normalizedKey) return;
+        if (!searchIndex[normalizedKey]) {
+            searchIndex[normalizedKey] = [];
+        }
+        if (!searchIndex[normalizedKey].includes(uniqueId)) {
+            searchIndex[normalizedKey].push(uniqueId);
+        }
     };
-};
 
-const generateSampleData = (region, errorMessage = null) => {
-    const today = new Date();
-    const kst = new Date(today.getTime() + 9 * 60 * 60 * 1000);
-    
-    const dates = [];
-    for (let i = 0; i < 3; i++) {
-        const date = new Date(kst.getTime() + i * 24 * 60 * 60 * 1000);
-        dates.push(date);
-    }
-    
- ```javascript
-    const baseMessage = errorMessage ? `⚠️ 오류: ${errorMessage}` : '⚠️ 기상청 API 연결 문제 - 샘플 데이터';
-    
-    const sampleData = [
-        { temp: 23, minTemp: 18, maxTemp: 26, sky: '3', pty: '0', pop: 30, reh: 70, wsd: 2.5 },
-        { temp: 24, minTemp: 19, maxTemp: 27, sky: '1', pty: '0', pop: 10, reh: 65, wsd: 2.0 },
-        { temp: 21, minTemp: 17, maxTemp: 25, sky: '4', pty: '1', pop: 60, reh: 80, wsd: 3.5 }
-    ];
-    
-    return dates.map((date, index) => {
-        const sample = sampleData[index];
+    /**
+     * 지역 데이터를 추가하고 검색 인덱스를 구축하는 메인 함수.
+     * @param {Object} loc - 추가할 지역의 상세 정보
+     */
+    const addLocation = (loc) => {
+        const { name, lat, lon, type, admin_parent, legal_divisions = [], aliases = [] } = loc;
+        const uniqueId = name.replace(/\s+/g, '_');
+
+        if (locationData[uniqueId]) return;
+
+        const { nx, ny } = latLonToGrid(lat, lon);
+        const shortName = name.split(' ').pop();
+        const basePriority = priorityMap[type] || 750;
+        const namePriority = priorityMap[shortName] || 0;
         
-        return {
-            date: date.toISOString().slice(0, 10).replace(/-/g, ''),
-            dateFormatted: date.toISOString().slice(0, 10),
-            dayLabel: ['오늘', '내일', '모레'][index],
-            dayIndex: index,
-            representativeTime: '1200',
-            
-            temperature: sample.temp,
-            temperatureMin: sample.minTemp,
-            temperatureMax: sample.maxTemp,
-            temperatureUnit: '°C',
-            sensoryTemperature: calculateSensoryTemperature(sample.temp, sample.reh, sample.wsd),
-            
-            sky: WEATHER_CODES.SKY[sample.sky] || '정보없음',
-            skyCode: sample.sky,
-            
-            precipitation: WEATHER_CODES.PTY[sample.pty] || '없음',
-            precipitationCode: sample.pty,
-            precipitationProbability: sample.pop,
-            precipitationProbabilityMax: sample.pop,
-            precipitationAmount: sample.pty === '1' ? '5mm' : '강수없음',
-            snowAmount: sample.pty === '3' ? '1cm' : '적설없음',
-            
-            windSpeed: sample.wsd.toFixed(1),
-            windSpeedUnit: 'm/s',
-            windDirection: getWindDirection16(225),
-            windDirectionDegree: 225,
-            
-            humidity: sample.reh,
-            humidityUnit: '%',
-            waveHeight: null,
-            visibility: null,
-            
-            hourlyData: [
-                {
-                    time: '0600',
-                    timeFormatted: '06:00',
-                    temperature: sample.temp - 3,
-                    sensoryTemperature: calculateSensoryTemperature(sample.temp - 3, sample.reh, sample.wsd),
-                    sky: WEATHER_CODES.SKY[sample.sky],
-                    precipitation: WEATHER_CODES.PTY[sample.pty],
-                    precipitationProbability: sample.pop
-                },
-                {
-                    time: '1200',
-                    timeFormatted: '12:00',
-                    temperature: sample.temp,
-                    sensoryTemperature: calculateSensoryTemperature(sample.temp, sample.reh, sample.wsd),
-                    sky: WEATHER_CODES.SKY[sample.sky],
-                    precipitation: WEATHER_CODES.PTY[sample.pty],
-                    precipitationProbability: sample.pop
-                },
-                {
-                    time: '1800',
-                    timeFormatted: '18:00',
-                    temperature: sample.temp - 2,
-                    sensoryTemperature: calculateSensoryTemperature(sample.temp - 2, sample.reh, sample.wsd),
-                    sky: WEATHER_CODES.SKY[sample.sky],
-                    precipitation: WEATHER_CODES.PTY[sample.pty],
-                    precipitationProbability: sample.pop
-                }
-            ],
-            
-            isSeaArea: false,
-            message: `${baseMessage} (${['오늘', '내일', '모레'][index]})`,
-            timestamp: new Date().toISOString(),
-            region: region
+        locationData[uniqueId] = {
+            ...loc,
+            key: uniqueId,
+            kma_nx: nx,
+            kma_ny: ny,
+            priority_score: basePriority + namePriority
         };
-    });
-};
 
-// ===================================================================== 
-// API 호출 및 재시도 로직
+        addToIndex(name, uniqueId);
+        if(shortName && shortName !== name) addToIndex(shortName, uniqueId);
+        aliases.forEach(alias => addToIndex(alias, uniqueId));
+        legal_divisions.forEach(legal => addToIndex(legal, uniqueId));
+    };
 
-const apiCallWithRetry = async (url, params, retries = WEATHER_CONFIG.API.MAX_RETRIES) => {
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => {
-            controller.abort();
-        }, WEATHER_CONFIG.API.TIMEOUT);
+    // ============================================================= //
+    // 데이터 정의 (locationData (2).js의 모든 데이터 통합)
+    // ============================================================= //
+    
+    // 서울특별시
+    addLocation({ name: '서울특별시', lat: 37.5665, lon: 126.9780, type: '광역자치단체', aliases: ['서울', '서울시'] });
+    addLocation({ name: '서울특별시 종로구', lat: 37.5735, lon: 126.9788, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['종로구'] });
+    addLocation({ name: '서울특별시 종로구 청운효자동', lat: 37.5852, lon: 126.9691, type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['청운동', '효자동', '궁정동', '신교동', '창성동', '통인동', '누하동', '옥인동', '필운동', '내자동'] });
+    addLocation({ name: '서울특별시 종로구 사직동', lat: 37.5746, lon: 126.9702, type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['사직동', '내수동', '도렴동', '당주동', '신문로1가', '신문로2가', '세종로'] });
+    addLocation({ name: '서울특별시 종로구 삼청동', lat: 37.5898, lon: 126.9806, type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['삼청동', '팔판동', '안국동', '화동'] });
+    addLocation({ name: '서울특별시 종로구 평창동', lat: 37.6080, lon: 126.9670, type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['평창동'] });
+    addLocation({ name: '서울특별시 종로구 가회동', lat: 37.5830, lon: 126.9890, type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['가회동', '재동', '계동', '원서동'] });
+    addLocation({ name: '서울특별시 종로구 종로1.2.3.4가동', lat: 37.5710, lon: 126.9910, type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['종로1가', '종로2가', '종로3가', '종로4가', '인사동', '관철동', '관수동', '견지동', '공평동', '와룡동', '운니동', '익선동', '돈화문로'] });
+    addLocation({ name: '서울특별시 종로구 혜화동', lat: 37.5810, lon: 127.0000, type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['혜화동', '명륜1가', '명륜2가', '동숭동'] });
+    addLocation({ name: '서울특별시 종로구 창신1동', lat: 37.5780, lon: 127.0100, type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['창신동'] });
+    addLocation({ name: '서울특별시 종로구 숭인1동', lat: 37.5750, lon: 127.0200, type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['숭인동'] });
+    addLocation({ name: '서울특별시 종로구 종로1가', lat: 37.5700, lon: 126.9790, type: '별칭', admin_parent: '서울특별시 종로구', aliases: ['종각','종로'] });
+    addLocation({ name: '서울특별시 종로구 세종로', lat: 37.5776, lon: 126.9769, type: '별칭', admin_parent: '서울특별시 종로구', aliases: ['경복궁'] });
+    addLocation({ name: '서울특별시 중구', lat: 37.5630, lon: 126.9970, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['중구'] });
+    addLocation({ name: '서울특별시 중구 소공동', lat: 37.5630, lon: 126.9800, type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['소공동', '북창동', '태평로2가'] });
+    addLocation({ name: '서울특별시 중구 명동', lat: 37.5610, lon: 126.9860, type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['명동1가', '명동2가', '남산동1가', '남산동2가', '남산동3가', '충무로1가', '충무로2가', '저동1가', '저동2가', '예관동'], aliases: ['명동성당'] });
+    addLocation({ name: '서울특별시 중구 을지로동', lat: 37.5650, lon: 126.9910, type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['을지로1가', '을지로2가', '을지로3가', '을지로4가', '을지로5가', '을지로6가', '을지로7가', '수하동', '장교동', '삼각동', '입정동', '산림동', '주교동'] });
+    addLocation({ name: '서울특별시 중구 필동', lat: 37.5600, lon: 127.0000, type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['필동1가', '필동2가', '필동3가', '묵정동', '장충동1가', '장충동2가', '광희동1가', '광희동2가'] });
+    addLocation({ name: '서울특별시 중구 장충동', lat: 37.5580, lon: 127.0090, type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['장충동1가', '장충동2가', '묵정동'] });
+    addLocation({ name: '서울특별시 중구 신당5동', lat: 37.5680, lon: 127.0180, type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['신당동'] });
+    addLocation({ name: '서울특별시 중구 황학동', lat: 37.5710, lon: 127.0150, type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['황학동'] });
+    addLocation({ name: '서울특별시 중구 중림동', lat: 37.5590, lon: 126.9670, type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['중림동'] });
+    addLocation({ name: '서울특별시 중구 회현동', lat: 37.5580, lon: 126.9770, type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['회현동1가', '회현동2가', '회현동3가', '남산동1가', '남산동2가', '남산동3가', '충무로1가'] });
+    addLocation({ name: '서울특별시 용산구 용산동2가', lat: 37.5512, lon: 126.9880, type: '별칭', admin_parent: '서울특별시 용산구', aliases: ['남산타워', 'N서울타워'] });
+    addLocation({ name: '서울특별시 중구 남대문로4가', lat: 37.5590, lon: 126.9770, type: '별칭', admin_parent: '서울특별시 중구', aliases: ['남대문시장'] });
+    addLocation({ name: '서울특별시 종로구 예지동', lat: 37.5709, lon: 127.0006, type: '별칭', admin_parent: '서울특별시 종로구', aliases: ['광장시장'] });
+    addLocation({ name: '서울특별시 용산구', lat: 37.5326, lon: 126.9905, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['용산구'] });
+    addLocation({ name: '서울특별시 용산구 후암동', lat: 37.5450, lon: 126.9740, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['후암동'] });
+    addLocation({ name: '서울특별시 용산구 용산2가동', lat: 37.5380, lon: 126.9830, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['용산동2가'] });
+    addLocation({ name: '서울특별시 용산구 남영동', lat: 37.5410, lon: 126.9700, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['남영동', '갈월동'] });
+    addLocation({ name: '서울특별시 용산구 원효로2동', lat: 37.5350, lon: 126.9600, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['원효로2가', '원효로3가'] });
+    addLocation({ name: '서울특별시 용산구 이촌1동', lat: 37.5220, lon: 126.9700, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['이촌동'] });
+    addLocation({ name: '서울특별시 용산구 이태원1동', lat: 37.5345, lon: 126.9934, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['이태원동', '한남동'], aliases: ['이태원'] });
+    addLocation({ name: '서울특별시 용산구 한남동', lat: 37.5370, lon: 127.0090, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['한남동'] });
+    addLocation({ name: '서울특별시 용산구 보광동', lat: 37.5310, lon: 127.0060, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['보광동'] });
+    addLocation({ name: '서울특별시 용산구 청파동', lat: 37.5500, lon: 126.9690, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['청파동1가', '청파동2가', '청파동3가'] });
+    addLocation({ name: '서울특별시 용산구 효창동', lat: 37.5400, lon: 126.9600, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['효창동'] });
+    addLocation({ name: '서울특별시 용산구 서빙고동', lat: 37.5190, lon: 126.9820, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['서빙고동', '동빙고동'] });
+    addLocation({ name: '서울특별시 용산구 용문동', lat: 37.5330, lon: 126.9580, type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['용문동'] });
+    addLocation({ name: '서울특별시 용산구 이촌동', lat: 37.5190, lon: 126.9740, type: '법정동', admin_parent: '서울특별시 용산구' });
+    addLocation({ name: '서울특별시 성동구', lat: 37.5635, lon: 127.0365, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['성동구'] });
+    addLocation({ name: '서울특별시 성동구 왕십리2동', lat: 37.5660, lon: 127.0290, type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['하왕십리동'] });
+    addLocation({ name: '서울특별시 성동구 마장동', lat: 37.5700, lon: 127.0430, type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['마장동'] });
+    addLocation({ name: '서울특별시 성동구 사근동', lat: 37.5600, lon: 127.0400, type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['사근동'] });
+    addLocation({ name: '서울특별시 성동구 행당1동', lat: 37.5580, lon: 127.0270, type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['행당동'] });
+    addLocation({ name: '서울특별시 성동구 응봉동', lat: 37.5460, lon: 127.0370, type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['응봉동'] });
+    addLocation({ name: '서울특별시 성동구 금호1가동', lat: 37.5500, lon: 127.0200, type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['금호동1가'] });
+    addLocation({ name: '서울특별시 성동구 성수1가1동', lat: 37.5460, lon: 127.0470, type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['성수동1가'] });
+    addLocation({ name: '서울특별시 성동구 옥수동', lat: 37.5520, lon: 127.0140, type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['옥수동'] });
+    addLocation({ name: '서울특별시 광진구', lat: 37.5384, lon: 127.0822, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['광진구'] });
+    addLocation({ name: '서울특별시 광진구 화양동', lat: 37.5450, lon: 127.0690, type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['화양동'] });
+    addLocation({ name: '서울특별시 광진구 군자동', lat: 37.5500, lon: 127.0760, type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['군자동'] });
+    addLocation({ name: '서울특별시 광진구 중곡1동', lat: 37.5680, lon: 127.0850, type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['중곡동'] });
+    addLocation({ name: '서울특별시 광진구 능동', lat: 37.5550, lon: 127.0800, type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['능동'] });
+    addLocation({ name: '서울특별시 광진구 광장동', lat: 37.5520, lon: 127.1030, type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['광장동'] });
+    addLocation({ name: '서울특별시 광진구 구의1동', lat: 37.5370, lon: 127.0880, type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['구의동'] });
+    addLocation({ name: '서울특별시 광진구 자양1동', lat: 37.5320, lon: 127.0670, type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['자양동'] });
+    addLocation({ name: '서울특별시 동대문구', lat: 37.5744, lon: 127.0394, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['동대문구'] });
+    addLocation({ name: '서울특별시 동대문구 용두동', lat: 37.5740, lon: 127.0270, type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['용두동'] });
+    addLocation({ name: '서울특별시 동대문구 제기동', lat: 37.5790, lon: 127.0350, type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['제기동'] });
+    addLocation({ name: '서울특별시 동대문구 전농1동', lat: 37.5850, lon: 127.0500, type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['전농동'] });
+    addLocation({ name: '서울특별시 동대문구 답십리1동', lat: 37.5700, lon: 127.0500, type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['답십리동'] });
+    addLocation({ name: '서울특별시 동대문구 장안1동', lat: 37.5700, lon: 127.0660, type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['장안동'] });
+    addLocation({ name: '서울특별시 동대문구 청량리동', lat: 37.5900, lon: 127.0480, type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['청량리동'] });
+    addLocation({ name: '서울특별시 동대문구 회기동', lat: 37.5940, lon: 127.0560, type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['회기동'] });
+    addLocation({ name: '서울특별시 동대문구 휘경1동', lat: 37.5960, lon: 127.0620, type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['휘경동'] });
+    addLocation({ name: '서울특별시 중랑구', lat: 37.6063, lon: 127.0925, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['중랑구'] });
+    addLocation({ name: '서울특별시 중랑구 면목2동', lat: 37.5890, lon: 127.0880, type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['면목동'] });
+    addLocation({ name: '서울특별시 중랑구 상봉1동', lat: 37.5950, lon: 127.0870, type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['상봉동'] });
+    addLocation({ name: '서울특별시 중랑구 중화1동', lat: 37.6000, lon: 127.0810, type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['중화동'] });
+    addLocation({ name: '서울특별시 중랑구 묵1동', lat: 37.6180, lon: 127.0780, type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['묵동'] });
+    addLocation({ name: '서울특별시 중랑구 망우3동', lat: 37.6060, lon: 127.0970, type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['망우동'] });
+    addLocation({ name: '서울특별시 중랑구 신내1동', lat: 37.6180, lon: 127.0960, type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['신내동'] });
+    addLocation({ name: '서울특별시 성북구', lat: 37.5894, lon: 127.0167, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['성북구'] });
+    addLocation({ name: '서울특별시 성북구 성북동', lat: 37.5950, lon: 127.0080, type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['성북동'] });
+    addLocation({ name: '서울특별시 성북구 삼선동', lat: 37.5850, lon: 127.0130, type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['삼선동1가', '삼선동2가', '삼선동3가', '삼선동4가'] });
+    addLocation({ name: '서울특별시 성북구 동선동', lat: 37.5880, lon: 127.0210, type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['동선동1가', '동선동2가', '동선동3가', '동선동4가', '동선동5가'] });
+    addLocation({ name: '서울특별시 성북구 돈암1동', lat: 37.5890, lon: 127.0170, type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['돈암동'] });
+    addLocation({ name: '서울특별시 성북구 안암동', lat: 37.5870, lon: 127.0300, type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['안암동1가', '안암동2가', '안암동3가', '안암동4가', '안암동5가'] });
+    addLocation({ name: '서울특별시 성북구 정릉1동', lat: 37.6000, lon: 127.0100, type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['정릉동'] });
+    addLocation({ name: '서울특별시 성북구 길음1동', lat: 37.6050, lon: 127.0240, type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['길음동'] });
+    addLocation({ name: '서울특별시 강북구', lat: 37.6397, lon: 127.0256, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['강북구'] });
+    addLocation({ name: '서울특별시 강북구 미아동', lat: 37.6250, lon: 127.0250, type: '법정동', admin_parent: '서울특별시 강북구' });
+    addLocation({ name: '서울특별시 강북구 수유1동', lat: 37.6380, lon: 127.0180, type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['수유동'] });
+    addLocation({ name: '서울특별시 강북구 번1동', lat: 37.6300, lon: 127.0400, type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['번동'] });
+    addLocation({ name: '서울특별시 강북구 삼각산동', lat: 37.6470, lon: 127.0080, type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['수유동', '우이동'] });
+    addLocation({ name: '서울특별시 강북구 우이동', lat: 37.6600, lon: 127.0180, type: '법정동', admin_parent: '서울특별시 강북구' });
+    addLocation({ name: '서울특별시 도봉구', lat: 37.6688, lon: 127.0471, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['도봉구'] });
+    addLocation({ name: '서울특별시 도봉구 쌍문1동', lat: 37.6490, lon: 127.0340, type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['쌍문동'] });
+    addLocation({ name: '서울특별시 도봉구 방학1동', lat: 37.6680, lon: 127.0380, type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['방학동'] });
+    addLocation({ name: '서울특별시 도봉구 창2동', lat: 37.6480, lon: 127.0560, type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['창동'] });
+    addLocation({ name: '서울특별시 도봉구 도봉1동', lat: 37.6850, lon: 127.0450, type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['도봉동'] });
+    addLocation({ name: '서울특별시 노원구', lat: 37.6541, lon: 127.0568, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['노원구'] });
+    addLocation({ name: '서울특별시 노원구 월계1동', lat: 37.6180, lon: 127.0570, type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['월계동'] });
+    addLocation({ name: '서울특별시 노원구 공릉1동', lat: 37.6260, lon: 127.0750, type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['공릉동'] });
+    addLocation({ name: '서울특별시 노원구 하계1동', lat: 37.6170, lon: 127.0710, type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['하계동'] });
+    addLocation({ name: '서울특별시 노원구 중계1동', lat: 37.6370, lon: 127.0700, type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['중계동'] });
+    addLocation({ name: '서울특별시 노원구 상계1동', lat: 37.6530, lon: 127.0600, type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['상계동'] });
+    addLocation({ name: '서울특별시 노원구 상계동', lat: 37.6800, lon: 127.0700, type: '별칭', admin_parent: '서울특별시 노원구', aliases: ['수락산'] });
+    addLocation({ name: '서울특별시 은평구', lat: 37.6176, lon: 126.9227, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['은평구'] });
+    addLocation({ name: '서울특별시 은평구 녹번동', lat: 37.6100, lon: 126.9360, type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['녹번동'] });
+    addLocation({ name: '서울특별시 은평구 불광1동', lat: 37.6150, lon: 126.9300, type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['불광동'] });
+    addLocation({ name: '서울특별시 은평구 갈현1동', lat: 37.6250, lon: 126.9050, type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['갈현동'] });
+    addLocation({ name: '서울특별시 은평구 구산동', lat: 37.6100, lon: 126.9050, type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['구산동'] });
+    addLocation({ name: '서울특별시 은평구 응암1동', lat: 37.5980, lon: 126.9240, type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['응암동'] });
+    addLocation({ name: '서울특별시 은평구 역촌동', lat: 37.6050, lon: 126.9120, type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['역촌동'] });
+    addLocation({ name: '서울특별시 은평구 진관동', lat: 37.6350, lon: 126.9250, type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['진관동', '구파발동'] });
+    addLocation({ name: '서울특별시 서대문구', lat: 37.5791, lon: 126.9368, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['서대문구'] });
+    addLocation({ name: '서울특별시 서대문구 천연동', lat: 37.5720, lon: 126.9530, type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['천연동', '옥천동', '영천동'] });
+    addLocation({ name: '서울특별시 서대문구 홍제1동', lat: 37.5880, lon: 126.9400, type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['홍제동'] });
+    addLocation({ name: '서울특별시 서대문구 연희동', lat: 37.5680, lon: 126.9370, type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['연희동'] });
+    addLocation({ name: '서울특별시 서대문구 북가좌1동', lat: 37.5850, lon: 126.9100, type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['북가좌동'] });
+    addLocation({ name: '서울특별시 서대문구 신촌동', lat: 37.5598, lon: 126.9423, type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['신촌동', '창천동', '대현동', '봉원동'], aliases: ['신촌'] });
+    addLocation({ name: '서울특별시 마포구', lat: 37.5615, lon: 126.9088, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['마포구'] });
+    addLocation({ name: '서울특별시 마포구 공덕동', lat: 37.5450, lon: 126.9520, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['공덕동'] });
+    addLocation({ name: '서울특별시 마포구 아현동', lat: 37.5580, lon: 126.9520, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['아현동'] });
+    addLocation({ name: '서울특별시 마포구 도화동', lat: 37.5400, lon: 126.9490, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['도화동'] });
+    addLocation({ name: '서울특별시 마포구 용강동', lat: 37.5350, lon: 126.9400, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['용강동'] });
+    addLocation({ name: '서울특별시 마포구 대흥동', lat: 37.5500, lon: 126.9420, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['대흥동'] });
+    addLocation({ name: '서울특별시 마포구 염리동', lat: 37.5520, lon: 126.9490, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['염리동'] });
+    addLocation({ name: '서울특별시 마포구 신수동', lat: 37.5480, lon: 126.9300, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['신수동'] });
+    addLocation({ name: '서울특별시 마포구 서교동', lat: 37.5577, lon: 126.9248, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['서교동', '동교동', '합정동'], aliases: ['홍대', '홍대입구'] });
+    addLocation({ name: '서울특별시 마포구 합정동', lat: 37.5490, lon: 126.9140, type: '법정동', admin_parent: '서울특별시 마포구' });
+    addLocation({ name: '서울특별시 마포구 망원1동', lat: 37.5600, lon: 126.9030, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['망원동'] });
+    addLocation({ name: '서울특별시 마포구 연남동', lat: 37.5610, lon: 126.9260, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['연남동'] });
+    addLocation({ name: '서울특별시 마포구 상암동', lat: 37.5770, lon: 126.8900, type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['상암동'] });
+    addLocation({ name: '서울특별시 양천구', lat: 37.5173, lon: 126.8665, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['양천구'] });
+    addLocation({ name: '서울특별시 양천구 목1동', lat: 37.5360, lon: 126.8780, type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['목동'] });
+    addLocation({ name: '서울특별시 양천구 신월1동', lat: 37.5300, lon: 126.8370, type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신월동'] });
+    addLocation({ name: '서울특별시 양천구 신정1동', lat: 37.5180, lon: 126.8680, type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신정동'] });
+    addLocation({ name: '서울특별시 강서구', lat: 37.5509, lon: 126.8495, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['강서구'] });
+    addLocation({ name: '서울특별시 강서구 염창동', lat: 37.5610, lon: 126.8770, type: '행정동', admin_parent: '서울특별시 강서구', legal_divisions: ['염창동'] });
+    addLocation({ name: '서울특별시 강서구 등촌1동', lat: 37.5600, lon: 126.8570, type: '행정동', admin_parent: '서울특별시 강서구', legal_divisions: ['등촌동'] });
+    addLocation({ name: '서울특별시 강서구 화곡1동', lat: 37.5450, lon: 126.8400, type: '행정동', admin_parent: '서울특별시 강서구', legal_divisions: ['화곡동'] });
+    addLocation({ name: '서울특별시 강서구 가양1동', lat: 37.5660, lon: 126.8500, type: '행정동', admin_parent: '서울특별시 강서구', legal_divisions: ['가양동'] });
+    addLocation({ name: '서울특별시 강서구 발산1동', lat: 37.5600, lon: 126.8200, type: '행정동', admin_parent: '서울특별시 강서구', legal_divisions: ['발산동'] });
+    addLocation({ name: '서울특별시 강서구 공항동', lat: 37.5600, lon: 126.7940, type: '행정동', admin_parent: '서울특별시 강서구', legal_divisions: ['공항동'] });
+    addLocation({ name: '서울특별시 강서구 방화1동', lat: 37.5700, lon: 126.8000, type: '행정동', admin_parent: '서울특별시 강서구', legal_divisions: ['방화동'] });
+    addLocation({ name: '서울특별시 구로구', lat: 37.4954, lon: 126.8874, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['구로구'] });
+    addLocation({ name: '서울특별시 구로구 신도림동', lat: 37.5060, lon: 126.8910, type: '행정동', admin_parent: '서울특별시 구로구', legal_divisions: ['신도림동'] });
+    addLocation({ name: '서울특별시 구로구 구로1동', lat: 37.4960, lon: 126.8850, type: '행정동', admin_parent: '서울특별시 구로구', legal_divisions: ['구로동'] });
+    addLocation({ name: '서울특별시 구로구 고척1동', lat: 37.5010, lon: 126.8650, type: '행정동', admin_parent: '서울특별시 구로구', legal_divisions: ['고척동'] });
+    addLocation({ name: '서울특별시 구로구 개봉1동', lat: 37.4870, lon: 126.8580, type: '행정동', admin_parent: '서울특별시 구로구', legal_divisions: ['개봉동'] });
+    addLocation({ name: '서울특별시 구로구 오류1동', lat: 37.4870, lon: 126.8370, type: '행정동', admin_parent: '서울특별시 구로구', legal_divisions: ['오류동'] });
+    addLocation({ name: '서울특별시 구로구 가리봉동', lat: 37.4820, lon: 126.8820, type: '행정동', admin_parent: '서울특별시 구로구', legal_divisions: ['가리봉동'] });
+    addLocation({ name: '서울특별시 금천구', lat: 37.4571, lon: 126.9009, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['금천구'] });
+    addLocation({ name: '서울특별시 금천구 가산동', lat: 37.4770, lon: 126.8800, type: '행정동', admin_parent: '서울특별시 금천구', legal_divisions: ['가산동'] });
+    addLocation({ name: '서울특별시 금천구 독산1동', lat: 37.4650, lon: 126.9000, type: '행정동', admin_parent: '서울특별시 금천구', legal_divisions: ['독산동'] });
+    addLocation({ name: '서울특별시 금천구 시흥1동', lat: 37.4470, lon: 126.9140, type: '행정동', admin_parent: '서울특별시 금천구', legal_divisions: ['시흥동'] });
+    addLocation({ name: '서울특별시 영등포구', lat: 37.5262, lon: 126.9095, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['영등포구'] });
+    addLocation({ name: '서울특별시 영등포구 여의동', lat: 37.5222, lon: 126.9242, type: '행정동', admin_parent: '서울특별시 영등포구', legal_divisions: ['여의도동'], aliases: ['여의도'] });
+    addLocation({ name: '서울특별시 영등포구 당산1동', lat: 37.5330, lon: 126.9000, type: '행정동', admin_parent: '서울특별시 영등포구', legal_divisions: ['당산동'] });
+    addLocation({ name: '서울특별시 영등포구 영등포동', lat: 37.5180, lon: 126.9060, type: '행정동', admin_parent: '서울특별시 영등포구', legal_divisions: ['영등포동'] });
+    addLocation({ name: '서울특별시 영등포구 도림동', lat: 37.5080, lon: 126.8960, type: '행정동', admin_parent: '서울특별시 영등포구', legal_divisions: ['도림동'] });
+    addLocation({ name: '서울특별시 영등포구 신길1동', lat: 37.5080, lon: 126.9140, type: '행정동', admin_parent: '서울특별시 영등포구', legal_divisions: ['신길동'] });
+    addLocation({ name: '서울특별시 영등포구 대림1동', lat: 37.4900, lon: 126.9060, type: '행정동', admin_parent: '서울특별시 영등포구', legal_divisions: ['대림동'] });
+    addLocation({ name: '서울특별시 영등포구 양평1동', lat: 37.5400, lon: 126.8970, type: '행정동', admin_parent: '서울특별시 영등포구', legal_divisions: ['양평동1가', '양평동2가'] });
+    addLocation({ name: '서울특별시 동작구', lat: 37.5124, lon: 126.9392, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['동작구'] });
+    addLocation({ name: '서울특별시 동작구 노량진1동', lat: 37.5130, lon: 126.9400, type: '행정동', admin_parent: '서울특별시 동작구', legal_divisions: ['노량진동'] });
+    addLocation({ name: '서울특별시 동작구 상도1동', lat: 37.5020, lon: 126.9440, type: '행정동', admin_parent: '서울특별시 동작구', legal_divisions: ['상도동'] });
+    addLocation({ name: '서울특별시 동작구 흑석동', lat: 37.5080, lon: 126.9580, type: '행정동', admin_parent: '서울특별시 동작구', legal_divisions: ['흑석동'] });
+    addLocation({ name: '서울특별시 동작구 사당1동', lat: 37.4840, lon: 126.9740, type: '행정동', admin_parent: '서울특별시 동작구', legal_divisions: ['사당동'] });
+    addLocation({ name: '서울특별시 동작구 대방동', lat: 37.5000, lon: 126.9260, type: '행정동', admin_parent: '서울특별시 동작구', legal_divisions: ['대방동'] });
+    addLocation({ name: '서울특별시 동작구 신대방1동', lat: 37.4910, lon: 126.9200, type: '행정동', admin_parent: '서울특별시 동작구', legal_divisions: ['신대방동'] });
+    addLocation({ name: '서울특별시 관악구', lat: 37.4784, lon: 126.9517, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['관악구'] });
+    addLocation({ name: '서울특별시 관악구 봉천동', lat: 37.4780, lon: 126.9530, type: '법정동', admin_parent: '서울특별시 관악구' });
+    addLocation({ name: '서울특별시 관악구 신림동', lat: 37.4830, lon: 126.9300, type: '법정동', admin_parent: '서울특별시 관악구' });
+    addLocation({ name: '서울특별시 관악구 남현동', lat: 37.4700, lon: 126.9800, type: '행정동', admin_parent: '서울특별시 관악구', legal_divisions: ['남현동'] });
+    addLocation({ name: '서울특별시 관악구 대학동', lat: 37.4660, lon: 126.9400, type: '행정동', admin_parent: '서울특별시 관악구', legal_divisions: ['신림동'] });
+    addLocation({ name: '서울특별시 관악구 조원동', lat: 37.4710, lon: 126.9060, type: '행정동', admin_parent: '서울특별시 관악구', legal_divisions: ['신림동'] });
+    addLocation({ name: '서울특별시 관악구 삼성동', lat: 37.4650, lon: 126.9250, type: '행정동', admin_parent: '서울특별시 관악구', legal_divisions: ['신림동'] });
+    addLocation({ name: '서울특별시 관악구 청룡동', lat: 37.4800, lon: 126.9540, type: '행정동', admin_parent: '서울특별시 관악구', legal_divisions: ['봉천동'] });
+    addLocation({ name: '서울특별시 관악구 은천동', lat: 37.4860, lon: 126.9400, type: '행정동', admin_parent: '서울특별시 관악구', legal_divisions: ['봉천동'] });
+    addLocation({ name: '서울특별시 서초구', lat: 37.4837, lon: 127.0324, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['서초구'] });
+    addLocation({ name: '서울특별시 서초구 서초1동', lat: 37.4900, lon: 127.0170, type: '행정동', admin_parent: '서울특별시 서초구', legal_divisions: ['서초동'] });
+    addLocation({ name: '서울특별시 서초구 잠원동', lat: 37.5200, lon: 127.0180, type: '행정동', admin_parent: '서울특별시 서초구', legal_divisions: ['잠원동'] });
+    addLocation({ name: '서울특별시 서초구 반포1동', lat: 37.5020, lon: 127.0000, type: '행정동', admin_parent: '서울특별시 서초구', legal_divisions: ['반포동'] });
+    addLocation({ name: '서울특별시 서초구 방배1동', lat: 37.4830, lon: 126.9850, type: '행정동', admin_parent: '서울특별시 서초구', legal_divisions: ['방배동'] });
+    addLocation({ name: '서울특별시 서초구 양재1동', lat: 37.4600, lon: 127.0380, type: '행정동', admin_parent: '서울특별시 서초구', legal_divisions: ['양재동', '염곡동'] });
+    addLocation({ name: '서울특별시 서초구 내곡동', lat: 37.4470, lon: 127.0700, type: '행정동', admin_parent: '서울특별시 서초구', legal_divisions: ['내곡동', '신원동', '원지동', '염곡동'] });
+    addLocation({ name: '서울특별시 서초구 반포동', lat: 37.5050, lon: 127.0040, type: '별칭', admin_parent: '서울특별시 서초구', aliases: ['고속터미널'] });
+    addLocation({ name: '서울특별시 강남구', lat: 37.5172, lon: 127.0473, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['강남구'] });
+    addLocation({ name: '서울특별시 강남구 신사동', lat: 37.5200, lon: 127.0200, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['신사동'], aliases: ['가로수길'] });
+    addLocation({ name: '서울특별시 강남구 논현1동', lat: 37.5130, lon: 127.0250, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['논현동'] });
+    addLocation({ name: '서울특별시 강남구 압구정동', lat: 37.5270, lon: 127.0290, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['압구정동'] });
+    addLocation({ name: '서울특별시 강남구 청담동', lat: 37.5220, lon: 127.0500, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['청담동'] });
+    addLocation({ name: '서울특별시 강남구 삼성1동', lat: 37.5140, lon: 127.0560, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['삼성동'], aliases: ['코엑스'] });
+    addLocation({ name: '서울특별시 강남구 대치1동', lat: 37.4990, lon: 127.0580, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['대치동'] });
+    addLocation({ name: '서울특별시 강남구 역삼1동', lat: 37.5000, lon: 127.0360, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['역삼동'], aliases: ['강남', '강남역'] });
+    addLocation({ name: '서울특별시 강남구 도곡1동', lat: 37.4900, lon: 127.0450, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['도곡동'] });
+    addLocation({ name: '서울특별시 강남구 개포1동', lat: 37.4760, lon: 127.0540, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['개포동'] });
+    addLocation({ name: '서울특별시 강남구 세곡동', lat: 37.4660, lon: 127.1000, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['세곡동', '자곡동', '율현동'] });
+    addLocation({ name: '서울특별시 강남구 일원1동', lat: 37.4850, lon: 127.0800, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['일원동'] });
+    addLocation({ name: '서울특별시 강남구 수서동', lat: 37.4870, lon: 127.1000, type: '행정동', admin_parent: '서울특별시 강남구', legal_divisions: ['수서동'] });
+    addLocation({ name: '서울특별시 송파구', lat: 37.5145, lon: 127.1054, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['송파구'] });
+    addLocation({ name: '서울특별시 송파구 잠실본동', lat: 37.5080, lon: 127.0850, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['잠실동'], aliases: ['잠실'] });
+    addLocation({ name: '서울특별시 송파구 잠실2동', lat: 37.5130, lon: 127.0860, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['잠실동'] });
+    addLocation({ name: '서울특별시 송파구 잠실3동', lat: 37.5100, lon: 127.0900, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['잠실동'] });
+    addLocation({ name: '서울특별시 송파구 잠실7동', lat: 37.5200, lon: 127.1000, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['잠실동'] });
+    addLocation({ name: '서울특별시 송파구 잠실4동', lat: 37.5160, lon: 127.0800, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['잠실동'] });
+    addLocation({ name: '서울특별시 송파구 잠실5동', lat: 37.5140, lon: 127.0820, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['잠실동'] });
+    addLocation({ name: '서울특별시 송파구 잠실6동', lat: 37.5130, lon: 127.0990, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['잠실동'] });
+    addLocation({ name: '서울특별시 송파구 신천동', lat: 37.5130, lon: 127.1000, type: '법정동', admin_parent: '서울특별시 송파구' });
+    addLocation({ name: '서울특별시 송파구 방이1동', lat: 37.5150, lon: 127.1250, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['방이동'] });
+    addLocation({ name: '서울특별시 송파구 오륜동', lat: 37.5140, lon: 127.1360, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['오륜동'] });
+    addLocation({ name: '서울특별시 송파구 송파1동', lat: 37.5020, lon: 127.1080, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['송파동'] });
+    addLocation({ name: '서울특별시 송파구 석촌동', lat: 37.5030, lon: 127.0990, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['석촌동'] });
+    addLocation({ name: '서울특별시 송파구 삼전동', lat: 37.5070, lon: 127.0820, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['삼전동'] });
+    addLocation({ name: '서울특별시 송파구 가락1동', lat: 37.4950, lon: 127.1120, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['가락동'] });
+    addLocation({ name: '서울특별시 송파구 문정1동', lat: 37.4870, lon: 127.1160, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['문정동'] });
+    addLocation({ name: '서울특별시 송파구 장지동', lat: 37.4780, lon: 127.1280, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['장지동', '복정동'] });
+    addLocation({ name: '서울특별시 송파구 위례동', lat: 37.4850, lon: 127.1430, type: '행정동', admin_parent: '서울특별시 송파구', legal_divisions: ['장지동', '거여동'] });
+    addLocation({ name: '서울특별시 강동구', lat: 37.5298, lon: 127.1269, type: '기초자치단체', admin_parent: '서울특별시', aliases: ['강동구'] });
+    addLocation({ name: '서울특별시 강동구 명일1동', lat: 37.5500, lon: 127.1400, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['명일동'] });
+    addLocation({ name: '서울특별시 강동구 고덕1동', lat: 37.5580, lon: 127.1480, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['고덕동'] });
+    addLocation({ name: '서울특별시 강동구 암사1동', lat: 37.5540, lon: 127.1280, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['암사동'] });
+    addLocation({ name: '서울특별시 강동구 천호1동', lat: 37.5380, lon: 127.1200, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['천호동'] });
+    addLocation({ name: '서울특별시 강동구 성내1동', lat: 37.5300, lon: 127.1200, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['성내동'] });
+    addLocation({ name: '서울특별시 강동구 둔촌1동', lat: 37.5200, lon: 127.1450, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['둔촌동'] });
+    addLocation({ name: '서울특별시 강동구 길동', lat: 37.5370, lon: 127.1370, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['길동'] });
+    addLocation({ name: '서울특별시 강동구 상일동', lat: 37.5500, lon: 127.1600, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['상일동'] });
+    addLocation({ name: '서울특별시 강동구 강일동', lat: 37.5670, lon: 127.1700, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['강일동'] });
+    addLocation({ name: '제주특별자치도', lat: 33.4891, lon: 126.5135, type: '광역자치단체', aliases: ['제주', '제주도'] });
+    addLocation({ name: '제주특별자치시 제주시', lat: 33.5073, lon: 126.5148, type: '기초자치단체', admin_parent: '제주특별자치도', aliases: ['제주시'] });
+    addLocation({ name: '제주특별자치시 제주시 일도1동', lat: 33.5130, lon: 126.5270, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['일도일동'] });
+    addLocation({ name: '제주특별자치시 제주시 일도2동', lat: 33.5078, lon: 126.5362, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['일도이동'] });
+    addLocation({ name: '제주특별자치시 제주시 이도1동', lat: 33.5060, lon: 126.5180, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['이도일동'] });
+    addLocation({ name: '제주특별자치시 제주시 이도2동', lat: 33.4975, lon: 126.5337, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['이도이동', '도남동', '영평동', '오등동'], aliases: ['도남'] });
+    addLocation({ name: '제주특별자치시 제주시 삼도1동', lat: 33.5113, lon: 126.5120, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['삼도일동'] });
+    addLocation({ name: '제주특별자치시 제주시 삼도2동', lat: 33.5090, lon: 126.5080, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['삼도이동'] });
+    addLocation({ name: '제주특별자치시 제주시 건입동', lat: 33.5140, lon: 126.5360, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['건입동'] });
+    addLocation({ name: '제주특별자치시 제주시 화북동', lat: 33.5210, lon: 126.5700, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['화북일동', '화북이동'] });
+    addLocation({ name: '제주특별자치시 제주시 삼양동', lat: 33.5260, lon: 126.6010, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['삼양일동', '삼양이동', '삼양삼동'] });
+    addLocation({ name: '제주특별자치시 제주시 봉개동', lat: 33.4590, lon: 126.6190, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['봉개동'] });
+    addLocation({ name: '제주특별자치시 제주시 아라동', lat: 33.4680, lon: 126.5490, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['아라일동', '아라이동'] });
+    addLocation({ name: '제주특별자치시 제주시 오라동', lat: 33.4800, lon: 126.4990, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['오라일동', '오라이동', '오라삼동'] });
+    addLocation({ name: '제주특별자치시 제주시 연동', lat: 33.4890, lon: 126.4900, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['연동'] });
+    addLocation({ name: '제주특별자치시 제주시 노형동', lat: 33.4850, lon: 126.4670, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['노형동'] });
+    addLocation({ name: '제주특별자치시 제주시 외도동', lat: 33.5040, lon: 126.4490, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['외도일동', '외도이동', '외도삼동'] });
+    addLocation({ name: '제주특별자치시 제주시 이호동', lat: 33.5130, lon: 126.4710, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['이호일동', '이호이동'] });
+    addLocation({ name: '제주특별자치시 제주시 도두동', lat: 33.5160, lon: 126.4350, type: '행정동', admin_parent: '제주특별자치시 제주시', legal_divisions: ['도두일동', '도두이동'] });
+    addLocation({ name: '제주특별자치시 제주시 애월읍', lat: 33.4560, lon: 126.3300, type: '읍', admin_parent: '제주특별자치시 제주시', legal_divisions: ['고내리', '고성리', '곽지리', '광령리', '구엄리', '금성리', '납읍리', '봉성리', '상가리', '상귀리', '소길리', '수산리', '애월리', '어음리', '신엄리', '유수암리'] });
+    addLocation({ name: '제주특별자치시 제주시 한림읍', lat: 33.4140, lon: 126.2570, type: '읍', admin_parent: '제주특별자치시 제주시', legal_divisions: ['귀덕리', '금능리', '금악리', '대림리', '동명리', '명월리', '상대리', '상명리', '수원리', '옹포리', '월령리', '월림리', '한림리', '한수리', '협재리'] });
+    addLocation({ name: '제주특별자치시 제주시 구좌읍', lat: 33.5180, lon: 126.8370, type: '읍', admin_parent: '제주특별자치시 제주시', legal_divisions: ['김녕리', '덕천리', '동복리', '상도리', '세화리', '송당리', '월정리', '종달리', '평대리', '하도리', '한동리', '행원리'] });
+    addLocation({ name: '제주특별자치시 제주시 조천읍', lat: 33.5320, lon: 126.6800, type: '읍', admin_parent: '제주특별자치시 제주시', legal_divisions: ['교래리', '대흘리', '북촌리', '선흘리', '신촌리', '신흥리', '와산리', '와흘리', '조천리', '함덕리'] });
+    addLocation({ name: '제주특별자치시 제주시 한경면', lat: 33.3280, lon: 126.1730, type: '면', admin_parent: '제주특별자치시 제주시', legal_divisions: ['고산리', '금등리', '낙천리', '두모리', '신창리', '용수리', '저지리', '조수리', '청수리', '판포리'] });
+    addLocation({ name: '제주특별자치시 제주시 추자면', lat: 33.9500, lon: 126.3200, type: '면', admin_parent: '제주특별자치시 제주시', legal_divisions: ['대서리', '묵리', '신양리', '영흥리', '예초리'], aliases: ['추자'] });
+    addLocation({ name: '제주특별자치시 제주시 우도면', lat: 33.5040, lon: 126.9530, type: '면', admin_parent: '제주특별자치시 제주시', legal_divisions: ['연평리'], aliases: ['우도'] });
+    addLocation({ name: '제주특별자치시 서귀포시', lat: 33.2540, lon: 126.5600, type: '기초자치단체', admin_parent: '제주특별자치도', aliases: ['서귀포', '서귀포시'] });
+    addLocation({ name: '제주특별자치시 서귀포시 정방동', lat: 33.2490, lon: 126.5690, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['서귀동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 중앙동', lat: 33.2500, lon: 126.5630, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['서귀동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 천지동', lat: 33.2470, lon: 126.5560, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['서귀동', '서홍동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 효돈동', lat: 33.2800, lon: 126.6100, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['하효동', '신효동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 영천동', lat: 33.2850, lon: 126.5800, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['토평동', '서귀동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 동홍동', lat: 33.2700, lon: 126.5750, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['동홍동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 서홍동', lat: 33.2600, lon: 126.5400, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['서홍동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 대륜동', lat: 33.2450, lon: 126.5200, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['법환동', '서호동', '호근동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 대천동', lat: 33.2580, lon: 126.4900, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['강정동', '도순동', '영남동', '월평동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 중문동', lat: 33.2440, lon: 126.4300, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['중문동', '대포동', '하원동', '회수동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 예래동', lat: 33.2480, lon: 126.3800, type: '행정동', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['예래동', '상예동', '하예동'] });
+    addLocation({ name: '제주특별자치시 서귀포시 대정읍', lat: 33.2260, lon: 126.2570, type: '읍', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['하모리', '상모리', '신평리', '영락리', '무릉리', '보성리', '안성리', '구억리', '인성리', '일과리', '동일1리', '동일2리', '가파리', '마라리'] });
+    addLocation({ name: '제주특별자치시 서귀포시 남원읍', lat: 33.2800, lon: 126.7300, type: '읍', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['남원리', '위미리', '태흥리', '한남리', '의귀리', '신례리', '하례리'] });
+    addLocation({ name: '제주특별자치시 서귀포시 성산읍', lat: 33.3800, lon: 126.8900, type: '읍', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['성산리', '고성리', '온평리', '신풍리', '수산리', '신천리', '삼달리', '오조리', '시흥리'], aliases: ['성산일출봉'] });
+    addLocation({ name: '제주특별자치시 서귀포시 안덕면', lat: 33.2500, lon: 126.3100, type: '면', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['화순리', '감산리', '서광리', '동광리', '사계리', '창천리', '상창리', '광평리', '덕수리'] });
+    addLocation({ name: '제주특별자치시 서귀포시 표선면', lat: 33.3000, lon: 126.8300, type: '면', admin_parent: '제주특별자치시 서귀포시', legal_divisions: ['표선리', '세화리', '가시리', '성읍리', '하천리', '토산리'] });
 
-        const response = await axios.get(url, {
-            params: params,
-            signal: controller.signal,
-            headers: {
-                'User-Agent': 'KMA-Weather-Service/3.0-SPEC-COMPLIANT'
+
+    // 모듈이 반환할 최종 객체
+    return {
+        locationData,
+        latLonToGrid,
+
+        findAllMatches: (searchTerm) => {
+            const normalizedSearch = searchTerm.trim().toLowerCase().replace(/\s+/g, '');
+            if (!normalizedSearch) return [];
+            const matchedIds = new Set();
+            for (const key in searchIndex) {
+                if (key.includes(normalizedSearch)) {
+                    searchIndex[key].forEach(id => matchedIds.add(id));
+                }
             }
-        });
-        
-        clearTimeout(timeoutId);
-        return response;
-    } catch (error) {
-        if (retries > 0 && (error.code === 'ECONNABORTED' || error.name === 'AbortError')) {
-            logger.warn(`API 호출 재시도 (남은 횟수: ${retries - 1})`, { 
-                url, 
-                error_message: error.message 
-            });
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            return apiCallWithRetry(url, params, retries - 1);
-        }
-        throw error;
-    }
-};
-
-// ===================================================================== 
-// 입력 검증
-
-const validateInput = {
-    latitude: (lat) => {
-        const num = parseFloat(lat);
-        if (isNaN(num) || num < 33 || num > 43) {
-            throw new WeatherAPIError(
-                '유효하지 않은 위도입니다. 위도는 33-43 범위여야 합니다.',
-                'INVALID_LATITUDE',
-                400
-            );
-        }
-        return num;
-    },
-    
-    longitude: (lon) => {
-        const num = parseFloat(lon);
-        if (isNaN(num) || num < 124 || num > 132) {
-            throw new WeatherAPIError(
-                '유효하지 않은 경도입니다. 경도는 124-132 범위여야 합니다.',
-                'INVALID_LONGITUDE', 
-                400
-            );
-        }
-        return num;
-    },
-    
-    region: (region) => {
-        if (typeof region !== 'string' || region.trim().length === 0 || region.length > 50) {
-            throw new WeatherAPIError(
-                '유효하지 않은 지역명입니다. 1자 이상 50자 이하의 문자열이어야 합니다.',
-                'INVALID_REGION',
-                400
-            );
-        }
-        return region.replace(/[<>"'&]/g, ''); // XSS 방지
-    }
-};
-
-// ===================================================================== 
-// Rate Limiting
-
-const rateLimitMap = new Map();
-
-const checkRateLimit = (ip, limit = 100, windowMs = 60 * 1000) => {
-    if (!ip) return;
-    
-    const now = Date.now();
-    const userRequests = rateLimitMap.get(ip) || [];
-    const recentRequests = userRequests.filter(time => now - time < windowMs);
-    
-    if (recentRequests.length >= limit) {
-        metrics.rateLimited++;
-        throw new WeatherAPIError(
-            '요청 한도 초과입니다. 잠시 후 다시 시도해주세요.',
-            'RATE_LIMIT_EXCEEDED',
-            429
-        );
-    }
-    
-    recentRequests.push(now);
-    rateLimitMap.set(ip, recentRequests);
-};
-
-// ===================================================================== 
-// 메인 날씨 API 핸들러
-
-const handleWeatherRequest = async (req, res) => {
-    metrics.apiCalls++;
-    const startTime = Date.now();
-    
-    try {
-        const { lat, lon, region = '서울특별시' } = req.query;
-        
-        // 환경 변수 검증
-        if (!WEATHER_API_KEY) {
-            const errorMessage = 'WEATHER_API_KEY 환경 변수가 설정되지 않았습니다.';
-            logger.error(errorMessage);
-            return res.status(500).json({
-                success: false,
-                data: generateSampleData(region, errorMessage),
-                error: errorMessage,
-                code: 'API_KEY_MISSING'
-            });
-        }
-        
-        // 좌표 결정
-        let latitude, longitude, locationName;
-        
-        if (lat && lon) {
-            latitude = validateInput.latitude(lat);
-            longitude = validateInput.longitude(lon);
-            locationName = `위도 ${latitude}, 경도 ${longitude}`;
-        } else {
-            // 기본 지역 좌표 (서울)
-            latitude = 37.5665;
-            longitude = 126.9780;
-            locationName = validateInput.region(region);
-        }
-        
-        // 기상청 격자 좌표 변환
-        const coordinates = gridConverter.latLonToGrid(latitude, longitude);
-        
-        // base_date, base_time 계산
-        const kstNow = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
-        const { baseDate, baseTime } = calculateBaseDateTime(kstNow);
-        
-        // 캐시 확인
-        const cacheKey = `weather_${coordinates.nx}_${coordinates.ny}_${baseDate}_${baseTime}`;
-        const cachedData = weatherCache.get(cacheKey);
-        
-        if (cachedData && (Date.now() - cachedData.timestamp < WEATHER_CONFIG.CACHE.TTL_MINUTES * 60 * 1000)) {
-            logger.info('✅ 캐시된 데이터 사용', { cacheKey });
-            metrics.cacheHits++;
-            
-            const responseTime = Date.now() - startTime;
-            metrics.addResponseTime(responseTime);
-            
-            return res.json({
-                ...cachedData.data,
-                locationInfo: {
-                    requested: region,
-                    coordinates: coordinates,
-                    latLon: { lat: latitude, lon: longitude },
-                    source: '캐시'
-                }
-            });
-        }
-        
-        metrics.cacheMisses++;
-        
-        // 기상청 API 호출
-        logger.info('🌤️ 기상청 API 호출 시작', { 
-            baseDate, 
-            baseTime, 
-            nx: coordinates.nx, 
-            ny: coordinates.ny 
-        });
-        
-        const response = await apiCallWithRetry(WEATHER_CONFIG.API.BASE_URL, {
-            serviceKey: decodeURIComponent(WEATHER_API_KEY),
-            numOfRows: 300,
-            pageNo: 1,
-            dataType: 'JSON',
-            base_date: baseDate,
-            base_time: baseTime,
-            nx: coordinates.nx,
-            ny: coordinates.ny
-        });
-        
-        // API 응답 검증
-        if (!response.data?.response?.body?.items?.item) {
-            throw new WeatherAPIError(
-                '기상청 API 응답에 날씨 데이터가 없습니다.',
-                'API_RESPONSE_EMPTY',
-                500
-            );
-        }
-        
-        const resultCode = response.data.response.header.resultCode;
-        if (resultCode !== '00') {
-            const errorMsg = API_ERROR_MESSAGES[resultCode] || `알 수 없는 오류 (코드: ${resultCode})`;
-            throw new WeatherAPIError(
-                `기상청 API 오류: ${errorMsg}`,
-                `API_ERROR_${resultCode}`,
-                ['10', '11'].includes(resultCode) ? 400 : 500
-            );
-        }
-        
-        // 데이터 가공
-        const items = response.data.response.body.items.item || [];
-        logger.info('📊 받은 기상 데이터 항목 수', { count: items.length });
-        
-        const weatherData = processWeatherData(items, kstNow, locationName, coordinates);
-        
-        // 응답 데이터 구성
-        const responseData = {
-            success: true,
-            data: weatherData,
-            locationInfo: {
-                requested: region,
-                matched: locationName,
-                coordinates: coordinates,
-                latLon: { lat: latitude, lon: longitude },
-                source: '기상청 API'
-            },
-            apiInfo: {
-                source: '기상청 단기예보 조회서비스 (VilageFcstInfoService_2.0)',
-                baseDate: baseDate,
-                baseTime: baseTime,
-                timestamp: new Date().toISOString(),
-                dataPoints: items.length,
-                version: '3.0-KMA-SPEC-COMPLIANT',
-                improvements: [
-                    '기상청 공식 좌표 변환 공식 적용',
-                    '정확한 API 호출 시점 (매시각 10분 이후)',
-                    'Missing 값 처리 (+900이상, -900이하)',
-                    '해상 마스킹 처리',
-                    '16방위 풍향 변환 공식',
-                    '강수량/적설량 범위 처리',
-                    '기상청 공식 체감온도 계산'
-                ]
-            },
-            weatherCodes: WEATHER_CODES
-        };
-        
-        // 캐싱
-        weatherCache.set(cacheKey, {
-            data: responseData,
-            timestamp: Date.now()
-        });
-        
-        cleanupCache();
-        
-        const responseTime = Date.now() - startTime;
-        metrics.addResponseTime(responseTime);
-        metrics.addRegionalRequest(locationName);
-        
-        logger.info('🎉 날씨 API 응답 성공', { responseTime: `${responseTime}ms` });
-        
-        return res.json(responseData);
-        
-    } catch (error) {
-        const responseTime = Date.now() - startTime;
-        metrics.addResponseTime(responseTime);
-        
-        logger.error(`날씨 API 오류: ${error.message}`, error, {
-            url: req.url,
-            query: req.query
-        });
-        
-        if (error instanceof WeatherAPIError) {
-            return res.status(error.statusCode).json({
-                success: false,
-                data: generateSampleData(req.query.region || '서울특별시', error.message),
-                error: error.message,
-                code: error.code
-            });
-        }
-        
-        return res.status(500).json({
-            success: false,
-            data: generateSampleData(req.query.region || '서울특별시', '서버 내부 오류'),
-            error: '서버 내부 오류가 발생했습니다.',
-            code: 'UNKNOWN_SERVER_ERROR'
-        });
-    }
-};
-
-// ===================================================================== 
-// 헬스체크 핸들러
-
-const handleHealthCheck = (req, res) => {
-    return res.json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        version: '3.0-KMA-SPEC-COMPLIANT',
-        description: '기상청 단기예보 조회서비스 API 가이드 완전 준수 버전',
-        cacheSize: weatherCache.size,
-        metrics: {
-            apiCalls: metrics.apiCalls,
-            apiErrors: metrics.apiErrors,
-            cacheHits: metrics.cacheHits,
-            cacheMisses: metrics.cacheMisses,
-            rateLimited: metrics.rateLimited,
-            coordinateConversions: metrics.coordinateConversions,
-            missingValueDetections: metrics.missingValueDetections,
-            seaAreaMasking: metrics.seaAreaMasking,
-            avgResponseTimeMs: metrics.avgResponseTime.toFixed(2),
-            regionalRequests: metrics.regionalRequests,
-            errorTypes: metrics.errorTypes
+            const results = Array.from(matchedIds).map(id => locationData[id]);
+            results.sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0));
+            return results;
         },
-        config: {
-            hasApiKey: !!WEATHER_API_KEY,
-            environment: process.env.NODE_ENV || 'production',
-            cacheTtlMinutes: WEATHER_CONFIG.CACHE.TTL_MINUTES,
-            apiTimeoutMs: WEATHER_CONFIG.API.TIMEOUT,
-            apiMaxRetries: WEATHER_CONFIG.API.MAX_RETRIES
+
+        findMatchingLocation: ({ lat, lon }) => {
+            let closestLocation = null;
+            let minDistance = Infinity;
+            Object.values(locationData).forEach(loc => {
+                if (['광역자치단체', '기초자치단체', '행정동', '읍', '면'].includes(loc.type)) {
+                    const distance = Math.pow(lat - loc.lat, 2) + Math.pow(lon - loc.lon, 2);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestLocation = loc;
+                    }
+                }
+            });
+            return closestLocation;
         },
-        kmaCompliance: {
-            coordinateConversion: '기상청 공식 Lambert Conformal Conic Projection',
-            apiCallTiming: '매시각 10분 이후 호출',
-            missingValueHandling: '+900이상, -900이하 값 Missing 처리',
-            seaAreaMasking: '해상 지역 기온군/강수확률/강수량/적설/습도 마스킹',
-            windDirection: '16방위 변환 공식 적용',
-            precipitationRange: '기상청 JAVA 코드 기준 범위 처리',
-            sensoryTemperature: '기상청 공식 체감온도 계산'
+        
+        searchLocations: (query, page = 1, size = 10) => {
+            const allMatches = locationModule.findAllMatches(query);
+            const totalResults = allMatches.length;
+            const totalPages = Math.ceil(totalResults / size);
+            const startIndex = (page - 1) * size;
+            const paginatedResults = allMatches.slice(startIndex, startIndex + size);
+            return {
+                results: paginatedResults.map(loc => ({
+                    ...loc,
+                    displayName: (loc.name.replace(loc.admin_parent || '', '').trim() || loc.name)
+                })),
+                pagination: {
+                    currentPage: page,
+                    totalPages,
+                    totalResults,
+                    pageSize: size
+                }
+            };
         }
-    });
-};
+    };
+})();
 
-// ===================================================================== 
-// 메인 핸들러 (Vercel entry point)
-
-module.exports = async function handler(req, res) {
-    // CORS 설정
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    
-    // OPTIONS 요청 처리
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-    
-    // GET 요청만 허용
-    if (req.method !== 'GET') {
-        return res.status(405).json({
-            success: false,
-            error: 'Method not allowed',
-            message: 'GET 요청만 지원됩니다.'
-        });
-    }
-    
-    // Rate Limiting
-    const clientIp = req.headers['x-forwarded-for']?.split(',').shift() || 
-                    req.connection?.remoteAddress || '';
-    
-    if (IS_PRODUCTION && clientIp) {
-        try {
-            checkRateLimit(clientIp, 100, 60 * 1000);
-        } catch (error) {
-            if (error instanceof WeatherAPIError && error.code === 'RATE_LIMIT_EXCEEDED') {
-                return res.status(error.statusCode).json({
-                    success: false,
-                    error: error.message,
-                    code: error.code
-                });
-            }
-            throw error;
-        }
-    }
-    
-    // 라우팅
-    const pathname = req.url.split('?')[0];
-    
-    if (pathname === '/api/health') {
-        return handleHealthCheck(req, res);
-    }
-    
-    // 기본 날씨 요청 처리
-    return handleWeatherRequest(req, res);
-};
+// CommonJS 모듈로 내보내기
+module.exports = locationModule;
