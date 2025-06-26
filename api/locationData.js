@@ -1,4 +1,24 @@
+/**
+ * @file locationData.js
+ * @description 제주특별자치도 내 모든 읍·면·동 단위의 행정 지역 데이터를 포함하는 파일.
+ * 이 버전은 법정동/리 대신 행정동/읍/면을 주요 데이터 기준으로 삼고,
+ * 각 행정구역이 관할하는 법정동/리 정보를 `legal_divisions` 배열에 포함합니다.
+ * 기상청 날씨 API 연동, 사용자 입력 대응, 행정 계층 구조 및 우선순위 정렬을 목적으로 합니다.
+ * 관광지 정보는 포함하지 않으며, 주소 데이터만 집중적으로 관리합니다.
+ * 이 파일은 weather.js에서 `require` 방식으로 임포트될 수 있도록 CommonJS 형식으로 변경되었습니다.
+ *
+ * 위경도 좌표는 제주 지역의 일반적인 지리 정보와 주요 지점을 기준으로 설정되었으며,
+ * 사용자가 제공한 SHP/GeoJSON 원본 데이터의 정밀한 좌표를 직접 파싱한 결과는 아닙니다.
+ * (해당 데이터의 완전한 내용 접근 및 자동 파싱을 위해서는 추가적인 파일 제공이 필요합니다.)
+ */
 
+/**
+ * 위경도를 기상청 격자 좌표로 변환
+ * 기상청 단기예보/초단기예보 API의 격자 좌표를 계산하는 공식입니다.
+ * @param {number} lat - 위도 (십진수)
+ * @param {number} lon - 경도 (십진수)
+ * @returns {{nx: number, ny: number}} 격자 좌표 객체 (nx: X 좌표, ny: Y 좌표)
+ */
 const latLonToGrid = (lat, lon) => {
     const RE = 6371.00877; // 지구 반경 (km)
     const GRID = 5.0;      // 격자 간격 (km)
@@ -50,9 +70,9 @@ const latLonToGrid = (lat, lon) => {
  * @property {number} lon - 경도
  * @property {number} kma_nx - 기상청 격자 X 좌표
  * @property {number} kma_ny - 기상청 Y 좌표
- * @property {'광역자치단체'|'기초자치단체'|'행정동'|'읍'|'면'|'법정동'|'별칭'} type - 지역 유형
+ * @property {'광역자치단체'|'기초자치단체'|'행정동'|'읍'|'면'} type - 지역 유형 (행정동, 읍, 면만 최상위)
  * @property {string} [admin_parent] - 상위 행정 구역의 공식 명칭 (예: '제주특별자치시 제주시')
- * @property {string[]} [legal_divisions] - 해당 행정 구역이 관할하는 법정동/리 명칭 배열
+ * @property {string[]} [legal_divisions] - 해당 행정 구역에 속하는 법정동/리 명칭 배열
  * @property {string[]} [aliases] - 검색을 위한 추가 별칭 배열 (예: ['제주도'])
  * @property {number} [priority_score] - 중복 이름 해결 및 검색 결과 우선순위를 위한 점수 (높을수록 우선)
  */
@@ -61,7 +81,7 @@ const locationData = (() => {
 
     // 우선순위 점수 매핑 (높을수록 중요)
     // 행정동, 읍, 면에 높은 우선순위를 부여합니다.
-    const priorityMap = {
+   const priorityMap = {
         // 제주특별자치도 (최상위 우선순위)
         '제주특별자치도': 1000,
         '제주시': 950,
@@ -226,75 +246,46 @@ const locationData = (() => {
         '하동 화개장터': 640, '함양 상림': 630, '지리산': 620, '가야산': 610,
     };
 
-
     /**
      * 지역 데이터를 추가하는 헬퍼 함수
-     * @param {Object} locationObj - 지역 상세 정보 객체. kma_nx, kma_ny는 자동으로 계산됩니다.
-     * @param {string} locationObj.name - 지역의 공식 명칭
-     * @param {number} locationObj.lat - 위도
-     * @param {number} locationObj.lon - 경도
-     * @param {'광역자치단체'|'기초자치단체'|'행정동'|'읍'|'면'|'법정동'|'별칭'} locationObj.type - 지역 유형
-     * @param {string} [locationObj.admin_parent] - 상위 행정 구역의 공식 명칭
-     * @param {string[]} [locationObj.legal_divisions] - 해당 행정 구역이 관할하는 법정동/리 명칭 배열
-     * @param {string[]} [locationObj.aliases] - 검색을 위한 추가 별칭 배열
+     * @param {string} key - 데이터 객체의 키 (주로 지역명)
+     * @param {Object} locationObj - 지역 상세 정보 객체
+     * @param {string} [overrideName] - 실제 저장될 `name` 값 (별칭의 경우 원본 지역의 name 사용)
      */
-    const addLocation = (locationObj) => {
+    const addLocation = (key, locationObj, overrideName = null) => {
         const { lat, lon, name, type, admin_parent, legal_divisions, aliases } = locationObj;
+        const { nx, ny } = latLonToGrid(lat, lon);
         
-        // 경도 또는 위도가 유효한 숫자가 아니면 함수 실행 중단
-        if (typeof lat !== 'number' || typeof lon !== 'number' || isNaN(lat) || isNaN(lon)) {
-            console.error(`Error: Invalid lat/lon for name '${name}'. Lat: ${lat}, Lon: ${lon}`);
-            return;
-        }
+        // 실제 저장될 지역명. overrideName이 있으면 사용하고, 아니면 locationObj의 name 사용.
+        const finalName = overrideName || name;
+        const finalPriority = priorityMap[key] || 0; // 키에 해당하는 우선순위 사용
 
-        const { nx: kma_nx, ny: kma_ny } = latLonToGrid(lat, lon);
-
-        // 우선순위는 name 또는 aliases를 기반으로 priorityMap에서 조회
-        let finalPriority = priorityMap[name] || 0;
-        if (aliases) {
-            aliases.forEach(alias => {
-                if (priorityMap[alias] && priorityMap[alias] > finalPriority) {
-                    finalPriority = priorityMap[alias];
-                }
-            });
-        }
-        // 만약 priorityMap에 없는 새로운 지역이라면 기본값 0 또는 낮은 우선순위 부여
-        if (finalPriority === 0 && type !== '별칭') { // 별칭이 아닌 일반 지역에 대한 기본 우선순위
-            if (type === '광역자치단체') finalPriority = 100;
-            else if (type === '기초자치단체') finalPriority = 80;
-            else if (type === '행정동' || type === '읍' || type === '면') finalPriority = 60;
-            else if (type === '법정동') finalPriority = 40;
-        }
-
-
-        // 데이터 객체의 키는 name 속성을 기반으로 합니다.
         // 이미 더 높은 우선순위의 동일한 키가 있으면 덮어쓰지 않음
-        if (data[name] && data[name].priority_score && data[name].priority_score >= finalPriority) {
+        if (data[key] && data[key].priority_score && data[key].priority_score >= finalPriority) {
             return;
         }
 
-        const newLocation = {
-            name: name,
+        data[key] = {
+            name: finalName,
             lat: lat,
             lon: lon,
-            kma_nx: kma_nx,
-            kma_ny: kma_ny,
+            kma_nx: nx,
+            kma_ny: ny,
             type: type,
             admin_parent: admin_parent,
             legal_divisions: legal_divisions || [], // 법정동/리 목록
             aliases: aliases || [],
             priority_score: finalPriority
         };
-        data[name] = newLocation;
 
         // 별칭도 데이터에 추가 (공식 명칭보다 낮은 우선순위로, 원본 객체 참조)
         (aliases || []).forEach(alias => {
-            const aliasPriority = (priorityMap[alias] || 0) || (newLocation.priority_score - 10); // 별칭 기본 우선순위
+            const aliasPriority = (priorityMap[alias] || 0) || (finalPriority - 10); // 별칭 기본 우선순위
             if (!data[alias] || data[alias].priority_score < aliasPriority) {
                 // 별칭은 원본 지역 데이터를 참조하도록 하여 메모리 효율성을 높임
-                data[alias] = newLocation; 
+                data[alias] = data[key]; 
                 // 참조된 객체에 별칭의 우선순위를 직접 저장 (findMatches에서 활용)
-                data[alias].priority_score = aliasPriority; 
+                data[alias].priority = aliasPriority; 
             }
         });
 
@@ -303,10 +294,10 @@ const locationData = (() => {
             // 법정동/리 이름 자체를 키로 사용하되, 해당 행정동 객체를 참조하도록 함.
             // 이는 법정동/리를 검색했을 때 해당 행정동의 정보가 나오도록 하기 위함.
             // 단, 법정동/리 이름이 이미 다른 (더 높은 우선순위의) 행정동 키로 존재하면 덮어쓰지 않음
-            const legalDivPriority = newLocation.priority_score - 50; // 법정동은 행정동보다 낮은 우선순위
+            const legalDivPriority = finalPriority - 50; // 법정동은 행정동보다 낮은 우선순위
             if (!data[legalDiv] || data[legalDiv].priority_score < legalDivPriority) { 
-                data[legalDiv] = newLocation;
-                data[legalDiv].priority_score = legalDivPriority; // 참조된 객체에 우선순위 저장
+                data[legalDiv] = data[key];
+                data[legalDiv].priority = legalDivPriority; // 참조된 객체에 우선순위 저장
             }
         });
     };
@@ -1569,44 +1560,119 @@ addLocation('삼동면', {lat: 35.5190861111111, lon: 129.159155555555, name: '�
 
 
 
+    // 데이터 로드 확인용 통계 및 메타데이터
+    const METADATA = {
+        totalLocations: Object.keys(data).length,
+        lastUpdated: new Date().toISOString(),
+        coverage: {
+            cities: new Set(Object.values(data).filter(loc => loc.type === '광역자치단체' || loc.type === '기초자치단체').map(loc => loc.name)).size,
+            adminDivisions: new Set(Object.values(data).filter(loc => loc.type === '행정동' || loc.type === '읍' || loc.type === '면').map(loc => loc.name)).size
+        }
+    };
 
-
-return {
+    return {
+        locationData: data, // 실제 데이터 객체
+        latLonToGrid,
+        
         /**
-         * 이름을 기반으로 지역 정보를 조회합니다.
-         * @param {string} name - 조회할 지역의 이름 또는 별칭
-         * @returns {Object|null} 해당 지역 정보 객체 또는 null
+         * 검색어를 기반으로 지역을 검색하고 페이지네이션을 적용합니다.
+         * @param {string} searchTerm - 검색어
+         * @param {number} page - 요청 페이지 번호 (1부터 시작)
+         * @param {number} pageSize - 페이지당 항목 수
+         * @returns {{results: Array<Object>, pagination: Object}} 검색 결과 및 페이지네이션 정보
          */
-        get: (name) => {
-            return data[name] || null;
+        searchLocations: (searchTerm, page = 1, pageSize = 10) => {
+            const normalizedSearch = searchTerm.trim().toLowerCase();
+            const filtered = [];
+
+            // 먼저 모든 매칭되는 지역을 찾고, priority_score로 정렬 (findAllMatches와 유사)
+            for (const key in data) {
+                const location = data[key];
+                const keyLower = key.toLowerCase();
+                const nameLower = location.name.toLowerCase();
+
+                if (nameLower.includes(normalizedSearch) ||
+                    keyLower.includes(normalizedSearch) ||
+                    (location.aliases && location.aliases.some(alias => alias.toLowerCase().includes(normalizedSearch))) ||
+                    (location.legal_divisions && location.legal_divisions.some(ld => ld.toLowerCase().includes(normalizedSearch)))
+                ) {
+                    filtered.push({ ...location, key: key, priority: location.priority_score || 0 });
+                }
+            }
+
+            // 우선순위가 높은 순으로 정렬
+            filtered.sort((a, b) => b.priority - a.priority);
+
+            const totalResults = filtered.length;
+            const totalPages = Math.ceil(totalResults / pageSize);
+            const startIndex = (page - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+
+            const results = filtered.slice(startIndex, endIndex);
+
+            return {
+                results: results,
+                pagination: {
+                    currentPage: page,
+                    pageSize: pageSize,
+                    totalResults: totalResults,
+                    totalPages: totalPages
+                }
+            };
         },
 
         /**
-         * 검색 쿼리에 따라 일치하는 지역 목록을 반환합니다.
-         * 우선순위 점수를 기반으로 정렬됩니다.
-         * @param {string} query - 사용자의 검색 쿼리
-         * @returns {Array<Object>} 일치하는 지역 정보 객체 배열
+         * 좌표에 가장 가까운 행정 구역을 찾습니다. (간단한 근접성 판단)
+         * 이 함수는 정밀한 지리 공간 분석이 아닌, 가장 가까운 `locationData` 항목을 찾습니다.
+         * @param {{lat: number, lon: number}} coords - 위도 및 경도
+         * @returns {Object|null} 가장 가까운 지역 객체 또는 null
          */
-        findMatches: (query) => {
-            if (!query) return [];
-            const lowerCaseQuery = query.toLowerCase().replace(/\s/g, ''); // 공백 제거 후 소문자 변환
+        findMatchingLocation: (coords) => {
+            let closestLocation = null;
+            let minDistance = Infinity;
 
+            for (const key in data) {
+                const loc = data[key];
+                // 광역/기초자치단체, 행정동, 읍, 면만 대상 (관광지 등은 제외)
+                if (loc.type && ['광역자치단체', '기초자치단체', '행정동', '읍', '면'].includes(loc.type)) {
+                    const distance = Math.sqrt(
+                        Math.pow(coords.lat - loc.lat, 2) +
+                        Math.pow(coords.lon - loc.lon, 2)
+                    );
+
+                    // 거리가 같을 경우 priority_score가 높은 것을 선택
+                    if (distance < minDistance || (distance === minDistance && loc.priority_score > (closestLocation ? closestLocation.priority_score : 0))) {
+                        minDistance = distance;
+                        closestLocation = loc;
+                    }
+                }
+            }
+            return closestLocation;
+        },
+
+        /**
+         * 검색어를 기반으로 매칭되는 모든 지역을 찾고 우선순위에 따라 정렬합니다.
+         * 이 함수는 searchLocations와 유사하지만, 페이지네이션 없이 모든 매칭 결과를 반환합니다.
+         * @param {string} searchTerm - 검색어
+         * @returns {Array<Object>} 매칭되는 지역 객체 배열
+         */
+        findAllMatches: (searchTerm) => {
+            const normalizedSearch = searchTerm.trim().toLowerCase();
             const matches = [];
+
             for (const key in data) {
                 const location = data[key];
-                const nameMatches = location.name.toLowerCase().replace(/\s/g, '').includes(lowerCaseQuery);
-                const aliasMatches = (location.aliases || []).some(alias =>
-                    alias.toLowerCase().replace(/\s/g, '').includes(lowerCaseQuery)
-                );
-                const legalDivMatches = (location.legal_divisions || []).some(legalDiv =>
-                    legalDiv.toLowerCase().replace(/\s/g, '').includes(lowerCaseQuery)
-                );
+                const keyLower = key.toLowerCase();
+                const nameLower = location.name.toLowerCase();
 
-                if (nameMatches || aliasMatches || legalDivMatches) {
+                // 이름, 키 또는 별칭, 법정동/리 목록에 검색어가 포함되는 경우
+                if (nameLower.includes(normalizedSearch) ||
+                    keyLower.includes(normalizedSearch) ||
+                    (location.aliases && location.aliases.some(alias => alias.toLowerCase().includes(normalizedSearch))) ||
+                    (location.legal_divisions && location.legal_divisions.some(ld => ld.toLowerCase().includes(normalizedSearch)))
+                ) {
                     // 깊은 복사를 통해 원본 객체 변경 방지 및 `key`와 `priority` 추가
-                    // 중요: findMatches에서 반환되는 객체에 priority_score를 추가하여 정렬에 사용
-                    // addLocation에서 이미 priority_score를 설정하므로, 여기서 다시 계산할 필요는 없음.
-                    matches.push({ ...location, key: key }); 
+                    matches.push({ ...location, key: key, priority: location.priority_score || 0 });
                 }
             }
 
@@ -1616,7 +1682,7 @@ return {
                 const priorityB = b.priority_score !== undefined ? b.priority_score : 0;
 
                 if (priorityA !== priorityB) {
-                    return priorityB - priorityA; // 높은 점수가 먼저 오도록 내림차순 정렬
+                    return priorityB - priorityA;
                 }
                 // 우선순위가 같으면 이름으로 정렬
                 return a.name.localeCompare(b.name);
@@ -1639,12 +1705,10 @@ return {
 
             return { totalLocations, byType, byLevel };
         },
-        getMetadata: () => METADATA_INFO
+        getMetadata: () => METADATA,
+        // (필요 시) 메타데이터 업데이트 함수 등 추가 가능
     };
-})();
+})(); // 즉시 실행 함수로 locationData 객체 생성 및 초기화
 
-// 파일 외부에서 접근할 수 있도록 내보냅니다. (CommonJS 방식)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { locationData, latLonToGrid };
-}
-
+// CommonJS 모듈 내보내기
+module.exports = locationData;
