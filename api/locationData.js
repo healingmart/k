@@ -1,13 +1,15 @@
 /**
  * @file locationData.js
- * @description 전국 지역 정보를 담는 데이터 파일.
+ * @description 제주특별자치도 내 모든 읍·면·동 단위의 행정 지역 데이터를 포함하는 파일.
+ * 이 버전은 법정동/리 대신 행정동/읍/면을 주요 데이터 기준으로 삼고,
+ * 각 행정구역이 관할하는 법정동/리 정보를 `legal_divisions` 배열에 포함합니다.
  * 기상청 날씨 API 연동, 사용자 입력 대응, 행정 계층 구조 및 우선순위 정렬을 목적으로 합니다.
+ * 관광지 정보는 포함하지 않으며, 주소 데이터만 집중적으로 관리합니다.
  * 이 파일은 weather.js에서 `require` 방식으로 임포트될 수 있도록 CommonJS 형식으로 변경되었습니다.
  *
- * 이 버전은 법정동/리는 직접적인 지역 항목으로 추가하지 않고,
- * 해당 법정동/리를 관할하는 행정동/읍/면의 'legal_divisions'에 포함시켜 매핑합니다.
- * '법환동' 검색 시 '대륜동' 정보가 반환되도록 수정되었습니다.
- * 서울 지역 데이터는 사용자의 요청에 따라 제외되었습니다.
+ * 위경도 좌표는 제주 지역의 일반적인 지리 정보와 주요 지점을 기준으로 설정되었으며,
+ * 사용자가 제공한 SHP/GeoJSON 원본 데이터의 정밀한 좌표를 직접 파싱한 결과는 아닙니다.
+ * (해당 데이터의 완전한 내용 접근 및 자동 파싱을 위해서는 추가적인 파일 제공이 필요합니다.)
  */
 
 /**
@@ -68,9 +70,9 @@ const latLonToGrid = (lat, lon) => {
  * @property {number} lon - 경도
  * @property {number} kma_nx - 기상청 격자 X 좌표
  * @property {number} kma_ny - 기상청 Y 좌표
- * @property {'광역자치단체'|'기초자치단체'|'행정동'|'읍'|'면'|'법정동'|'별칭'} type - 지역 유형
+ * @property {'광역자치단체'|'기초자치단체'|'행정동'|'읍'|'면'} type - 지역 유형 (행정동, 읍, 면만 최상위)
  * @property {string} [admin_parent] - 상위 행정 구역의 공식 명칭 (예: '제주특별자치시 제주시')
- * @property {string[]} [legal_divisions] - 해당 행정 구역이 관할하는 법정동/리 명칭 배열
+ * @property {string[]} [legal_divisions] - 해당 행정 구역에 속하는 법정동/리 명칭 배열
  * @property {string[]} [aliases] - 검색을 위한 추가 별칭 배열 (예: ['제주도'])
  * @property {number} [priority_score] - 중복 이름 해결 및 검색 결과 우선순위를 위한 점수 (높을수록 우선)
  */
@@ -93,12 +95,23 @@ const locationData = (() => {
         '우도면': 690, '추자면': 680, '한경면': 670,
 
         // 서귀포시 행정동/읍/면 (상대적 중요도 및 인구수 고려, KMA 자주 사용 지역)
-        '중문동': 900, '동홍동': 890, '서홍동': 880, '대륜동': 870, // 대륜동 우선순위 유지
+        '중문동': 900, '동홍동': 890, '서홍동': 880, '대륜동': 870,
         '천지동': 860, '정방동': 850, '중앙동': 840, '효돈동': 830,
         '영천동': 820, '대천동': 810, '예래동': 800,
         '성산읍': 730, '대정읍': 720, '남원읍': 710, '표선면': 700, '안덕면': 690,
 
-        // 전국 주요 도시 및 지역 추가 (서울 지역은 요청에 따라 제외되었습니다.)
+        // 전국 주요 도시 및 지역 추가 (weather.js에서 이관)
+        // 서울특별시 (구별 + 주요 동)
+        '서울특별시': 1000, // 최상위 우선순위
+        '종로구': 900, '중구': 900, '용산구': 900, '성동구': 900, '광진구': 900,
+        '동대문구': 900, '중랑구': 900, '성북구': 900, '강북구': 900, '도봉구': 900,
+        '노원구': 900, '은평구': 900, '서대문구': 900, '마포구': 900, '양천구': 900,
+        '강서구': 900, '구로구': 900, '금천구': 900, '영등포구': 900, '동작구': 900,
+        '관악구': 900, '서초구': 900, '강남구': 900, '송파구': 900, '강동구': 900,
+        '명동': 850, '홍대': 850, '강남': 850, '이태원': 850, '잠실': 850,
+        '여의도': 850, '신촌': 850, '동대문': 850, '종로': 850,
+
+        // 부산광역시
         '부산광역시': 980,
         '해운대구': 880, '광안리': 840, '서면': 840, '남포동': 840, '태종대': 830, '기장군': 820,
 
@@ -173,68 +186,47 @@ const locationData = (() => {
         '새별오름': 580
     };
 
+
     /**
      * 지역 데이터를 추가하는 헬퍼 함수
-     * @param {Object} locationObj - 지역 상세 정보 객체. kma_nx, kma_ny는 자동으로 계산됩니다.
-     * @param {string} locationObj.name - 지역의 공식 명칭
-     * @param {number} locationObj.lat - 위도
-     * @param {number} locationObj.lon - 경도
-     * @param {'광역자치단체'|'기초자치단체'|'행정동'|'읍'|'면'|'법정동'|'별칭'} locationObj.type - 지역 유형
-     * @param {string} [locationObj.admin_parent] - 상위 행정 구역의 공식 명칭
-     * @param {string[]} [locationObj.legal_divisions] - 해당 행정 구역이 관할하는 법정동/리 명칭 배열
-     * @param {string[]} [locationObj.aliases] - 검색을 위한 추가 별칭 배열
+     * @param {string} key - 데이터 객체의 키 (주로 지역명)
+     * @param {Object} locationObj - 지역 상세 정보 객체
+     * @param {string} [overrideName] - 실제 저장될 `name` 값 (별칭의 경우 원본 지역의 name 사용)
      */
-    const addLocation = (locationObj) => {
+    const addLocation = (key, locationObj, overrideName = null) => {
         const { lat, lon, name, type, admin_parent, legal_divisions, aliases } = locationObj;
+        const { nx, ny } = latLonToGrid(lat, lon);
         
-        // latLonToGrid로 kma_nx, kma_ny 자동 계산
-        const { nx: kma_nx, ny: kma_ny } = latLonToGrid(lat, lon);
+        // 실제 저장될 지역명. overrideName이 있으면 사용하고, 아니면 locationObj의 name 사용.
+        const finalName = overrideName || name;
+        const finalPriority = priorityMap[key] || 0; // 키에 해당하는 우선순위 사용
 
-        // 우선순위는 name 또는 aliases를 기반으로 priorityMap에서 조회
-        let finalPriority = priorityMap[name] || 0;
-        if (aliases) {
-            aliases.forEach(alias => {
-                if (priorityMap[alias] && priorityMap[alias] > finalPriority) {
-                    finalPriority = priorityMap[alias];
-                }
-            });
-        }
-        // 만약 priorityMap에 없는 새로운 지역이라면 기본값 0 또는 낮은 우선순위 부여
-        if (finalPriority === 0 && type !== '별칭') { // 별칭이 아닌 일반 지역에 대한 기본 우선순위
-            if (type === '광역자치단체') finalPriority = 100;
-            else if (type === '기초자치단체') finalPriority = 80;
-            else if (type === '행정동' || type === '읍' || type === '면') finalPriority = 60;
-            else if (type === '법정동') finalPriority = 40;
-        }
-
-        // 데이터 객체의 키는 name 속성을 기반으로 합니다.
         // 이미 더 높은 우선순위의 동일한 키가 있으면 덮어쓰지 않음
-        if (data[name] && data[name].priority_score && data[name].priority_score >= finalPriority) {
+        if (data[key] && data[key].priority_score && data[key].priority_score >= finalPriority) {
             return;
         }
 
-        const newLocation = {
-            name: name,
+        data[key] = {
+            name: finalName,
             lat: lat,
             lon: lon,
-            kma_nx: kma_nx,
-            kma_ny: kma_ny,
+            kma_nx: nx,
+            kma_ny: ny,
             type: type,
             admin_parent: admin_parent,
             legal_divisions: legal_divisions || [], // 법정동/리 목록
             aliases: aliases || [],
             priority_score: finalPriority
         };
-        data[name] = newLocation;
 
         // 별칭도 데이터에 추가 (공식 명칭보다 낮은 우선순위로, 원본 객체 참조)
         (aliases || []).forEach(alias => {
-            const aliasPriority = (priorityMap[alias] || 0) || (newLocation.priority_score - 10); // 별칭 기본 우선순위
+            const aliasPriority = (priorityMap[alias] || 0) || (finalPriority - 10); // 별칭 기본 우선순위
             if (!data[alias] || data[alias].priority_score < aliasPriority) {
                 // 별칭은 원본 지역 데이터를 참조하도록 하여 메모리 효율성을 높임
-                data[alias] = newLocation; 
+                data[alias] = data[key]; 
                 // 참조된 객체에 별칭의 우선순위를 직접 저장 (findMatches에서 활용)
-                data[alias].priority_score = aliasPriority; 
+                data[alias].priority = aliasPriority; 
             }
         });
 
@@ -243,15 +235,16 @@ const locationData = (() => {
             // 법정동/리 이름 자체를 키로 사용하되, 해당 행정동 객체를 참조하도록 함.
             // 이는 법정동/리를 검색했을 때 해당 행정동의 정보가 나오도록 하기 위함.
             // 단, 법정동/리 이름이 이미 다른 (더 높은 우선순위의) 행정동 키로 존재하면 덮어쓰지 않음
-            const legalDivPriority = newLocation.priority_score - 50; // 법정동은 행정동보다 낮은 우선순위
+            const legalDivPriority = finalPriority - 50; // 법정동은 행정동보다 낮은 우선순위
             if (!data[legalDiv] || data[legalDiv].priority_score < legalDivPriority) { 
-                data[legalDiv] = newLocation;
-                data[legalDiv].priority_score = legalDivPriority; // 참조된 객체에 우선순위 저장
+                data[legalDiv] = data[key];
+                data[legalDiv].priority = legalDivPriority; // 참조된 객체에 우선순위 저장
             }
         });
     };
 
-    
+
+
    // 서울특별시
     addLocation({ name: '서울특별시', lat: 37.5665, lon: 126.9780, type: '광역자치단체', aliases: ['서울', '서울시'] });
 
@@ -527,103 +520,524 @@ const locationData = (() => {
     addLocation({ name: '서울특별시 강동구 강일동', lat: 37.5670, lon: 127.1700, type: '행정동', admin_parent: '서울특별시 강동구', legal_divisions: ['강일동'] });
 
 
-  // =============================================================
-    // 제주특별자치도 데이터
-    // 고객님 요청에 따라 서울 지역 데이터는 제외되었습니다.
-
-    addLocation({ name: '제주특별자치도', lat: 33.3616, lon: 126.5292, type: '광역자치단체', aliases: ['제주도'] });
-    addLocation({ name: '제주시', lat: 33.5097, lon: 126.5219, type: '기초자치단체', admin_parent: '제주특별자치도' });
-    addLocation({ name: '서귀포시', lat: 33.2509, lon: 126.5646, type: '기초자치단체', admin_parent: '제주특별자치도' });
-
-    // 제주시 행정동/읍/면
-    addLocation({ name: '연동', lat: 33.4862, lon: 126.4912, type: '행정동', admin_parent: '제주시', legal_divisions: ['연동'] });
-    addLocation({ name: '노형동', lat: 33.4891, lon: 126.4770, type: '행정동', admin_parent: '제주시', legal_divisions: ['노형동'] });
-    addLocation({ name: '아라동', lat: 33.4751, lon: 126.5448, type: '행정동', admin_parent: '제주시', legal_divisions: ['아라일동', '아라이동'] });
-    addLocation({ name: '이도2동', lat: 33.4939, lon: 126.5361, type: '행정동', admin_parent: '제주시', legal_divisions: ['이도이동'] });
-    addLocation({ name: '일도2동', lat: 33.5065, lon: 126.5332, type: '행정동', admin_parent: '제주시', legal_divisions: ['일도이동'] });
-    addLocation({ name: '삼양동', lat: 33.5309, lon: 126.5861, type: '행정동', admin_parent: '제주시', legal_divisions: ['삼양일동', '삼양이동', '삼양삼동'] });
-    addLocation({ name: '화북동', lat: 33.5222, lon: 126.5694, type: '행정동', admin_parent: '제주시', legal_divisions: ['화북일동', '화북이동'] });
-    addLocation({ name: '이도1동', lat: 33.4988, lon: 126.5250, type: '행정동', admin_parent: '제주시', legal_divisions: ['이도일동'] });
-    addLocation({ name: '일도1동', lat: 33.5085, lon: 126.5278, type: '행정동', admin_parent: '제주시', legal_divisions: ['일도일동'] });
-    addLocation({ name: '삼도1동', lat: 33.5133, lon: 126.5186, type: '행정동', admin_parent: '제주시', legal_divisions: ['삼도일동'] });
-    addLocation({ name: '삼도2동', lat: 33.5117, lon: 126.5147, type: '행정동', admin_parent: '제주시', legal_divisions: ['삼도이동'] });
-    addLocation({ name: '건입동', lat: 33.5146, lon: 126.5342, type: '행정동', admin_parent: '제주시', legal_divisions: ['건입동'] });
-    addLocation({ name: '오라동', lat: 33.4842, lon: 126.5056, type: '행정동', admin_parent: '제주시', legal_divisions: ['오라일동', '오라이동', '오라삼동'] });
-    addLocation({ name: '외도동', lat: 33.5139, lon: 126.4484, type: '행정동', admin_parent: '제주시', legal_divisions: ['외도일동', '외도이동', '외도삼동'] });
-    addLocation({ name: '이호동', lat: 33.5175, lon: 126.4764, type: '행정동', admin_parent: '제주시', legal_divisions: ['이호일동', '이호이동'] });
-    addLocation({ name: '도두동', lat: 33.5100, lon: 126.4670, type: '행정동', admin_parent: '제주시', legal_divisions: ['도두일동', '도두이동'] });
-    addLocation({ name: '봉개동', lat: 33.4560, lon: 126.5700, type: '행정동', admin_parent: '제주시', legal_divisions: ['봉개동'] });
-    addLocation({ name: '한림읍', lat: 33.4154, lon: 126.2690, type: '읍', admin_parent: '제주시', legal_divisions: ['한림리', '대림리', '동명리', '명월리', '상대리', '옹포리', '월림리', '재릉리', '협재리', '금악리', '상명리', '강구리'] });
-    addLocation({ name: '애월읍', lat: 33.4344, lon: 126.3559, type: '읍', admin_parent: '제주시', legal_divisions: ['애월리', '곽지리', '수산리', '고내리', '하가리', '신엄리', '봉성리', '소길리', '어음리', '유수암리', '광령리', '상귀리', '하귀리', '장전리', '납읍리', '용흥리', '상가리'] });
-    addLocation({ name: '구좌읍', lat: 33.5358, lon: 126.8398, type: '읍', admin_parent: '제주시', legal_divisions: ['김녕리', '덕천리', '동복리', '상도리', '세화리', '송당리', '월정리', '종달리', '평대리', '하도리', '한동리', '행원리'] });
-    addLocation({ name: '조천읍', lat: 33.5222, lon: 126.6579, type: '읍', admin_parent: '제주시', legal_divisions: ['조천리', '신촌리', '함덕리', '교래리', '대흘리', '선흘리', '북촌리', '와산리', '선교리'] });
-    addLocation({ name: '우도면', lat: 33.5074, lon: 126.9427, type: '면', admin_parent: '제주시', legal_divisions: ['천진리', '서광리', '오봉리', '고수목원'] });
-    addLocation({ name: '추자면', lat: 33.9515, lon: 126.2995, type: '면', admin_parent: '제주시', legal_divisions: ['대서리', '묵리', '신양리', '영흥리', '예초리'] });
-    addLocation({ name: '한경면', lat: 33.3275, lon: 126.1730, type: '면', admin_parent: '제주시', legal_divisions: ['고산리', '낙천리', '두모리', '판포리', '용수리', '신창리', '저지리', '청수리', '조수리', '금등리', '옹포리', '산포리', '대정리'] });
-
-    // 서귀포시 행정동/읍/면
-    addLocation({ name: '중문동', lat: 33.2427, lon: 126.4287, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['중문동'] });
-    addLocation({ name: '동홍동', lat: 33.2599, lon: 126.5615, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['동홍동'] });
-    addLocation({ name: '서홍동', lat: 33.2599, lon: 126.5510, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['서홍동'] });
-    addLocation({ name: '대륜동', lat: 33.2428, lon: 126.5273, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['강정동', '도순동', '월평동', '하원동', '영남동', '법환동', '서호동', '호근동'] }); // 법환동 포함
-    addLocation({ name: '천지동', lat: 33.2492, lon: 126.5620, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['서귀동', '정방동'] });
-    addLocation({ name: '정방동', lat: 33.2498, lon: 126.5645, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['정방동'] });
-    addLocation({ name: '중앙동', lat: 33.2505, lon: 126.5592, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['서귀동'] });
-    addLocation({ name: '효돈동', lat: 33.2625, lon: 126.6025, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['하효동', '토평동', '신효동'] });
-    addLocation({ name: '영천동', lat: 33.2847, lon: 126.6346, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['영남동', '토평동'] });
-    addLocation({ name: '대천동', lat: 33.2750, lon: 126.4800, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['강정동', '도순동', '월평동', '하원동', '영남동'] });
-    addLocation({ name: '예래동', lat: 33.2520, lon: 126.3910, type: '행정동', admin_parent: '서귀포시', legal_divisions: ['상예동', '하예동', '색달동'] });
-    addLocation({ name: '성산읍', lat: 33.4357, lon: 126.9189, type: '읍', admin_parent: '서귀포시', legal_divisions: ['성산리', '고성리', '수산리', '온평리', '신양리', '삼달리', '난산리', '신풍리', '시흥리'] });
-    addLocation({ name: '대정읍', lat: 33.2269, lon: 126.2626, type: '읍', admin_parent: '서귀포시', legal_divisions: ['하모리', '인성리', '모슬포', '상모리', '보성리', '구억리', '신평리', '안성리', '동일주리', '가파리', '마라리'] });
-    addLocation({ name: '남원읍', lat: 33.3082, lon: 126.7029, type: '읍', admin_parent: '서귀포시', legal_divisions: ['남원리', '위미리', '태흥리', '하례리', '신례리', '한남리', '의귀리', '수망리', '고망리'] });
-    addLocation({ name: '표선면', lat: 33.3516, lon: 126.8398, type: '면', admin_parent: '서귀포시', legal_divisions: ['표선리', '성읍리', '가시리', '세화리', '토산리', '하천리', '상천리'] });
-    addLocation({ name: '안덕면', lat: 33.2800, lon: 126.3270, type: '면', admin_parent: '서귀포시', legal_divisions: ['감산리', '창천리', '상창리', '광평리', '동광리', '덕수리', '화순리', '사계리', '서광리'] });
-
-    // 관광지 및 기타 별칭 (주요 지점)
-    addLocation({ name: '성산일출봉', lat: 33.4584, lon: 126.9427, type: '별칭', admin_parent: '서귀포시 성산읍' });
-    addLocation({ name: '한라산', lat: 33.3616, lon: 126.5292, type: '별칭', admin_parent: '제주특별자치도', aliases: ['한라산국립공원'] });
-    addLocation({ name: '제주공항', lat: 33.5114, lon: 126.4927, type: '별칭', admin_parent: '제주시', aliases: ['제주국제공항'] });
-    addLocation({ name: '서귀포 매일올레시장', lat: 33.2497, lon: 126.5658, type: '별칭', admin_parent: '서귀포시 중앙동' });
-    addLocation({ name: '협재해수욕장', lat: 33.3948, lon: 126.2393, type: '별칭', admin_parent: '제주시 한림읍' });
-    addLocation({ name: '새별오름', lat: 33.4140, lon: 126.3930, type: '별칭', admin_parent: '제주시 애월읍' });
+    
 
 
-return {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    // =============================================================
+    // 제주특별자치도 (광역자치단체)
+    addLocation('제주특별자치도', {
+        lat: 33.4891, lon: 126.5135, name: '제주특별자치도', type: '광역자치단체',
+        aliases: ['제주', '제주도'],
+        priority_score: priorityMap['제주특별자치도']
+    });
+
+    // =============================================================
+    // 제주시 (기초자치단체)
+    addLocation('제주시', {
+        lat: 33.5073, lon: 126.5148, name: '제주특별자치시 제주시', type: '기초자치단체', admin_parent: '제주특별자치도',
+        aliases: [],
+        priority_score: priorityMap['제주시']
+    });
+
+    // 제주시 행정동
+    addLocation('일도1동', {
+        lat: 33.5130, lon: 126.5270, name: '제주특별자치시 제주시 일도1동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['일도일동'], aliases: [], priority_score: priorityMap['일도1동']
+    });
+    addLocation('일도2동', {
+        lat: 33.5078, lon: 126.5362, name: '제주특별자치시 제주시 일도2동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['일도이동'], aliases: [], priority_score: priorityMap['일도2동']
+    });
+    addLocation('이도1동', {
+        lat: 33.5060, lon: 126.5180, name: '제주특별자치시 제주시 이도1동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['이도일동'], aliases: [], priority_score: priorityMap['이도1동']
+    });
+    addLocation('이도2동', {
+        lat: 33.4975, lon: 126.5337, name: '제주특별자치시 제주시 이도2동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['이도이동', '도남동', '영평동', '오등동'], aliases: ['도남'], priority_score: priorityMap['이도2동']
+    }); // 영평동, 오등동은 현재 이도2동 관할 (법정동)
+    addLocation('삼도1동', {
+        lat: 33.5113, lon: 126.5120, name: '제주특별자치시 제주시 삼도1동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['삼도일동'], aliases: [], priority_score: priorityMap['삼도1동']
+    });
+    addLocation('삼도2동', {
+        lat: 33.5090, lon: 126.5080, name: '제주특별자치시 제주시 삼도2동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['삼도이동'], aliases: [], priority_score: priorityMap['삼도2동']
+    });
+    addLocation('건입동', {
+        lat: 33.5140, lon: 126.5360, name: '제주특별자치시 제주시 건입동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['건입동'], aliases: [], priority_score: priorityMap['건입동']
+    });
+    addLocation('화북동', {
+        lat: 33.5210, lon: 126.5700, name: '제주특별자치시 제주시 화북동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['화북일동', '화북이동'], aliases: [], priority_score: priorityMap['화북동']
+    });
+    addLocation('삼양동', {
+        lat: 33.5260, lon: 126.6010, name: '제주특별자치시 제주시 삼양동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['삼양일동', '삼양이동', '삼양삼동'], aliases: [], priority_score: priorityMap['삼양동']
+    });
+    addLocation('봉개동', {
+        lat: 33.4590, lon: 126.6190, name: '제주특별자치시 제주시 봉개동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['봉개동'], aliases: [], priority_score: priorityMap['봉개동']
+    });
+    addLocation('아라동', {
+        lat: 33.4680, lon: 126.5490, name: '제주특별자치시 제주시 아라동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['아라일동', '아라이동'], aliases: [], priority_score: priorityMap['아라동']
+    });
+    addLocation('오라동', {
+        lat: 33.4800, lon: 126.4990, name: '제주특별자치시 제주시 오라동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['오라일동', '오라이동', '오라삼동'], aliases: [], priority_score: priorityMap['오라동']
+    });
+    addLocation('연동', {
+        lat: 33.4890, lon: 126.4900, name: '제주특별자치시 제주시 연동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['연동'], aliases: [], priority_score: priorityMap['연동']
+    });
+    addLocation('노형동', {
+        lat: 33.4850, lon: 126.4670, name: '제주특별자치시 제주시 노형동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['노형동'], aliases: [], priority_score: priorityMap['노형동']
+    });
+    addLocation('외도동', {
+        lat: 33.5040, lon: 126.4490, name: '제주특별자치시 제주시 외도동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['외도일동', '외도이동', '외도삼동'], aliases: [], priority_score: priorityMap['외도동']
+    });
+    addLocation('이호동', {
+        lat: 33.5130, lon: 126.4710, name: '제주특별자치시 제주시 이호동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['이호일동', '이호이동'], aliases: [], priority_score: priorityMap['이호동']
+    });
+    addLocation('도두동', {
+        lat: 33.5160, lon: 126.4350, name: '제주특별자치시 제주시 도두동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['도두일동', '도두이동'], aliases: [], priority_score: priorityMap['도두동']
+    });
+
+    // 제주시 읍·면
+    addLocation('애월읍', {
+        lat: 33.4560, lon: 126.3300, name: '제주특별자치시 제주시 애월읍', type: '읍', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: [
+            '고내리', '고성리', '곽지리', '광령리', '구엄리', '금성리', '납읍리', '봉성리',
+            '상가리', '상귀리', '소길리', '수산리', '애월리', '어음리', '신엄리', '유수암리'
+        ], aliases: [], priority_score: priorityMap['애월읍']
+    });
+    addLocation('한림읍', {
+        lat: 33.4140, lon: 126.2570, name: '제주특별자치시 제주시 한림읍', type: '읍', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: [
+            '귀덕리', '금능리', '금악리', '대림리', '동명리', '명월리', '상대리', '상명리',
+            '수원리', '옹포리', '월령리', '월림리', '한림리', '한수리', '협재리'
+        ], aliases: [], priority_score: priorityMap['한림읍']
+    });
+    addLocation('구좌읍', {
+        lat: 33.5180, lon: 126.8370, name: '제주특별자치시 제주시 구좌읍', type: '읍', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: [
+            '김녕리', '덕천리', '동복리', '상도리', '세화리', '송당리', '월정리', '종달리',
+            '평대리', '하도리', '한동리', '행원리'
+        ], aliases: [], priority_score: priorityMap['구좌읍']
+    });
+    addLocation('조천읍', {
+        lat: 33.5320, lon: 126.6800, name: '제주특별자치시 제주시 조천읍', type: '읍', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: [
+            '교래리', '대흘리', '북촌리', '선흘리', '신촌리', '신흥리', '와산리', '와흘리',
+            '조천리', '함덕리'
+        ], aliases: [], priority_score: priorityMap['조천읍']
+    });
+    addLocation('한경면', {
+        lat: 33.3280, lon: 126.1730, name: '제주특별자치시 제주시 한경면', type: '면', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: [
+            '고산리', '금등리', '낙천리', '두모리', '신창리', '용수리', '저지리', '조수리',
+            '청수리', '판포리'
+        ], aliases: [], priority_score: priorityMap['한경면']
+    });
+    addLocation('추자면', {
+        lat: 33.9500, lon: 126.3200, name: '제주특별자치시 제주시 추자면', type: '면', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['대서리', '묵리', '신양리', '영흥리', '예초리'], aliases: ['추자'], priority_score: priorityMap['추자면']
+    });
+    addLocation('우도면', {
+        lat: 33.5040, lon: 126.9530, name: '제주특별자치시 제주시 우도면', type: '면', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['연평리'], aliases: ['우도'], priority_score: priorityMap['우도면']
+    });
+
+
+    // =============================================================
+    // 서귀포시 (기초자치단체)
+    addLocation('서귀포시', {
+        lat: 33.2540, lon: 126.5600, name: '제주특별자치시 서귀포시', type: '기초자치단체', admin_parent: '제주특별자치도',
+        aliases: ['서귀포'],
+        priority_score: priorityMap['서귀포시']
+    });
+
+    // 서귀포시 행정동
+    addLocation('정방동', {
+        lat: 33.2490, lon: 126.5690, name: '제주특별자치시 서귀포시 정방동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['서귀동'], aliases: [], priority_score: priorityMap['정방동']
+    });
+    addLocation('중앙동', {
+        lat: 33.2500, lon: 126.5630, name: '제주특별자치시 서귀포시 중앙동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['서귀동'], aliases: [], priority_score: priorityMap['중앙동']
+    });
+    addLocation('천지동', {
+        lat: 33.2470, lon: 126.5560, name: '제주특별자치시 서귀포시 천지동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['서귀동', '서홍동'], aliases: [], priority_score: priorityMap['천지동']
+    });
+    addLocation('효돈동', {
+        lat: 33.2800, lon: 126.6100, name: '제주특별자치시 서귀포시 효돈동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['하효동', '신효동'], aliases: [], priority_score: priorityMap['효돈동']
+    });
+    addLocation('영천동', {
+        lat: 33.2850, lon: 126.5800, name: '제주특별자치시 서귀포시 영천동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['토평동', '서귀동'], aliases: [], priority_score: priorityMap['영천동']
+    });
+    addLocation('동홍동', {
+        lat: 33.2700, lon: 126.5750, name: '제주특별자치시 서귀포시 동홍동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['동홍동'], aliases: [], priority_score: priorityMap['동홍동']
+    });
+    addLocation('서홍동', {
+        lat: 33.2600, lon: 126.5400, name: '제주특별자치시 서귀포시 서홍동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['서홍동'], aliases: [], priority_score: priorityMap['서홍동']
+    });
+    addLocation('대륜동', {
+        lat: 33.2450, lon: 126.5200, name: '제주특별자치시 서귀포시 대륜동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['법환동', '서호동', '호근동'], aliases: [], priority_score: priorityMap['대륜동']
+    });
+    addLocation('대천동', {
+        lat: 33.2580, lon: 126.4900, name: '제주특별자치시 서귀포시 대천동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['강정동', '도순동', '영남동', '월평동'], aliases: [], priority_score: priorityMap['대천동']
+    });
+    addLocation('중문동', {
+        lat: 33.2440, lon: 126.4300, name: '제주특별자치시 서귀포시 중문동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['중문동', '대포동', '하원동', '회수동'], aliases: [], priority_score: priorityMap['중문동']
+    });
+    addLocation('예래동', {
+        lat: 33.2480, lon: 126.3800, name: '제주특별자치시 서귀포시 예래동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['예래동', '상예동', '하예동'], aliases: [], priority_score: priorityMap['예래동']
+    });
+
+    // 서귀포시 읍·면
+    addLocation('대정읍', {
+        lat: 33.2260, lon: 126.2570, name: '제주특별자치시 서귀포시 대정읍', type: '읍', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: [
+            '하모리', '상모리', '신평리', '영락리', '무릉리', '보성리', '안성리', '구억리',
+            '인성리', '일과리', '동일1리', '동일2리', '가파리', '마라리'
+        ], aliases: [], priority_score: priorityMap['대정읍']
+    });
+    addLocation('남원읍', {
+        lat: 33.2800, lon: 126.7300, name: '제주특별자치시 서귀포시 남원읍', type: '읍', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: [
+            '남원리', '위미리', '태흥리', '한남리', '의귀리', '신례리', '하례리'
+        ], aliases: [], priority_score: priorityMap['남원읍']
+    });
+    addLocation('성산읍', {
+        lat: 33.3800, lon: 126.8900, name: '제주특별자치시 서귀포시 성산읍', type: '읍', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: [
+            '성산리', '고성리', '온평리', '신풍리', '수산리', '신천리', '삼달리', '오조리', '시흥리'
+        ], aliases: ['성산일출봉'], // 성산일출봉을 성산읍의 별칭으로 추가
+        priority_score: priorityMap['성산읍']
+    });
+    addLocation('안덕면', {
+        lat: 33.2500, lon: 126.3100, name: '제주특별자치시 서귀포시 안덕면', type: '면', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: [
+            '화순리', '감산리', '서광리', '동광리', '사계리', '창천리', '상창리', '광평리', '덕수리'
+        ], aliases: [], priority_score: priorityMap['안덕면']
+    });
+    addLocation('표선면', {
+        lat: 33.3000, lon: 126.8300, name: '제주특별자치시 서귀포시 표선면', type: '면', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: [
+            '표선리', '세화리', '가시리', '성읍리', '하천리', '토산리'
+        ], aliases: [], priority_score: priorityMap['표선면']
+    });
+
+    // =============================================================
+    // 전국 주요 도시 및 지역 데이터 추가 (weather.js에서 이관)
+    // 서울특별시
+    addLocation('서울특별시', { lat: 37.5665, lon: 126.9780, name: '서울특별시', type: '광역자치단체', aliases: ['서울', '서울시'], priority_score: priorityMap['서울특별시'] });
+    addLocation('종로구', { lat: 37.5735, lon: 126.9788, name: '서울특별시 종로구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['종로구'] });
+    addLocation('중구서울', { lat: 37.5641, lon: 126.9979, name: '서울특별시 중구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['중구'], priority_score: priorityMap['중구'] });
+    addLocation('용산구', { lat: 37.5326, lon: 126.9905, name: '서울특별시 용산구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['용산구'] });
+    addLocation('성동구', { lat: 37.5635, lon: 127.0365, name: '서울특별시 성동구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['성동구'] });
+    addLocation('광진구', { lat: 37.5384, lon: 127.0822, name: '서울특별시 광진구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['광진구'] });
+    addLocation('동대문구', { lat: 37.5744, lon: 127.0394, name: '서울특별시 동대문구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['동대문구'] });
+    addLocation('중랑구', { lat: 37.6063, lon: 127.0925, name: '서울특별시 중랑구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['중랑구'] });
+    addLocation('성북구', { lat: 37.5894, lon: 127.0167, name: '서울특별시 성북구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['성북구'] });
+    addLocation('강북구', { lat: 37.6397, lon: 127.0256, name: '서울특별시 강북구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['강북구'] });
+    addLocation('도봉구', { lat: 37.6688, lon: 127.0471, name: '서울특별시 도봉구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['도봉구'] });
+    addLocation('노원구', { lat: 37.6541, lon: 127.0568, name: '서울특별시 노원구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['노원구'] });
+    addLocation('은평구', { lat: 37.6176, lon: 126.9227, name: '서울특별시 은평구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['은평구'] });
+    addLocation('서대문구', { lat: 37.5791, lon: 126.9368, name: '서울특별시 서대문구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['서대문구'] });
+    addLocation('마포구', { lat: 37.5615, lon: 126.9088, name: '서울특별시 마포구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['마포구'] });
+    addLocation('양천구', { lat: 37.5173, lon: 126.8665, name: '서울특별시 양천구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['양천구'] });
+    addLocation('강서구', { lat: 37.5509, lon: 126.8495, name: '서울특별시 강서구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['강서구'] });
+    addLocation('구로구', { lat: 37.4954, lon: 126.8874, name: '서울특별시 구로구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['구로구'] });
+    addLocation('금천구', { lat: 37.4571, lon: 126.9009, name: '서울특별시 금천구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['금천구'] });
+    addLocation('영등포구', { lat: 37.5262, lon: 126.9095, name: '서울특별시 영등포구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['영등포구'] });
+    addLocation('동작구', { lat: 37.5124, lon: 126.9392, name: '서울특별시 동작구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['동작구'] });
+    addLocation('관악구', { lat: 37.4784, lon: 126.9517, name: '서울특별시 관악구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['관악구'] });
+    addLocation('서초구', { lat: 37.4837, lon: 127.0324, name: '서울특별시 서초구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['서초구'] });
+    addLocation('강남구', { lat: 37.5172, lon: 127.0473, name: '서울특별시 강남구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['강남구'] });
+    addLocation('송파구', { lat: 37.5145, lon: 127.1054, name: '서울특별시 송파구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['송파구'] });
+    addLocation('강동구', { lat: 37.5298, lon: 127.1269, name: '서울특별시 강동구', type: '기초자치단체', admin_parent: '서울특별시', aliases: [], priority_score: priorityMap['강동구'] });
+    addLocation('명동', { lat: 37.5610, lon: 126.9860, name: '서울특별시 중구 명동', type: '법정동', admin_parent: '서울특별시 중구', aliases: [], priority_score: priorityMap['명동'] });
+    addLocation('홍대', { lat: 37.5577, lon: 126.9248, name: '서울특별시 마포구 서교동', type: '별칭', admin_parent: '서울특별시 마포구', aliases: ['홍대입구'], priority_score: priorityMap['홍대'] });
+    addLocation('강남', { lat: 37.4981, lon: 127.0276, name: '서울특별시 강남구 역삼동', type: '별칭', admin_parent: '서울특별시 강남구', aliases: ['강남역'], priority_score: priorityMap['강남'] });
+    addLocation('이태원', { lat: 37.5345, lon: 126.9934, name: '서울특별시 용산구 이태원동', type: '법정동', admin_parent: '서울특별시 용산구', aliases: [], priority_score: priorityMap['이태원'] });
+    addLocation('잠실', { lat: 37.5116, lon: 127.1000, name: '서울특별시 송파구 잠실동', type: '법정동', admin_parent: '서울특별시 송파구', aliases: ['잠실역'], priority_score: priorityMap['잠실'] });
+    addLocation('여의도', { lat: 37.5222, lon: 126.9242, name: '서울특별시 영등포구 여의도동', type: '법정동', admin_parent: '서울특별시 영등포구', aliases: [], priority_score: priorityMap['여의도'] });
+    addLocation('신촌', { lat: 37.5598, lon: 126.9423, name: '서울특별시 서대문구 신촌동', type: '법정동', admin_parent: '서울특별시 서대문구', aliases: [], priority_score: priorityMap['신촌'] });
+    addLocation('동대문', { lat: 37.5714, lon: 127.0094, name: '서울특별시 종로구 종로6가', type: '별칭', admin_parent: '서울특별시 종로구', aliases: ['동대문시장'], priority_score: priorityMap['동대문'] });
+    addLocation('종로', { lat: 37.5700, lon: 126.9790, name: '서울특별시 종로구 종로1가', type: '별칭', admin_parent: '서울특별시 종로구', aliases: ['종각'], priority_score: priorityMap['종로'] });
+
+
+    // 부산광역시
+    addLocation('부산광역시', { lat: 35.1796, lon: 129.0756, name: '부산광역시', type: '광역자치단체', aliases: ['부산', '부산시'], priority_score: priorityMap['부산광역시'] });
+    addLocation('해운대구', { lat: 35.1633, lon: 129.1659, name: '부산광역시 해운대구', type: '기초자치단체', admin_parent: '부산광역시', aliases: [], priority_score: priorityMap['해운대구'] });
+    addLocation('광안리', { lat: 35.1539, lon: 129.1179, name: '부산광역시 수영구 광안동', type: '별칭', admin_parent: '부산광역시 수영구', aliases: ['광안리해수욕장'], priority_score: priorityMap['광안리'] });
+    addLocation('서면', { lat: 35.1585, lon: 129.0601, name: '부산광역시 부산진구 부전동', type: '별칭', admin_parent: '부산광역시 부산진구', aliases: ['서면역'], priority_score: priorityMap['서면'] });
+    addLocation('남포동', { lat: 35.1017, lon: 129.0270, name: '부산광역시 중구 남포동', type: '법정동', admin_parent: '부산광역시 중구', aliases: [], priority_score: priorityMap['남포동'] });
+    addLocation('태종대', { lat: 35.0505, lon: 129.0963, name: '부산광역시 영도구 동삼동', type: '별칭', admin_parent: '부산광역시 영도구', aliases: ['태종대유원지'], priority_score: priorityMap['태종대'] });
+    addLocation('기장군', { lat: 35.2435, lon: 129.2173, name: '부산광역시 기장군', type: '기초자치단체', admin_parent: '부산광역시', aliases: [], priority_score: priorityMap['기장군'] });
+
+
+    // 대구광역시
+    addLocation('대구광역시', { lat: 35.8722, lon: 128.6014, name: '대구광역시', type: '광역자치단체', aliases: ['대구', '대구시'], priority_score: priorityMap['대구광역시'] });
+    addLocation('동성로', { lat: 35.8690, lon: 128.5940, name: '대구광역시 중구 동성로', type: '별칭', admin_parent: '대구광역시 중구', aliases: [], priority_score: priorityMap['동성로'] });
+
+
+    // 인천광역시
+    addLocation('인천광역시', { lat: 37.4563, lon: 126.7052, name: '인천광역시', type: '광역자치단체', aliases: ['인천', '인천시'], priority_score: priorityMap['인천광역시'] });
+    addLocation('송도', { lat: 37.3800, lon: 126.6370, name: '인천광역시 연수구 송도동', type: '별칭', admin_parent: '인천광역시 연수구', aliases: ['송도국제도시'], priority_score: priorityMap['송도'] });
+    addLocation('월미도', { lat: 37.4720, lon: 126.6080, name: '인천광역시 중구 북성동1가', type: '별칭', admin_parent: '인천광역시 중구', aliases: ['월미도공원'], priority_score: priorityMap['월미도'] });
+    addLocation('강화군', { lat: 37.7476, lon: 126.4173, name: '인천광역시 강화군', type: '기초자치단체', admin_parent: '인천광역시', aliases: [], priority_score: priorityMap['강화군'] });
+    addLocation('을왕리', { lat: 37.4699, lon: 126.3400, name: '인천광역시 중구 을왕동', type: '별칭', admin_parent: '인천광역시 중구', aliases: ['을왕리해수욕장'], priority_score: priorityMap['을왕리'] });
+
+
+    // 광주광역시
+    addLocation('광주광역시', { lat: 35.1600, lon: 126.8514, name: '광주광역시', type: '광역자치단체', aliases: ['광주', '광주시'], priority_score: priorityMap['광주광역시'] });
+    addLocation('무등산', { lat: 35.1000, lon: 126.9600, name: '광주광역시 동구 운림동', type: '별칭', admin_parent: '광주광역시 동구', aliases: ['무등산국립공원'], priority_score: priorityMap['무등산'] });
+
+
+    // 대전광역시
+    addLocation('대전광역시', { lat: 36.3504, lon: 127.3845, name: '대전광역시', type: '광역자치단체', aliases: ['대전', '대전시'], priority_score: priorityMap['대전광역시'] });
+    addLocation('유성구', { lat: 36.3524, lon: 127.3423, name: '대전광역시 유성구', type: '기초자치단체', admin_parent: '대전광역시', aliases: [], priority_score: priorityMap['유성구'] });
+
+
+    // 울산광역시
+    addLocation('울산광역시', { lat: 35.5384, lon: 129.3113, name: '울산광역시', type: '광역자치단체', aliases: ['울산', '울산시'], priority_score: priorityMap['울산광역시'] });
+
+
+    // 세종특별자치시
+    addLocation('세종특별자치시', { lat: 36.4800, lon: 127.2890, name: '세종특별자치시', type: '광역자치단체', aliases: ['세종', '세종시'], priority_score: priorityMap['세종특별자치시'] });
+
+
+    // 경기도 주요 도시 (일부)
+    addLocation('수원시', { lat: 37.2635, lon: 127.0286, name: '경기도 수원시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['수원시'] });
+    addLocation('성남시', { lat: 37.4385, lon: 127.1373, name: '경기도 성남시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['성남시'] });
+    addLocation('용인시', { lat: 37.2350, lon: 127.2287, name: '경기도 용인시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['용인시'] });
+    addLocation('안양시', { lat: 37.3943, lon: 126.9568, name: '경기도 안양시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['안양시'] });
+    addLocation('안산시', { lat: 37.3223, lon: 126.8200, name: '경기도 안산시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['안산시'] });
+    addLocation('고양시', { lat: 37.6586, lon: 126.8320, name: '경기도 고양시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['고양시'] });
+    addLocation('화성시', { lat: 37.2000, lon: 126.8000, name: '경기도 화성시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['화성시'] });
+    addLocation('평택시', { lat: 36.9900, lon: 127.1000, name: '경기도 평택시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['평택시'] });
+    addLocation('남양주시', { lat: 37.6360, lon: 127.2100, name: '경기도 남양주시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['남양주시'] });
+    addLocation('부천시', { lat: 37.5030, lon: 126.7640, name: '경기도 부천시', type: '기초자치단체', admin_parent: '경기도', aliases: [], priority_score: priorityMap['부천시'] });
+
+
+    // 강원특별자치도 (일부)
+    addLocation('강원특별자치도', { lat: 37.8850, lon: 127.7340, name: '강원특별자치도', type: '광역자치단체', aliases: ['강원도'], priority_score: priorityMap['강원특별자치도'] });
+    addLocation('춘천시', { lat: 37.8850, lon: 127.7340, name: '강원특별자치도 춘천시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: [], priority_score: priorityMap['춘천시'] });
+    addLocation('원주시', { lat: 37.3480, lon: 127.9200, name: '강원특별자치도 원주시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: [], priority_score: priorityMap['원주시'] });
+    addLocation('강릉시', { lat: 37.7518, lon: 128.8751, name: '강원특별자치도 강릉시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: [], priority_score: priorityMap['강릉시'] });
+    addLocation('속초시', { lat: 38.2000, lon: 128.5800, name: '강원특별자치도 속초시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: [], priority_score: priorityMap['속초시'] });
+    addLocation('설악산국립공원', { lat: 38.1180, lon: 128.4600, name: '설악산국립공원', type: '별칭', admin_parent: '강원특별자치도 속초시', aliases: ['설악산'], priority_score: priorityMap['설악산국립공원'] });
+    addLocation('오대산국립공원', { lat: 37.7900, lon: 128.5500, name: '오대산국립공원', type: '별칭', admin_parent: '강원특별자치도 평창군', aliases: ['오대산'], priority_score: priorityMap['오대산국립공원'] });
+    addLocation('정동진', { lat: 37.6900, lon: 129.0200, name: '강원특별자치도 강릉시 강동면 정동진리', type: '별칭', admin_parent: '강원특별자치도 강릉시', aliases: [], priority_score: priorityMap['정동진'] });
+
+
+    // 충청북도 (일부)
+    addLocation('충청북도', { lat: 36.6350, lon: 127.4910, name: '충청북도', type: '광역자치단체', aliases: ['충북'], priority_score: priorityMap['충청북도'] });
+    addLocation('청주시', { lat: 36.6420, lon: 127.4890, name: '충청북도 청주시', type: '기초자치단체', admin_parent: '충청북도', aliases: [], priority_score: priorityMap['청주시'] });
+    addLocation('충주시', { lat: 36.9690, lon: 127.9310, name: '충청북도 충주시', type: '기초자치단체', admin_parent: '충청북도', aliases: [], priority_score: priorityMap['충주시'] });
+    addLocation('제천시', { lat: 37.1300, lon: 128.2000, name: '충청북도 제천시', type: '기초자치단체', admin_parent: '충청북도', aliases: [], priority_score: priorityMap['제천시'] });
+
+
+    // 충청남도 (일부)
+    addLocation('충청남도', { lat: 36.5180, lon: 126.8000, name: '충청남도', type: '광역자치단체', aliases: ['충남'], priority_score: priorityMap['충청남도'] });
+    addLocation('천안시', { lat: 36.8140, lon: 127.1500, name: '충청남도 천안시', type: '기초자치단체', admin_parent: '충청남도', aliases: [], priority_score: priorityMap['천안시'] });
+    addLocation('공주시', { lat: 36.4690, lon: 127.1190, name: '충청남도 공주시', type: '기초자치단체', admin_parent: '충청남도', aliases: [], priority_score: priorityMap['공주시'] });
+    addLocation('보령시', { lat: 36.3800, lon: 126.6100, name: '충청남도 보령시', type: '기초자치단체', admin_parent: '충청남도', aliases: [], priority_score: priorityMap['보령시'] });
+    addLocation('태안군', { lat: 36.7500, lon: 126.3000, name: '충청남도 태안군', type: '기초자치단체', admin_parent: '충청남도', aliases: [], priority_score: priorityMap['태안군'] });
+    addLocation('태안 안면도', { lat: 36.5000, lon: 126.3500, name: '충청남도 태안군 안면읍', type: '별칭', admin_parent: '충청남도 태안군', aliases: ['안면도'], priority_score: priorityMap['태안 안면도'] });
+
+
+    // 전라북도 (일부)
+    addLocation('전라북도', { lat: 35.8200, lon: 127.1100, name: '전라북도', type: '광역자치단체', aliases: ['전북'], priority_score: priorityMap['전라북도'] });
+    addLocation('전주시', { lat: 35.8200, lon: 127.1100, name: '전라북도 전주시', type: '기초자치단체', admin_parent: '전라북도', aliases: [], priority_score: priorityMap['전주시'] });
+    addLocation('군산시', { lat: 35.9700, lon: 126.7200, name: '전라북도 군산시', type: '기초자치단체', admin_parent: '전라북도', aliases: [], priority_score: priorityMap['군산시'] });
+    addLocation('익산시', { lat: 35.9400, lon: 126.9400, name: '전라북도 익산시', type: '기초자치단체', admin_parent: '전라북도', aliases: [], priority_score: priorityMap['익산시'] });
+    addLocation('전주 한옥마을', { lat: 35.8150, lon: 127.1500, name: '전라북도 전주시 완산구 교동', type: '별칭', admin_parent: '전라북도 전주시', aliases: ['한옥마을'], priority_score: priorityMap['전주 한옥마을'] });
+    addLocation('내장산', { lat: 35.4800, lon: 126.9000, name: '전라북도 정읍시 내장동', type: '별칭', admin_parent: '전라북도 정읍시', aliases: ['내장산국립공원'], priority_score: priorityMap['내장산'] });
+
+
+    // 전라남도 (일부)
+    addLocation('전라남도', { lat: 34.8100, lon: 126.4000, name: '전라남도', type: '광역자치단체', aliases: ['전남'], priority_score: priorityMap['전라남도'] });
+    addLocation('목포시', { lat: 34.8000, lon: 126.3900, name: '전라남도 목포시', type: '기초자치단체', admin_parent: '전라남도', aliases: [], priority_score: priorityMap['목포시'] });
+    addLocation('여수시', { lat: 34.7600, lon: 127.6600, name: '전라남도 여수시', type: '기초자치단체', admin_parent: '전라남도', aliases: [], priority_score: priorityMap['여수시'] });
+    addLocation('순천시', { lat: 34.9500, lon: 127.5300, name: '전라남도 순천시', type: '기초자치단체', admin_parent: '전라남도', aliases: [], priority_score: priorityMap['순천시'] });
+    addLocation('여수 엑스포', { lat: 34.7570, lon: 127.7410, name: '전라남도 여수시 덕충동', type: '별칭', admin_parent: '전라남도 여수시', aliases: ['여수엑스포'], priority_score: priorityMap['여수 엑스포'] });
+    addLocation('보성 녹차밭', { lat: 34.7600, lon: 127.3500, name: '전라남도 보성군 보성읍 녹차로', type: '별칭', admin_parent: '전라남도 보성군', aliases: ['보성녹차밭'], priority_score: priorityMap['보성 녹차밭'] });
+
+
+    // 경상북도 (일부)
+    addLocation('경상북도', { lat: 36.5750, lon: 128.5050, name: '경상북도', type: '광역자치단체', aliases: ['경북'], priority_score: priorityMap['경상북도'] });
+    addLocation('포항시', { lat: 36.0300, lon: 129.3600, name: '경상북도 포항시', type: '기초자치단체', admin_parent: '경상북도', aliases: [], priority_score: priorityMap['포항시'] });
+    addLocation('경주시', { lat: 35.8500, lon: 129.2100, name: '경상북도 경주시', type: '기초자치단체', admin_parent: '경상북도', aliases: [], priority_score: priorityMap['경주시'] });
+    addLocation('안동시', { lat: 36.5680, lon: 128.7290, name: '경상북도 안동시', type: '기초자치단체', admin_parent: '경상북도', aliases: [], priority_score: priorityMap['안동시'] });
+    addLocation('경주 역사유적지구', { lat: 35.8300, lon: 129.2200, name: '경상북도 경주시 인교동', type: '별칭', admin_parent: '경상북도 경주시', aliases: ['불국사', '첨성대'], priority_score: priorityMap['경주 역사유적지구'] });
+    addLocation('안동 하회마을', { lat: 36.5300, lon: 128.2600, name: '경상북도 안동시 풍천면 하회리', type: '별칭', admin_parent: '경상북도 안동시', aliases: ['하회마을'], priority_score: priorityMap['안동 하회마을'] });
+
+
+    // 경상남도 (일부)
+    addLocation('경상남도', { lat: 35.2380, lon: 128.6920, name: '경상남도', type: '광역자치단체', aliases: ['경남'], priority_score: priorityMap['경상남도'] });
+    addLocation('창원시', { lat: 35.2200, lon: 128.6800, name: '경상남도 창원시', type: '기초자치단체', admin_parent: '경상남도', aliases: [], priority_score: priorityMap['창원시'] });
+    addLocation('진주시', { lat: 35.1900, lon: 128.0800, name: '경상남도 진주시', type: '기초자치단체', admin_parent: '경상남도', aliases: [], priority_score: priorityMap['진주시'] });
+    addLocation('통영시', { lat: 34.8400, lon: 128.4300, name: '경상남도 통영시', type: '기초자치단체', admin_parent: '경상남도', aliases: [], priority_score: priorityMap['통영시'] });
+    addLocation('통영 케이블카', { lat: 34.8400, lon: 128.4000, name: '경상남도 통영시 도남동', type: '별칭', admin_parent: '경상남도 통영시', aliases: ['미륵산케이블카'], priority_score: priorityMap['통영 케이블카'] });
+    addLocation('거제 외도', { lat: 34.7800, lon: 128.7000, name: '경상남도 거제시 일운면 와현리', type: '별칭', admin_parent: '경상남도 거제시', aliases: ['외도보타니아'], priority_score: priorityMap['거제 외도'] });
+
+    // 기타 국립공원
+    addLocation('지리산국립공원', { lat: 35.3360, lon: 127.7300, name: '지리산국립공원', type: '별칭', aliases: ['지리산'], priority_score: priorityMap['지리산국립공원'] });
+    addLocation('북한산국립공원', { lat: 37.6500, lon: 126.9700, name: '북한산국립공원', type: '별칭', aliases: ['북한산'], priority_score: priorityMap['북한산국립공원'] });
+    addLocation('계룡산국립공원', { lat: 36.3500, lon: 127.2800, name: '계룡산국립공원', type: '별칭', aliases: ['계룡산'], priority_score: priorityMap['계룡산국립공원'] });
+
+
+    // 데이터 로드 확인용 통계 및 메타데이터
+    const METADATA = {
+        totalLocations: Object.keys(data).length,
+        lastUpdated: new Date().toISOString(),
+        coverage: {
+            cities: new Set(Object.values(data).filter(loc => loc.type === '광역자치단체' || loc.type === '기초자치단체').map(loc => loc.name)).size,
+            adminDivisions: new Set(Object.values(data).filter(loc => loc.type === '행정동' || loc.type === '읍' || loc.type === '면').map(loc => loc.name)).size
+        }
+    };
+
+    return {
+        locationData: data, // 실제 데이터 객체
+        latLonToGrid,
+        
         /**
-         * 이름을 기반으로 지역 정보를 조회합니다.
-         * @param {string} name - 조회할 지역의 이름 또는 별칭
-         * @returns {Object|null} 해당 지역 정보 객체 또는 null
+         * 검색어를 기반으로 지역을 검색하고 페이지네이션을 적용합니다.
+         * @param {string} searchTerm - 검색어
+         * @param {number} page - 요청 페이지 번호 (1부터 시작)
+         * @param {number} pageSize - 페이지당 항목 수
+         * @returns {{results: Array<Object>, pagination: Object}} 검색 결과 및 페이지네이션 정보
          */
-        get: (name) => {
-            return data[name] || null;
+        searchLocations: (searchTerm, page = 1, pageSize = 10) => {
+            const normalizedSearch = searchTerm.trim().toLowerCase();
+            const filtered = [];
+
+            // 먼저 모든 매칭되는 지역을 찾고, priority_score로 정렬 (findAllMatches와 유사)
+            for (const key in data) {
+                const location = data[key];
+                const keyLower = key.toLowerCase();
+                const nameLower = location.name.toLowerCase();
+
+                if (nameLower.includes(normalizedSearch) ||
+                    keyLower.includes(normalizedSearch) ||
+                    (location.aliases && location.aliases.some(alias => alias.toLowerCase().includes(normalizedSearch))) ||
+                    (location.legal_divisions && location.legal_divisions.some(ld => ld.toLowerCase().includes(normalizedSearch)))
+                ) {
+                    filtered.push({ ...location, key: key, priority: location.priority_score || 0 });
+                }
+            }
+
+            // 우선순위가 높은 순으로 정렬
+            filtered.sort((a, b) => b.priority - a.priority);
+
+            const totalResults = filtered.length;
+            const totalPages = Math.ceil(totalResults / pageSize);
+            const startIndex = (page - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+
+            const results = filtered.slice(startIndex, endIndex);
+
+            return {
+                results: results,
+                pagination: {
+                    currentPage: page,
+                    pageSize: pageSize,
+                    totalResults: totalResults,
+                    totalPages: totalPages
+                }
+            };
         },
 
         /**
-         * 검색 쿼리에 따라 일치하는 지역 목록을 반환합니다.
-         * 우선순위 점수를 기반으로 정렬됩니다.
-         * @param {string} query - 사용자의 검색 쿼리
-         * @returns {Array<Object>} 일치하는 지역 정보 객체 배열
+         * 좌표에 가장 가까운 행정 구역을 찾습니다. (간단한 근접성 판단)
+         * 이 함수는 정밀한 지리 공간 분석이 아닌, 가장 가까운 `locationData` 항목을 찾습니다.
+         * @param {{lat: number, lon: number}} coords - 위도 및 경도
+         * @returns {Object|null} 가장 가까운 지역 객체 또는 null
          */
-        findMatches: (query) => {
-            if (!query) return [];
-            const lowerCaseQuery = query.toLowerCase().replace(/\s/g, ''); // 공백 제거 후 소문자 변환
+        findMatchingLocation: (coords) => {
+            let closestLocation = null;
+            let minDistance = Infinity;
 
+            for (const key in data) {
+                const loc = data[key];
+                // 광역/기초자치단체, 행정동, 읍, 면만 대상 (관광지 등은 제외)
+                if (loc.type && ['광역자치단체', '기초자치단체', '행정동', '읍', '면'].includes(loc.type)) {
+                    const distance = Math.sqrt(
+                        Math.pow(coords.lat - loc.lat, 2) +
+                        Math.pow(coords.lon - loc.lon, 2)
+                    );
+
+                    // 거리가 같을 경우 priority_score가 높은 것을 선택
+                    if (distance < minDistance || (distance === minDistance && loc.priority_score > (closestLocation ? closestLocation.priority_score : 0))) {
+                        minDistance = distance;
+                        closestLocation = loc;
+                    }
+                }
+            }
+            return closestLocation;
+        },
+
+        /**
+         * 검색어를 기반으로 매칭되는 모든 지역을 찾고 우선순위에 따라 정렬합니다.
+         * 이 함수는 searchLocations와 유사하지만, 페이지네이션 없이 모든 매칭 결과를 반환합니다.
+         * @param {string} searchTerm - 검색어
+         * @returns {Array<Object>} 매칭되는 지역 객체 배열
+         */
+        findAllMatches: (searchTerm) => {
+            const normalizedSearch = searchTerm.trim().toLowerCase();
             const matches = [];
+
             for (const key in data) {
                 const location = data[key];
-                const nameMatches = location.name.toLowerCase().replace(/\s/g, '').includes(lowerCaseQuery);
-                const aliasMatches = (location.aliases || []).some(alias =>
-                    alias.toLowerCase().replace(/\s/g, '').includes(lowerCaseQuery)
-                );
-                const legalDivMatches = (location.legal_divisions || []).some(legalDiv =>
-                    legalDiv.toLowerCase().replace(/\s/g, '').includes(lowerCaseQuery)
-                );
+                const keyLower = key.toLowerCase();
+                const nameLower = location.name.toLowerCase();
 
-                if (nameMatches || aliasMatches || legalDivMatches) {
+                // 이름, 키 또는 별칭, 법정동/리 목록에 검색어가 포함되는 경우
+                if (nameLower.includes(normalizedSearch) ||
+                    keyLower.includes(normalizedSearch) ||
+                    (location.aliases && location.aliases.some(alias => alias.toLowerCase().includes(normalizedSearch))) ||
+                    (location.legal_divisions && location.legal_divisions.some(ld => ld.toLowerCase().includes(normalizedSearch)))
+                ) {
                     // 깊은 복사를 통해 원본 객체 변경 방지 및 `key`와 `priority` 추가
-                    // 중요: findMatches에서 반환되는 객체에 priority_score를 추가하여 정렬에 사용
-                    // addLocation에서 이미 priority_score를 설정하므로, 여기서 다시 계산할 필요는 없음.
-                    matches.push({ ...location, key: key }); 
+                    matches.push({ ...location, key: key, priority: location.priority_score || 0 });
                 }
             }
 
@@ -633,7 +1047,7 @@ return {
                 const priorityB = b.priority_score !== undefined ? b.priority_score : 0;
 
                 if (priorityA !== priorityB) {
-                    return priorityB - priorityA; // 높은 점수가 먼저 오도록 내림차순 정렬
+                    return priorityB - priorityA;
                 }
                 // 우선순위가 같으면 이름으로 정렬
                 return a.name.localeCompare(b.name);
@@ -656,11 +1070,10 @@ return {
 
             return { totalLocations, byType, byLevel };
         },
-        getMetadata: () => METADATA_INFO
+        getMetadata: () => METADATA,
+        // (필요 시) 메타데이터 업데이트 함수 등 추가 가능
     };
-})();
+})(); // 즉시 실행 함수로 locationData 객체 생성 및 초기화
 
-// 파일 외부에서 접근할 수 있도록 내보냅니다. (CommonJS 방식)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { locationData, latLonToGrid };
-}
+// CommonJS 모듈 내보내기
+module.exports = locationData;
