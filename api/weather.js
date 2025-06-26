@@ -8,7 +8,8 @@
 
 const axios = require('axios');
 // locationData 모듈 임포트
-const locationDataModule = require('./locationData.js');
+// locationDataModule은 전역 스코프에 설정되므로 별도 선언은 필요 없지만,
+// 명시적 로딩을 위해 try-catch 블록 내에서 require를 사용합니다.
 
 // =====================================================================
 // 7. 로깅 개선: 통합 로거 객체 (12. 에러 로깅 개선 포함)
@@ -1342,7 +1343,7 @@ async function preloadPopularLocations() {
     const weatherApiKey = process.env.WEATHER_API_KEY;
 
     if (!weatherApiKey) {
-        logger.warn('WEATHER_API_KEY가 없어 인기 지역 사전 캐싱을 건너뜜니다.');
+        logger.warn('WEATHER_API_KEY가 없어 인기 지역 사전 캐싱을 건너뜁니다.');
         return;
     }
 
@@ -1384,7 +1385,7 @@ async function preloadPopularLocations() {
                     base_date: baseDate,
                     base_time: baseTime,
                     nx: coordinates.nx,
-                    ny: coordinates.ny
+                    ny: coordinates.ny // 수정: ny를 coordinates.ny로 변경
                 }
             }, WEATHER_CONFIG.API.MAX_RETRIES);
 
@@ -1720,7 +1721,7 @@ async function handleWeatherRequest(req, res) {
             baseDate,
             baseTime,
             nx: coordinates.nx,
-            ny: coordinates.ny,
+            ny: coordinates.ny, // 수정: ny를 coordinates.ny로 변경
             location: locationInfo.fullName
         });
 
@@ -1734,7 +1735,7 @@ async function handleWeatherRequest(req, res) {
                 base_date: baseDate,
                 base_time: baseTime,
                 nx: coordinates.nx,
-                ny: ny
+                ny: coordinates.ny // 수정: ny를 coordinates.ny로 변경
             },
             headers: {
                 'User-Agent': 'HealingK-Complete-Weather-Service/2.0'
@@ -1895,60 +1896,3 @@ module.exports = async function handler(req, res) {
             message: 'GET 요청만 지원됩니다.'
         });
     }
-
-    // Rate Limiting 적용 (클라이언트 IP 추출)
-    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    try {
-        // 프로덕션 환경에서만 실제 Rate Limit 적용
-        if (process.env.NODE_ENV === 'production' && clientIp) {
-            checkRateLimit(clientIp, 100, 60 * 1000); // 1분당 100회 요청 제한
-        }
-    } catch (error) {
-        if (error instanceof WeatherAPIError && error.code === 'RATE_LIMIT_EXCEEDED') {
-            logger.warn(`Rate Limit 초과: ${clientIp}`, { error_message: error.message });
-            return res.status(error.statusCode).json({
-                success: false,
-                error: error.message,
-                code: error.code
-            });
-        }
-        throw error; // 다른 예상치 못한 오류는 다시 throw
-    }
-
-    const pathname = getPathname(req);
-
-    if (pathname === '/api/health') {
-        logger.info('헬스체크 요청 수신');
-        return res.json({
-            status: 'healthy',
-            timestamp: new Date().toISOString(),
-            version: '2.0-complete',
-            cacheSize: weatherCache.size,
-            metrics: { // 모니터링 강화: 메트릭 정보 포함
-                apiCalls: metrics.apiCalls,
-                apiErrors: metrics.apiErrors,
-                cacheHits: metrics.cacheHits,
-                cacheMisses: metrics.cacheMisses,
-                rateLimited: metrics.rateLimited,
-                avgResponseTimeMs: metrics.avgResponseTime.toFixed(2),
-                regionalRequests: metrics.regionalRequests, // 지역별 요청 통계
-                errorTypes: metrics.errorTypes, // 에러 타입별 분류
-                // responseTimeHistogram: metrics.responseTimeHistogram // 응답 시간 히스토그램 (활성화 시)
-            },
-            config: {
-                hasApiKey: !!process.env.WEATHER_API_KEY,
-                environment: process.env.NODE_ENV || 'production',
-                cacheTtlMinutes: WEATHER_CONFIG.CACHE.TTL_MINUTES,
-                apiTimeoutMs: WEATHER_CONFIG.API.TIMEOUT,
-                apiMaxRetries: WEATHER_CONFIG.API.MAX_RETRIES
-            },
-            uptime: process.uptime ? `${process.uptime().toFixed(2)}s` : 'N/A'
-        });
-    }
-
-    if (pathname === '/api/search-locations') {
-        return handleLocationSearch(req, res);
-    }
-
-    return handleWeatherRequest(req, res);
-};
