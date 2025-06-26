@@ -1803,7 +1803,7 @@ async function handleWeatherRequest(req, res) {
         if (weatherCache.size > WEATHER_CONFIG.CACHE.MAX_ENTRIES) {
             const oldestKey = weatherCache.keys().next().value;
             weatherCache.delete(oldestKey);
-            logger.info('� 캐시 정리 완료', { currentCacheSize: weatherCache.size });
+            logger.info('🧹 캐시 정리 완료', { currentCacheSize: weatherCache.size });
         }
 
         logger.info('🎉 완전한 날씨 API 응답 성공');
@@ -1851,3 +1851,104 @@ function validateEnvironment() {
         missing
     };
 }
+
+/**
+ * 메인 서버리스 핸들러 함수
+ * 요청 URL 경로에 따라 적절한 API 핸들러 함수로 라우팅합니다.
+ * @param {Object} req - 요청 객체
+ * @param {Object} res - 응답 객체
+ */
+module.exports = async function handler(req, res) {
+    // 서버 시작 시 한 번만 환경 변수 검증 및 사전 캐싱 실행
+    // (서버리스 환경에서는 콜드 스타트 시 매번 실행될 수 있음)
+    // locationData는 이제 CommonJS export로 직접 제공되므로,
+    // locationModule.locationData가 아닌 전역 스코프의 locationData 변수를 직접 참조합니다.
+    if (!global.weatherServiceInitialized) {
+        validateEnvironment(); // 환경 변수 검증
+        // locationData가 빈 객체({})이 아닌 경우에만 사전 캐싱을 시도합니다.
+        if (Object.keys(locationData).length > 0 && process.env.WEATHER_API_KEY) {
+            await preloadPopularLocations(); // 인기 지역 사전 캐싱
+        } else {
+            logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜁니다 (locationData 없음 또는 API 키 없음).');
+        }
+        global.weatherServiceInitialized = true; // 플래그 설정
+    }
+
+    // 보안 헤더 추가
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    // res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains'); // HTTPS 강제, 개발 환경 주의
+
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    if (req.method !== 'GET') {
+        return res.status(405).json({
+            success: false,
+            error: 'Method not allowed',
+            message: 'GET 요청만 지원됩니다.'
+        });
+    }
+
+    // Rate Limiting 적용 (클라이언트 IP 추출)
+    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    try {
+        // 프로덕션 환경에서만 실제 Rate Limit 적용
+        if (process.env.NODE_ENV === 'production' && clientIp) {
+            checkRateLimit(clientIp, 100, 60 * 1000); // 1분당 100회 요청 제한
+        }
+    } catch (error) {
+        if (error instanceof WeatherAPIError && error.code === 'RATE_LIMIT_EXCEEDED') {
+            logger.warn(`Rate Limit 초과: ${clientIp}`, { error_message: error.message });
+            return res.status(error.statusCode).json({
+                success: false,
+                error: error.message,
+                code: error.code
+            });
+        }
+        throw error; // 다른 예상치 못한 오류는 다시 throw
+    }
+
+    const pathname = getPathname(req);
+
+    if (pathname === '/api/health') {
+        logger.info('헬스체크 요청 수신');
+        return res.json({
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            version: '2.0-complete',
+            cacheSize: weatherCache.size,
+            metrics: { // 모니터링 강화: 메트릭 정보 포함
+                apiCalls: metrics.apiCalls,
+                apiErrors: metrics.apiErrors,
+                cacheHits: metrics.cacheHits,
+                cacheMisses: metrics.cacheMisses,
+                rateLimited: metrics.rateLimited,
+                avgResponseTimeMs: metrics.avgResponseTime.toFixed(2),
+                regionalRequests: metrics.regionalRequests, // 지역별 요청 통계
+                errorTypes: metrics.errorTypes, // 에러 타입별 분류
+                // responseTimeHistogram: metrics.responseTimeHistogram // 응답 시간 히스토그램 (활성화 시)
+            },
+            config: {
+                hasApiKey: !!process.env.WEATHER_API_KEY,
+                environment: process.env.NODE_ENV || 'production',
+                cacheTtlMinutes: WEATHER_CONFIG.CACHE.TTL_MINUTES,
+                apiTimeoutMs: WEATHER_CONFIG.API.TIMEOUT,
+                apiMaxRetries: WEATHER_CONFIG.API.MAX_RETRIES
+            },
+            uptime: process.uptime ? `${process.uptime().toFixed(2)}s` : 'N/A'
+        });
+    }
+
+    if (pathname === '/api/search-locations') {
+        return handleLocationSearch(req, res);
+    }
+
+    return handleWeatherRequest(req, res);
+};
