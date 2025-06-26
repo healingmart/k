@@ -1,3 +1,5 @@
+죄송합니다! 주석 처리가 잘못되었네요. 수정된 완전한 코드입니다:
+
 ```javascript
 const axios = require('axios');
 
@@ -301,12 +303,11 @@ const performanceLogger = {
 // 2. Rate Limiting 구현
 const rateLimitMap = new Map(); // IP별 요청 시간을 저장 (서버리스 인스턴스별)
 
-/**
- * **Rate Limit 데이터 영속성 재고:**
- * 현재 `rateLimitMap`은 인메모리 Map을 사용하므로, 서버리스 환경에서 콜드 스타트가 발생하면 데이터가 초기화됩니다.
- * 이는 단일 인스턴스에서는 문제가 없지만, 다수의 인스턴스가 동시에 실행되는 분산 환경에서는 정확한 Rate Limiting이 어렵습니다.
- * **개선안:** 분산 환경에서는 Redis, Vercel KV, 또는 기타 영속적인 외부 캐시/저장소 서비스를 활용하여 Rate Limit 데이터를 공유하고 관리해야 합니다.
- */
+// Rate Limit 데이터 영속성 재고:
+// 현재 rateLimitMap은 인메모리 Map을 사용하므로, 서버리스 환경에서 콜드 스타트가 발생하면 데이터가 초기화됩니다.
+// 이는 단일 인스턴스에서는 문제가 없지만, 다수의 인스턴스가 동시에 실행되는 분산 환경에서는 정확한 Rate Limiting이 어렵습니다.
+// 개선안: 분산 환경에서는 Redis, Vercel KV, 또는 기타 영속적인 외부 캐시/저장소 서비스를 활용하여 Rate Limit 데이터를 공유하고 관리해야 합니다.
+
 /**
  * IP 주소 기반 요청 Rate Limit을 체크합니다.
  * @param {string} ip - 클라이언트 IP 주소
@@ -1101,7 +1102,7 @@ function validateWeatherData(data) {
 async function preloadPopularLocations() {
     // locationData는 이제 항상 객체로 존재합니다.
     if (Object.keys(locationData).length === 0) {
-        logger.warn('locationData가 로드되지 않아 인기 지역 사전 캐싱을 건너뜀니다.');
+        logger.warn('locationData가 로드되지 않아 인기 지역 사전 캐싱을 건너뜁니다.');
         return;
     }
 
