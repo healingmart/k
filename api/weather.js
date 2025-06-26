@@ -425,7 +425,7 @@ function processCompleteWeatherData(items, kst, locationFullName) {
         if (!forecasts[date]) {
             forecasts[date] = {
                 times: {},
-                dailyData: {
+                dailyData: { // dailyData는 이제 hourlyData에서 집계되므로 비워둡니다.
                     temperatureMin: null,
                     temperatureMax: null,
                     precipitationProbabilityMax: 0
@@ -438,24 +438,6 @@ function processCompleteWeatherData(items, kst, locationFullName) {
         }
 
         forecasts[date].times[time][category] = value;
-
-        // 일별 최저/최고 기온 및 최대 강수확률 추출
-        if (category === 'TMN' && value) {
-            forecasts[date].dailyData.temperatureMin = parseFloat(value);
-        }
-        if (category === 'TMX' && value) {
-            forecasts[date].dailyData.temperatureMax = parseFloat(value);
-            // TMX 값이 없는 경우, TMN과 유사하게 설정하여 TMX가 없어도 강수확률이 표시되도록 처리
-            if (forecasts[date].dailyData.temperatureMin === null) {
-                forecasts[date].dailyData.temperatureMin = parseFloat(value) - 5; // 임시 값
-            }
-        }
-        if (category === 'POP' && value) {
-            const pop = parseFloat(value);
-            if (pop > forecasts[date].dailyData.precipitationProbabilityMax) {
-                forecasts[date].dailyData.precipitationProbabilityMax = pop;
-            }
-        }
     });
 
     // 3일간 완전한 날씨 데이터 생성
@@ -488,7 +470,6 @@ function processCompleteWeatherData(items, kst, locationFullName) {
  */
 function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
     const times = dayForecast.times;
-    const dailyData = dayForecast.times; // 일별 데이터는 이제 times에서 집계
     const forecastDateObj = new Date(parseInt(date.substring(0, 4)), parseInt(date.substring(4, 6)) - 1, parseInt(date.substring(6, 8)));
 
     const timeKeys = Object.keys(times).sort(); // 예보 시간들 (예: ["0200", "0500", "0800", ..., "2300"])
@@ -503,8 +484,8 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
         const fcstMinute = parseInt(fcstTimeStr.substring(2, 4), 10);
 
         // 현재 날짜의 예보라면, 현재 시각보다 미래인 예보 시간 중 가장 가까운 것을 찾습니다.
-        // 다른 날짜의 예보라면, 해당 날짜의 첫 번째 예보 시간을 대표 시간으로 사용합니다.
         if (forecastDateObj.toDateString() === kst.toDateString()) { // 오늘 날짜
+            // 현재 시각보다 미래이거나 같은 시간
             if (fcstHour > currentKstHours || (fcstHour === currentKstHours && fcstMinute >= currentKstMinutes)) {
                 bestRepresentativeTime = fcstTimeStr;
                 break; // 가장 가까운 미래 시간을 찾았으므로 루프 종료
@@ -520,10 +501,29 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
         bestRepresentativeTime = timeKeys[timeKeys.length - 1]; // 가장 늦은 시간
     }
 
-    // 3. 데이터가 아예 없는 경우를 대비한 폴백 (최악의 경우)
+    // 3. 데이터가 아예 없는 경우를 대비한 폴백
     if (!bestRepresentativeTime && timeKeys.length === 0) {
         logger.warn(`[WARN] 날씨 데이터를 찾을 수 없어 대표 시간을 설정할 수 없습니다. 날짜: ${date}`);
-        return null; // 데이터가 없음을 반환하거나 빈 객체 반환
+        // 이 경우, 반환될 DailyWeatherData 객체가 유효하지 않을 수 있으므로,
+        // 이 함수를 호출하는 상위 함수에서 null 체크 또는 빈 데이터 처리가 필요합니다.
+        return {
+            date: date,
+            dateFormatted: `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`,
+            representativeTime: null,
+            temperature: null, temperatureMin: null, temperatureMax: null, temperatureUnit: '°C', temperatureDescription: '정보없음',
+            sensoryTemperature: null, sensoryTemperatureDescription: '정보없음', temperatureCompareYesterday: null,
+            sky: '정보없음', skyCode: null, skyDescription: '정보없음',
+            precipitation: '정보없음', precipitationCode: null, precipitationDescription: '정보없음',
+            precipitationProbability: 0, precipitationProbabilityMax: 0, precipitationProbabilityDescription: '0% (강수 없음)',
+            precipitationAmount: '0mm', precipitationAmountDescription: '0mm',
+            snowAmount: '0cm', snowAmountDescription: '0cm',
+            humidity: null, humidityUnit: '%', humidityDescription: '정보없음',
+            windSpeed: null, windSpeedUnit: 'm/s', windSpeedDescription: '정보없음',
+            windSpeedRange: null, windDirection: '정보없음', windDirectionDegree: null, windDirectionDescription: '정보없음',
+            waveHeight: null, waveHeightDescription: '정보없음', uvIndex: null, visibility: null,
+            weatherStatus: '정보없음', weatherAdvice: '정보를 확인할 수 없습니다',
+            hourlyData: []
+        };
     }
 
     const data = bestRepresentativeTime ? times[bestRepresentativeTime] : {};
@@ -665,23 +665,23 @@ function calculateSensoryTemperature(temperature, humidity, windSpeed) {
 
     if (T >= 25) { // 쾌적 범위 이상: 더위 체감 (온열 지수 단순화)
         // 습도 영향 강화 및 온도와의 조화 고려
-        feelsLike = T + (RH / 100) * (T - 20) * 0.15; // 습도가 높을수록, 기온이 높을수록 체감온도 상승
+        // 계수 조정으로 습도에 따른 체감 온도 상승폭 확대
+        feelsLike = T + (RH / 100) * (T - 20) * 0.25; // 이전 0.15에서 0.25로 증가
     } else if (T <= 10) { // 서늘 범위 이하: 추위 체감 (윈드칠 지수 단순화)
-        // 바람 영향 강화
-        feelsLike = T - (WS * 0.8) - 1; // 바람이 강할수록 체감온도 하락, 기본적으로 1도 추가 하락
-    } else { // 쾌적 범위: 실제 기온과 유사
+        // 바람 영향 강화 및 기본 하락 폭 증가
+        feelsLike = T - (WS * 1.2) - 1.5; // 이전 0.8에서 1.2로 증가, 기본 -1에서 -1.5로 증가
+    } else { // 쾌적 범위: 실제 기온과 유사하되 습도/바람 영향 추가
         feelsLike = T;
-        // 쾌적한 범위에서도 습도가 매우 높거나 낮을 경우 약간의 보정
-        if (RH > 80) {
-            feelsLike += (RH - 80) * 0.05;
-        } else if (RH < 30) {
-            feelsLike -= (30 - RH) * 0.05;
-        }
+        // 쾌적한 범위에서도 습도와 바람이 있다면 미세하게 체감온도에 영향
+        feelsLike += (RH - 50) * 0.04; // 습도가 50% 기준, 10%당 0.4도 변화 (이전 0.05에서 조정)
+        feelsLike -= (WS * 0.3); // 바람 1m/s당 0.3도 하락 (이전 0.2에서 조정)
     }
 
     // 너무 극단적인 값 방지
-    if (feelsLike > T + 10) feelsLike = T + 10; // 체감온도가 실제 기온보다 10도 이상 높지 않도록
-    if (feelsLike < T - 10) feelsLike = T - 10; // 체감온도가 실제 기온보다 10도 이상 낮지 않도록
+    // 실제 기온과의 차이를 최대 5도로 제한 (더 큰 차이도 있을 수 있지만 일반적인 경우에 맞춰 조정)
+    if (feelsLike > T + 5) feelsLike = T + 5;
+    if (feelsLike < T - 5) feelsLike = T - 5;
+
 
     if (isNaN(feelsLike)) {
         return null;
