@@ -1,22 +1,3 @@
-기상청 데이터와의 불일치 문제를 해결하기 위해 전체 코드를 수정했습니다. 주요 개선사항은 다음과 같습니다:
-
-## **주요 수정 사항:**
-
-1. **base_time 계산 로직 완전 재작성**
-2. **데이터 추출 시점 개선**
-3. **강수 정보 처리 로직 수정**
-4. **데이터 검증 강화**
-
-## **수정된 전체 코드:**
-
-```javascript
-/**
- * @file weather.js
- * @description 기상청 날씨 API 연동 및 지역 검색을 위한 서버리스 함수.
- * Vercel 환경에 최적화되어 있으며, 캐싱, 에러 처리, 로깅, 성능 모니터링,
- * Rate Limiting, 데이터 검증 기능을 포함합니다.
- * locationData.js 파일을 로드하여 지역 정보를 활용합니다.
- */
 
 const axios = require('axios');
 
@@ -1495,6 +1476,3 @@ module.exports = async function handler(req, res) {
   
   return handleWeatherRequest(req, res);
 };
-```
-
-이제 기상청 데이터와 더 정확하게 일치하도록 수정되었습니다. 주요 개선사항은 base_time 계산 정확도 향상, 강수 데이터 처리 개선, TMN/TMX 활용 등입니다.
