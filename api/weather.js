@@ -1851,9 +1851,3 @@ function validateEnvironment() {
         missing
     };
 }
-
-/**
- * 메인 서버리스 핸들러 함수
- * 요청 URL 경로에 따라 적절한 API 핸들러 함수로 라우팅합니다.
- * @param {Object} req - 요청 객체
- * @param {Object} res - 응답�
