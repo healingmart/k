@@ -535,10 +535,14 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
     let minTemp = Infinity;
     let maxTemp = -Infinity;
     let maxPop = 0;
-    let representativeSkyCode = data.SKY;
-    let representativePtyCode = data.PTY;
+    
+    // 이 시간대의 초기 SKY, PTY 값을 가져옴
+    let initialSkyCode = data.SKY || '1'; // 기본값은 맑음
+    let representativeSkyCode = initialSkyCode; // 최종 SKY 코드
+    let representativePtyCode = data.PTY || '0'; // 최종 PTY 코드
 
     // 모든 시간별 데이터를 순회하며 PTY 및 POP, SKY를 종합적으로 판단
+    let anyPrecipitationToday = false;
     timeKeys.forEach(timeKey => {
         const hourData = times[timeKey];
         if (hourData.TMP) {
@@ -552,23 +556,35 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
         }
 
         // PTY (강수 형태)가 '0'이 아니면 해당 PTY를 우선적으로 반영
-        // 그리고 그 PTY가 있는 시간대의 SKY도 함께 고려
         if (hourData.PTY && hourData.PTY !== '0') {
-            representativePtyCode = hourData.PTY;
-            // 강수가 있다면 하늘 상태는 '흐림'으로 강제 설정 (기상청 표현 경향)
-            representativeSkyCode = '4'; // 흐림
-            return; // 강수가 있으니 더 이상 SKY/POP 조합을 볼 필요 없음
+            anyPrecipitationToday = true;
+            representativePtyCode = hourData.PTY; // 비가 오면 해당 PTY를 대표로 설정 (가장 나중 값으로 덮어씌워짐)
+            // 비가 올 때는 하늘 상태를 '흐림'으로 강제 설정하는 것이 기상청 표현과 더 유사 (맑은 하늘+비는 어색)
+            // 단, 이미 비 관련 SKY 코드 (6, 7, 8, 9) 라면 유지
+            if (!['6','7','8','9'].includes(initialSkyCode)) { // 초기 SKY가 비/눈 관련 코드가 아니라면
+                representativeSkyCode = '4'; // 흐림
+            } else {
+                representativeSkyCode = initialSkyCode; // 이미 비/눈 관련 코드라면 유지
+            }
         }
     });
 
     // 만약 하루 종일 PTY가 '0' (강수 없음)이었다면, POP과 SKY를 조합하여 최종 하늘 상태 결정
-    if (representativePtyCode === '0') {
-        if (maxPop >= 60) { // 강수 확률이 높으면 '흐림'
-            representativeSkyCode = '4';
-        } else if (maxPop >= 30) { // 강수 확률이 중간이면 '구름많음'
-            if (representativeSkyCode === '1' || representativeSkyCode === '2') { // 맑음/구름조금일 경우만
-                representativeSkyCode = '3';
+    if (!anyPrecipitationToday || representativePtyCode === '0') {
+        representativePtyCode = '0'; // 강수가 없음을 확실히 함
+
+        // 기상청은 실제 강수(PTY)가 없어도 강수 확률(POP)이 높으면 '흐림' 또는 '구름많음'으로 표시하는 경향이 있음
+        // 그러나 '맑음'을 과감하게 '흐림'으로 바꾸기보다, '구름조금'이나 '구름많음'으로 완화하는 경향도 있음.
+        if (initialSkyCode === '1' || initialSkyCode === '2') { // 원래 맑음 또는 구름조금이었을 경우
+            if (maxPop >= 60) { // 강수확률이 60% 이상이면
+                representativeSkyCode = '3'; // '구름많음'으로 조정
+            } else if (maxPop >= 30) { // 강수확률이 30% 이상 60% 미만이면
+                representativeSkyCode = '2'; // '구름조금'으로 조정 (원래 맑음이었다면 구름조금으로, 원래 구름조금이었다면 유지)
+            } else {
+                representativeSkyCode = initialSkyCode; // 강수확률이 낮으면 원래 하늘 상태 유지
             }
+        } else { // 원래 구름많음 (3) 또는 흐림 (4) 이었을 경우
+            representativeSkyCode = initialSkyCode; // 원래 하늘 상태 유지 (더 흐린 상태를 맑게 바꾸지 않음)
         }
     }
 
@@ -1041,7 +1057,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
         if (forecastDateStr === kst.toISOString().slice(0, 10).replace(/-/g, '')) { // 오늘 날짜
             for (const fcstTimeStr of timeKeys) {
                 const fcstHour = parseInt(fcstTimeStr.substring(0, 2), 10);
-                const fcstMinute = parseInt(fcstTimeStr.substring(2, 4), 10);
+                const fcstMinute = fcstTimeStr.length > 2 ? parseInt(fcstTimeStr.substring(2, 4), 10) : 0; // Fix: Ensure minute parsing for 'HHMM' format.
                 if (fcstHour > currentKstHours || (fcstHour === currentKstHours && fcstMinute >= currentKstMinutes)) {
                     bestRepTime = fcstTimeStr;
                     break;
@@ -1065,9 +1081,12 @@ function generateCompleteSampleData(region, errorMessage = null) {
         let minTemp = Infinity;
         let maxTemp = -Infinity;
         let maxPop = 0;
-        let representativeSkyCodeForSample = data.SKY; // 샘플에서도 SKY, PTY 로직 적용
-        let representativePtyCodeForSample = data.PTY;
 
+        let initialSkyCodeForSample = data.SKY || '1';
+        let representativeSkyCodeForSample = initialSkyCodeForSample;
+        let representativePtyCodeForSample = data.PTY || '0';
+
+        let anyPrecipitationTodaySample = false;
         hourlySampleData.forEach(item => {
             if (item.temperature !== null) {
                 if (item.temperature < minTemp) minTemp = item.temperature;
@@ -1079,18 +1098,29 @@ function generateCompleteSampleData(region, errorMessage = null) {
 
             // 샘플 데이터에서도 PTY 우선 로직 적용
             if (item.precipitation && item.precipitation !== '0') {
+                anyPrecipitationTodaySample = true;
                 representativePtyCodeForSample = item.precipitation;
-                representativeSkyCodeForSample = '4'; // 강수 있으면 흐림
+                 if (!['6','7','8','9'].includes(initialSkyCodeForSample)) {
+                    representativeSkyCodeForSample = '4'; // 흐림
+                } else {
+                    representativeSkyCodeForSample = initialSkyCodeForSample;
+                }
             }
         });
 
-        if (representativePtyCodeForSample === '0') {
-            if (maxPop >= 60) {
-                representativeSkyCodeForSample = '4';
-            } else if (maxPop >= 30) {
-                if (representativeSkyCodeForSample === '1' || representativeSkyCodeForSample === '2') {
+        if (!anyPrecipitationTodaySample || representativePtyCodeForSample === '0') {
+            representativePtyCodeForSample = '0';
+            if (initialSkyCodeForSample === '1' || initialSkyCodeForSample === '2') {
+                if (maxPop >= 60) {
                     representativeSkyCodeForSample = '3';
+                } else if (maxPop >= 30) {
+                    if (initialSkyCodeForSample === '1') representativeSkyCodeForSample = '2';
+                    else representativeSkyCodeForSample = initialSkyCodeForSample;
+                } else {
+                    representativeSkyCodeForSample = initialSkyCodeForSample;
                 }
+            } else {
+                representativeSkyCodeForSample = initialSkyCodeForSample;
             }
         }
 
@@ -1385,7 +1415,7 @@ async function preloadPopularLocations() {
                     base_date: baseDate,
                     base_time: baseTime,
                     nx: coordinates.nx,
-                    ny: coordinates.ny // 수정: ny를 coordinates.ny로 변경
+                    ny: coordinates.ny
                 }
             }, WEATHER_CONFIG.API.MAX_RETRIES);
 
@@ -1721,7 +1751,7 @@ async function handleWeatherRequest(req, res) {
             baseDate,
             baseTime,
             nx: coordinates.nx,
-            ny: coordinates.ny, // 수정: ny를 coordinates.ny로 변경
+            ny: coordinates.ny,
             location: locationInfo.fullName
         });
 
@@ -1735,7 +1765,7 @@ async function handleWeatherRequest(req, res) {
                 base_date: baseDate,
                 base_time: baseTime,
                 nx: coordinates.nx,
-                ny: coordinates.ny // 수정: ny를 coordinates.ny로 변경
+                ny: coordinates.ny // 수정 완료: ny를 coordinates.ny로 변경
             },
             headers: {
                 'User-Agent': 'HealingK-Complete-Weather-Service/2.0'
@@ -1851,6 +1881,11 @@ function validateEnvironment() {
         isValid: missing.length === 0,
         missing
     };
+}
+
+// 초기화 플래그
+if (typeof global.weatherServiceInitialized === 'undefined') {
+    global.weatherServiceInitialized = false;
 }
 
 /**
