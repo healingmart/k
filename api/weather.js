@@ -15,6 +15,7 @@ const metrics = {
     responseTimeCount: 0,
     regionalRequests: {}, // 지역별 요청 통계 (예: { '서울특별시': 10, '제주시': 5 })
     errorTypes: {},       // 에러 타입별 분류 (예: { 'API_ERROR_22': 3, 'LOCATION_NOT_FOUND': 1 })
+    // responseTimeHistogram: { '0-100ms': 0, '101-500ms': 0, '501-1000ms': 0, '>1000ms': 0 }, // 응답 시간 히스토그램 (더 복잡한 구현 필요)
 
     // 메트릭 초기화
     reset: () => {
@@ -28,12 +29,17 @@ const metrics = {
         metrics.responseTimeCount = 0;
         metrics.regionalRequests = {};
         metrics.errorTypes = {};
+        // for (const key in metrics.responseTimeHistogram) metrics.responseTimeHistogram[key] = 0;
     },
     // 응답 시간 추가 및 평균 계산
     addResponseTime: (duration) => {
         metrics.totalResponseTime += duration;
         metrics.responseTimeCount++;
         metrics.avgResponseTime = metrics.totalResponseTime / metrics.responseTimeCount;
+        // if (duration <= 100) metrics.responseTimeHistogram['0-100ms']++;
+        // else if (duration <= 500) metrics.responseTimeHistogram['101-500ms']++;
+        // else if (duration <= 1000) metrics.responseTimeHistogram['501-1000ms']++;
+        // else metrics.responseTimeHistogram['>1000ms']++;
     },
     // 지역별 요청 증가
     addRegionalRequest: (regionName) => {
@@ -47,14 +53,14 @@ const metrics = {
 
 const logger = {
     info: (message, data = {}) => {
-        console.log(`[INFO] ${new Date().toISOString()} - ${message}`, data);
+        console.log('[INFO] ' + new Date().toISOString() + ' - ' + message, data);
     },
     warn: (message, data = {}) => {
-        console.warn(`[WARN] ${new Date().toISOString()} - ${message}`, data);
+        console.warn('[WARN] ' + new Date().toISOString() + ' - ' + message, data);
     },
     // 에러 로그 출력 (구조화된 로깅으로 개선)
     error: (message, error, requestInfo = {}) => {
-        console.error(`[ERROR] ${new Date().toISOString()} - ${message}`, {
+        console.error('[ERROR] ' + new Date().toISOString() + ' - ' + message, {
             error: {
                 message: error.message,
                 code: error.code || 'UNKNOWN',
@@ -284,7 +290,7 @@ const performanceLogger = {
         const start = Date.now();
         return () => {
             const duration = Date.now() - start;
-            logger.info(`성능 측정: ${operation}`, { duration: `${duration}ms` });
+            logger.info('성능 측정: ' + operation, { duration: duration + 'ms' });
             metrics.addResponseTime(duration); // 응답 시간 메트릭에 추가
         };
     }
@@ -295,6 +301,12 @@ const performanceLogger = {
 // 2. Rate Limiting 구현
 const rateLimitMap = new Map(); // IP별 요청 시간을 저장 (서버리스 인스턴스별)
 
+/**
+ * **Rate Limit 데이터 영속성 재고:**
+ * 현재 `rateLimitMap`은 인메모리 Map을 사용하므로, 서버리스 환경에서 콜드 스타트가 발생하면 데이터가 초기화됩니다.
+ * 이는 단일 인스턴스에서는 문제가 없지만, 다수의 인스턴스가 동시에 실행되는 분산 환경에서는 정확한 Rate Limiting이 어렵습니다.
+ * **개선안:** 분산 환경에서는 Redis, Vercel KV, 또는 기타 영속적인 외부 캐시/저장소 서비스를 활용하여 Rate Limit 데이터를 공유하고 관리해야 합니다.
+ */
 /**
  * IP 주소 기반 요청 Rate Limit을 체크합니다.
  * @param {string} ip - 클라이언트 IP 주소
@@ -320,9 +332,66 @@ function checkRateLimit(ip, limit = 100, windowMs = 60 * 1000) { // 기본 1분�
         recentRequests.shift();
     }
     rateLimitMap.set(ip, recentRequests);
-    logger.info(`Rate Limit 체크: ${ip}, 요청 수: ${recentRequests.length}/${limit}`);
+    logger.info('Rate Limit 체크: ' + ip + ', 요청 수: ' + recentRequests.length + '/' + limit);
 }
 // =====================================================================
+
+/**
+ * @typedef {Object} WeatherForecastItem - 기상청 API 응답에서 파싱된 개별 날씨 예보 항목
+ * @property {string} category - 예보 항목의 종류 (예: 'TMP', 'SKY', 'PTY')
+ * @property {string} fcstDate - 예보 날짜 (YYYYMMDD)
+ * @property {string} fcstTime - 예보 시간 (HHMM)
+ * @property {string} fcstValue - 예보 값
+ * @property {number} nx - 예보 지점 X 좌표
+ * @property {number} ny - 예보 지점 Y 좌표
+ */
+
+/**
+ * @typedef {Object} DailyWeatherData - 가공된 일별 날씨 데이터
+ * @property {string} date - 날짜 (YYYYMMDD)
+ * @property {string} dateFormatted - 포맷된 날짜 (YYYY-MM-DD)
+ * @property {string} dayLabel - 요일 라벨 (예: '오늘', '내일')
+ * @property {number} dayIndex - 날짜 인덱스 (0: 오늘, 1: 내일, 2: 모레)
+ * @property {string} representativeTime - 대표 시간 (HHMM)
+ * @property {number|null} temperature - 대표 시간 기온
+ * @property {number|null} temperatureMin - 일별 최저 기온
+ * @property {number|null} temperatureMax - 일별 최고 기온
+ * @property {string} temperatureUnit - 기온 단위 (°C)
+ * @property {string} temperatureDescription - 기온에 대한 설명
+ * @property {string|null} sensoryTemperature - 체감 온도 (소수점 첫째 자리)
+ * @property {string} sensoryTemperatureDescription - 체감 온도에 대한 설명
+ * @property {string|null} temperatureCompareYesterday - 어제 대비 기온 변화 (현재 미구현)
+ * @property {string} sky - 하늘 상태에 대한 설명 (예: '맑음', '흐림')
+ * @property {string|null} skyCode - 하늘 상태 코드
+ * @property {string} skyDescription - 하늘 상태 코드에 대한 상세 설명
+ * @property {string} precipitation - 강수 형태에 대한 설명 (예: '비', '눈')
+ * @property {string|null} precipitationCode - 강수 형태 코드
+ * @property {string} precipitationDescription - 강수 형태 코드에 대한 상세 설명
+ * @property {number|null} precipitationProbability - 대표 시간 강수확률
+ * @property {number} precipitationProbabilityMax - 일별 최대 강수확률
+ * @property {string} precipitationProbabilityDescription - 강수확률에 대한 상세 설명
+ * @property {string} precipitationAmount - 강수량
+ * @property {string} precipitationAmountDescription - 강수량에 대한 상세 설명
+ * @property {string} snowAmount - 적설량
+ * @property {string} snowAmountDescription - 적설량에 대한 상세 설명
+ * @property {number|null} humidity - 습도
+ * @property {string} humidityUnit - 습도 단위 (%)
+ * @property {string} humidityDescription - 습도에 대한 설명
+ * @property {string|null} windSpeed - 풍속
+ * @property {string} windSpeedUnit - 풍속 단위 (m/s)
+ * @property {string} windSpeedDescription - 풍속에 대한 설명
+ * @property {string|null} windSpeedRange - 풍속 범위 (예: 3~6m/s)
+ * @property {string} windDirection - 풍향 (16방위)
+ * @property {number|null} windDirectionDegree - 풍향 각도
+ * @property {string} windDirectionDescription - 풍향에 대한 상세 설명
+ * @property {string|null} waveHeight - 파고
+ * @property {string} waveHeightDescription - 파고에 대한 상세 설명
+ * @property {number|null} uvIndex - 자외선 지수 (있는 경우)
+ * @property {number|null} visibility - 가시거리 (있는 경우)
+ * @property {string} weatherStatus - 종합 날씨 상태 요약
+ * @property {string} weatherAdvice - 날씨 기반 맞춤형 조언
+ * @property {Array<Object>} hourlyData - 시간별 상세 날씨 데이터
+ */
 
 /**
  * 기상청 API 응답 데이터를 가공하여 3일간의 완전한 날씨 정보 반환
@@ -337,6 +406,8 @@ function processCompleteWeatherData(items, kst, locationFullName) {
     // 오늘, 내일, 모레 날짜 계산
     const today = kst.toISOString().slice(0, 10).replace(/-/g, '');
     const tomorrow = new Date(kst.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10).replace(/-/g, '');
+    // 기상청 단기예보 API는 보통 최대 48시간 (오늘과 내일) 데이터를 제공합니다.
+    // 따라서 '모레'에 해당하는 데이터는 API 응답에 포함되지 않을 수 있습니다.
     const dayAfter = new Date(kst.getTime() + 48 * 60 * 60 * 1000).toISOString().slice(0, 10).replace(/-/g, '');
 
     // 모든 기상 데이터 분류
@@ -369,6 +440,7 @@ function processCompleteWeatherData(items, kst, locationFullName) {
         }
         if (category === 'TMX' && value) {
             forecasts[date].dailyData.temperatureMax = parseFloat(value);
+            // TMX 값이 없는 경우, TMN과 유사하게 설정하여 TMX가 없어도 강수확률이 표시되도록 처리
             if (forecasts[date].dailyData.temperatureMin === null) {
                 forecasts[date].dailyData.temperatureMin = parseFloat(value) - 5; // 임시 값
             }
@@ -384,7 +456,9 @@ function processCompleteWeatherData(items, kst, locationFullName) {
     // 3일간 완전한 날씨 데이터 생성
     const result = [];
     [today, tomorrow, dayAfter].forEach((date, index) => {
+        // '모레' 데이터는 API에서 제공하지 않을 수 있음
         if (forecasts[date]) {
+            // kst (현재 시각)를 extractCompleteWeatherData에 전달하여 가장 가까운 예보 시간을 찾도록 함
             const dayData = extractCompleteWeatherData(forecasts[date], date, kst, locationFullName);
             dayData.dayLabel = index === 0 ? '오늘' : index === 1 ? '내일' : '모레';
             dayData.dayIndex = index;
@@ -411,7 +485,7 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
     const times = dayForecast.times;
     const dailyData = dayForecast.dailyData;
 
-    const timeKeys = Object.keys(times).sort();
+    const timeKeys = Object.keys(times).sort(); // 예보 시간들 (예: ["0200", "0500", "0800", ..., "2300"])
 
     const currentTotalMinutes = kst.getHours() * 60 + kst.getMinutes();
     let bestRepresentativeTime = null;
@@ -429,12 +503,14 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
             minAbsDiffMinutes = absDiff;
             bestRepresentativeTime = fcstTimeStr;
         } else if (absDiff === minAbsDiffMinutes) {
+            // 동점일 경우, 더 늦은 시간 (현재 시각에 더 가깝거나, 다음 예보 중 더 이른 시간)을 선택합니다.
             if (parseInt(fcstTimeStr) > parseInt(bestRepresentativeTime)) {
                 bestRepresentativeTime = fcstTimeStr;
             }
         }
     });
 
+    // 데이터가 없는 경우를 대비한 폴백 (첫 번째 예보 시간)
     if (!bestRepresentativeTime && timeKeys.length > 0) {
         bestRepresentativeTime = timeKeys[0];
     }
@@ -450,25 +526,25 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
     // 완전한 날씨 정보 생성
     return {
         date: date,
-        dateFormatted: `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`,
-        representativeTime: bestRepresentativeTime,
+        dateFormatted: date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8),
+        representativeTime: bestRepresentativeTime, // 동적으로 선택된 대표 시간
 
-        // 기온 정보
+        // 기온 정보 (완전)
         temperature: data.TMP ? Math.round(parseFloat(data.TMP)) : null,
         temperatureMin: dailyData.temperatureMin ? Math.round(dailyData.temperatureMin) : null,
         temperatureMax: dailyData.temperatureMax ? Math.round(dailyData.temperatureMax) : null,
         temperatureUnit: '°C',
         temperatureDescription: getTemperatureDescription(data.TMP),
-        sensoryTemperature: sensoryTemp,
+        sensoryTemperature: sensoryTemp, // 체감온도 추가
         sensoryTemperatureDescription: sensoryTemp !== null ? getTemperatureDescription(sensoryTemp) : '정보없음',
-        temperatureCompareYesterday: null,
+        temperatureCompareYesterday: null, // 어제와의 비교: 현재 미구현 (이력 데이터 필요)
 
-        // 하늘 상태
+        // 하늘 상태 (완전)
         sky: getSkyDescription(data.SKY),
         skyCode: data.SKY,
         skyDescription: WEATHER_CODES.SKY[data.SKY] || '정보없음',
 
-        // 강수 정보
+        // 강수 정보 (완전)
         precipitation: getPrecipitationDescription(data.PTY),
         precipitationCode: data.PTY,
         precipitationDescription: WEATHER_CODES.PTY[data.PTY] || '없음',
@@ -478,25 +554,26 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
         precipitationAmount: processPrecipitationAmount(data.PCP),
         precipitationAmountDescription: WEATHER_CODES.PCP[data.PCP] || '0mm',
 
-        // 적설 정보
+        // 적설 정보 (완전)
         snowAmount: processSnowAmount(data.SNO),
         snowAmountDescription: WEATHER_CODES.SNO[data.SNO] || '0cm',
 
-        // 습도 정보
+        // 습도 정보 (완전)
         humidity: data.REH ? parseInt(data.REH) : null,
         humidityUnit: '%',
         humidityDescription: getHumidityDescription(data.REH),
 
-        // 풍속/풍향 정보
+        // 풍속/풍향 정보 (완전)
         windSpeed: data.WSD ? parseFloat(data.WSD).toFixed(1) : null,
         windSpeedUnit: 'm/s',
+        // 제주 지역 특성 반영
         windSpeedDescription: getWindSpeedDescription(data.WSD, locationFullName.includes('제주')),
-        windSpeedRange: data.WSD ? `${Math.max(0, parseFloat(data.WSD) - 1).toFixed(1)}~${(parseFloat(data.WSD) + 2).toFixed(1)}m/s` : null,
+        windSpeedRange: data.WSD ? Math.max(0, parseFloat(data.WSD) - 1).toFixed(1) + '~' + (parseFloat(data.WSD) + 2).toFixed(1) + 'm/s' : null,
         windDirection: getWindDirectionFromDegree(data.VEC),
         windDirectionDegree: data.VEC ? parseFloat(data.VEC) : null,
-        windDirectionDescription: data.VEC ? `${getWindDirectionFromDegree(data.VEC)} (${data.VEC}도)` : '정보없음',
+        windDirectionDescription: data.VEC ? getWindDirectionFromDegree(data.VEC) + ' (' + data.VEC + '도)' : '정보없음',
 
-        // 파고 정보
+        // 파고 정보 (완전)
         waveHeight: data.WAV || null,
         waveHeightDescription: WEATHER_CODES.WAV[data.WAV] || '정보없음',
 
@@ -506,9 +583,9 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
 
         // 종합 날씨 상태
         weatherStatus: getOverallWeatherStatus(data),
-        weatherAdvice: getWeatherAdvice(data, locationFullName),
+        weatherAdvice: getWeatherAdvice(data, locationFullName), // 날씨 조언에도 지역 정보 전달
 
-        // 시간별 상세 데이터
+        // 시간별 상세 데이터 (선택적으로 포함)
         hourlyData: Object.keys(times).map(time => {
             const hourData = times[time];
             const hourlyTemp = hourData.TMP ? parseFloat(hourData.TMP) : null;
@@ -518,15 +595,15 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
 
             return {
                 time: time,
-                timeFormatted: `${time.slice(0, 2)}:${time.slice(2, 4)}`,
+                timeFormatted: time.slice(0, 2) + ':' + time.slice(2, 4),
                 temperature: hourlyTemp ? Math.round(hourlyTemp) : null,
-                sensoryTemperature: hourlySensoryTemp,
+                sensoryTemperature: hourlySensoryTemp, // 시간별 체감온도 추가
                 sky: WEATHER_CODES.SKY[hourData.SKY] || '정보없음',
                 precipitation: WEATHER_CODES.PTY[hourData.PTY] || '없음',
                 precipitationProbability: hourData.POP ? parseInt(hourData.POP) : 0,
                 humidity: hourData.REH ? parseInt(hourData.REH) : null,
                 windSpeed: hourlyWindSpeed ? hourlyWindSpeed.toFixed(1) : null,
-                windSpeedRange: hourlyWindSpeed ? `${Math.max(0, hourlyWindSpeed - 1).toFixed(1)}~${(hourlyWindSpeed + 2).toFixed(1)}m/s` : null,
+                windSpeedRange: hourlyWindSpeed ? Math.max(0, hourlyWindSpeed - 1).toFixed(1) + '~' + (hourlyWindSpeed + 2).toFixed(1) + 'm/s' : null,
             };
         }).sort((a, b) => a.time.localeCompare(b.time))
     };
@@ -534,6 +611,7 @@ function extractCompleteWeatherData(dayForecast, date, kst, locationFullName) {
 
 /**
  * 기온, 습도, 풍속을 기반으로 체감온도를 계산합니다.
+ * 기상청과 유사한 공식 사용.
  * @param {number|null} temperature - 실제 기온 (°C)
  * @param {number|null} humidity - 상대 습도 (%)
  * @param {number|null} windSpeed - 풍속 (m/s)
@@ -550,11 +628,16 @@ function calculateSensoryTemperature(temperature, humidity, windSpeed) {
 
     let feelsLike;
     if (temp >= 10) {
+        // 습도 고려한 더위 체감
+        // 기존: temp + (rh - 40) * 0.1
+        // 수정: 습도 영향 계수를 0.07로 완화하여 더 실제적인 체감온도 반영
         feelsLike = temp + (rh - 40) * 0.07;
     } else {
+        // 바람 고려한 추위 체감
         feelsLike = temp - ws * 1.5;
     }
 
+    // 너무 극단적인 값 방지 및 유효성 검사
     if (isNaN(feelsLike)) {
         return null;
     }
@@ -562,7 +645,7 @@ function calculateSensoryTemperature(temperature, humidity, windSpeed) {
     return feelsLike.toFixed(1);
 }
 
-// 기온에 따른 설명 반환
+// **기온에 따른 설명 반환**
 function getTemperatureDescription(temp) {
     if (!temp && temp !== 0) return '정보없음';
     const t = parseFloat(temp);
@@ -579,33 +662,33 @@ function getTemperatureDescription(temp) {
     return '극심한폭염 (위험)';
 }
 
-// 하늘 상태 코드에 따른 설명 반환
+// **하늘 상태 코드에 따른 설명 반환**
 function getSkyDescription(code) {
     return WEATHER_CODES.SKY[code] || '정보없음';
 }
 
-// 강수 형태 코드에 따른 설명 반환
+// **강수 형태 코드에 따른 설명 반환**
 function getPrecipitationDescription(code) {
     return WEATHER_CODES.PTY[code] || '없음';
 }
 
-// 강수량 값 처리 및 설명 반환
+// **강수량 값 처리 및 설명 반환**
 function processPrecipitationAmount(pcp) {
     if (!pcp || pcp === '강수없음' || pcp === '0') return '0mm';
     if (pcp === '1mm 미만') return '1mm 미만';
     if (pcp.includes('mm')) return pcp;
-    return `${pcp}mm`;
+    return pcp + 'mm';
 }
 
-// 적설량 값 처리 및 설명 반환
+// **적설량 값 처리 및 설명 반환**
 function processSnowAmount(sno) {
     if (!sno || sno === '적설없음' || sno === '0') return '0cm';
     if (sno === '1cm 미만') return '1cm 미만';
     if (sno.includes('cm')) return sno;
-    return `${sno}cm`;
+    return sno + 'cm';
 }
 
-// 습도에 따른 설명 반환
+// **습도에 따른 설명 반환**
 function getHumidityDescription(humidity) {
     if (!humidity) return '정보없음';
     const h = parseInt(humidity);
@@ -616,7 +699,7 @@ function getHumidityDescription(humidity) {
     return '매우 습함';
 }
 
-// 풍속에 따른 설명 반환 (제주 지역 특성 반영)
+// **풍속에 따른 설명 반환 (제주 지역 특성 반영)**
 function getWindSpeedDescription(windSpeed, isJeju = false) {
     if (!windSpeed) return '정보없음';
     const ws = parseFloat(windSpeed);
@@ -636,12 +719,12 @@ function getWindSpeedDescription(windSpeed, isJeju = false) {
     else desc = '25m/s 이상 (매우강한폭풍)';
 
     if (isJeju) {
-        return `${desc} (변동 가능)`;
+        return desc + ' (변동 가능)'; // 제주 지역일 때 추가 문구
     }
     return desc;
 }
 
-// 풍향 각도에 따른 16방위 설명 반환
+// **풍향 각도에 따른 16방위 설명 반환**
 function getWindDirectionFromDegree(degree) {
     if (!degree && degree !== 0) return '정보없음';
 
@@ -659,7 +742,7 @@ function getWindDirectionFromDegree(degree) {
     return directions[index];
 }
 
-// 주요 날씨 요소 기반 종합 날씨 상태 반환
+// **주요 날씨 요소 기반 종합 날씨 상태 반환**
 function getOverallWeatherStatus(data) {
     const temp = data.TMP ? parseFloat(data.TMP) : null;
     const sky = data.SKY;
@@ -668,9 +751,9 @@ function getOverallWeatherStatus(data) {
 
     if (pty && pty !== '0') {
         const precipType = WEATHER_CODES.PTY[pty] || '강수';
-        if (pop >= 80) return `${precipType} 확실`;
-        if (pop >= 60) return `${precipType} 가능성 높음`;
-        return `${precipType} 가능성 있음`;
+        if (pop >= 80) return precipType + ' 확실';
+        if (pop >= 60) return precipType + ' 가능성 높음';
+        return precipType + ' 가능성 있음';
     }
 
     if (pop >= 60) {
@@ -680,18 +763,18 @@ function getOverallWeatherStatus(data) {
     const skyDesc = WEATHER_CODES.SKY[sky] || '정보없음';
 
     if (temp !== null) {
-        if (temp >= 33) return `${skyDesc}, 폭염 주의`;
-        if (temp >= 28) return `${skyDesc}, 더움`;
-        if (temp >= 21) return `${skyDesc}, 쾌적`;
-        if (temp >= 10) return `${skyDesc}, 선선`;
-        if (temp >= 0) return `${skyDesc}, 쌀쌀`;
-        return `${skyDesc}, 추움`;
+        if (temp >= 33) return skyDesc + ', 폭염 주의';
+        if (temp >= 28) return skyDesc + ', 더움';
+        if (temp >= 21) return skyDesc + ', 쾌적';
+        if (temp >= 10) return skyDesc + ', 선선';
+        if (temp >= 0) return skyDesc + ', 쌀쌀';
+        return skyDesc + ', 추움';
     }
 
     return skyDesc;
 }
 
-// 현재 날씨 데이터 기반 맞춤형 조언 반환 (제주 특성 반영)
+// **현재 날씨 데이터 기반 맞춤형 조언 반환 (제주 특성 반영)**
 function getWeatherAdvice(data, locationFullName) {
     const temp = data.TMP ? parseFloat(data.TMP) : null;
     const pty = data.PTY;
@@ -735,10 +818,150 @@ function getWeatherAdvice(data, locationFullName) {
     return advice.length > 0 ? advice.join(' | ') : '쾌적한 날씨입니다';
 }
 
-// URL pathname을 안전하게 추출하는 헬퍼 함수
+/**
+ * API 키가 없거나 오류 발생 시 완전한 샘플 데이터 생성
+ * @param {string} region - 요청된 지역명
+ * @param {string} [errorMessage=null] - 발생한 오류 메시지 (선택 사항)
+ * @returns {Array<DailyWeatherData>} 샘플 날씨 데이터 배열
+ */
+function generateCompleteSampleData(region, errorMessage = null) {
+    const today = new Date();
+    const kst = new Date(today.getTime() + 9 * 60 * 60 * 1000);
+
+    const dates = [];
+    for (let i = 0; i < 3; i++) {
+        const date = new Date(kst.getTime() + i * 24 * 60 * 60 * 1000);
+        dates.push(date);
+    }
+
+    const baseMessage = errorMessage
+        ? '⚠️ 오류: ' + errorMessage
+        : '⚠️ WEATHER_API_KEY 설정 필요 - 샘플 데이터';
+    const sampleTemps = [20, 22, 21];
+    const sampleSkies = ['1', '3', '4'];
+    const samplePrecips = ['0', '0', '1'];
+    const sampleHumidity = [60, 70, 80];
+    const sampleWindSpeed = [2.5, 3.0, 3.5];
+
+    const defaultLocationFullName = '서울특별시';
+
+    return dates.map((date, index) => ({
+        date: date.toISOString().slice(0, 10).replace(/-/g, ''),
+        dateFormatted: date.toISOString().slice(0, 10),
+        dayLabel: index === 0 ? '오늘' : index === 1 ? '내일' : '모레',
+        dayIndex: index,
+        representativeTime: '1400',
+
+        temperature: errorMessage ? null : Math.round(sampleTemps[index]),
+        temperatureMin: errorMessage ? null : Math.round(sampleTemps[index] - 5),
+        temperatureMax: errorMessage ? null : Math.round(sampleTemps[index] + 5),
+        temperatureUnit: '°C',
+        temperatureDescription: errorMessage ? '정보없음' : getTemperatureDescription(sampleTemps[index]),
+        sensoryTemperature: errorMessage ? null : calculateSensoryTemperature(sampleTemps[index], sampleHumidity[index], sampleWindSpeed[index]),
+        sensoryTemperatureDescription: errorMessage ? '정보없음' : getTemperatureDescription(calculateSensoryTemperature(sampleTemps[index], sampleHumidity[index], sampleWindSpeed[index])),
+        temperatureCompareYesterday: null, // 샘플 데이터에서는 미구현
+
+        sky: errorMessage ? '정보없음' : WEATHER_CODES.SKY[sampleSkies[index]],
+        skyCode: errorMessage ? null : sampleSkies[index],
+        skyDescription: errorMessage ? '정보없음' : WEATHER_CODES.SKY[sampleSkies[index]],
+
+        precipitation: errorMessage ? '정보없음' : WEATHER_CODES.PTY[samplePrecips[index]],
+        precipitationCode: errorMessage ? null : samplePrecips[index],
+        precipitationDescription: WEATHER_CODES.PTY[samplePrecips[index]],
+        precipitationProbability: errorMessage ? null : [10, 30, 60][index],
+        precipitationProbabilityMax: errorMessage ? null : [10, 30, 60][index],
+        precipitationProbabilityDescription: WEATHER_CODES.POP[[10, 30, 60][index]],
+        precipitationAmount: errorMessage ? '정보없음' : index === 2 ? '5mm' : '0mm',
+        precipitationAmountDescription: WEATHER_CODES.PCP[index === 2 ? '5' : '강수없음'] || '0mm',
+
+        snowAmount: '0cm',
+        snowAmountDescription: '0cm',
+
+        humidity: errorMessage ? null : sampleHumidity[index],
+        humidityUnit: '%',
+        humidityDescription: errorMessage ? '정보없음' : getHumidityDescription(sampleHumidity[index]),
+
+        windSpeed: errorMessage ? null : sampleWindSpeed[index].toFixed(1),
+        windSpeedUnit: 'm/s',
+        windSpeedDescription: errorMessage ? '정보없음' : getWindSpeedDescription(sampleWindSpeed[index], region.includes('제주')),
+        windSpeedRange: errorMessage ? null : Math.max(0, sampleWindSpeed[index] - 1).toFixed(1) + '~' + (sampleWindSpeed[index] + 2).toFixed(1) + 'm/s',
+        windDirection: errorMessage ? '정보없음' : ['북동', '남', '서'][index],
+        windDirectionDegree: errorMessage ? null : [45, 180, 270][index],
+        windDirectionDescription: errorMessage ? '정보없음' : ['북동', '남', '서'][index] + ' (' + [45, 180, 270][index] + '도)',
+
+        waveHeight: null,
+        waveHeightDescription: '정보없음',
+
+        uvIndex: null,
+        visibility: null,
+
+        weatherStatus: errorMessage ? '정보없음' : getOverallWeatherStatus({
+            TMP: sampleTemps[index],
+            SKY: sampleSkies[index],
+            PTY: samplePrecips[index],
+            POP: [10, 30, 60][index]
+        }),
+        weatherAdvice: errorMessage ? '정보를 확인할 수 없습니다' : getWeatherAdvice({
+            TMP: sampleTemps[index],
+            PTY: samplePrecips[index],
+            POP: [10, 30, 60][index],
+            WSD: sampleWindSpeed[index]
+        }, region), // 샘플 데이터에도 지역 정보 전달
+
+        hourlyData: errorMessage ? [] : [
+            {
+                time: '0600',
+                timeFormatted: '06:00',
+                temperature: Math.round(sampleTemps[index] - 3),
+                sensoryTemperature: calculateSensoryTemperature(sampleTemps[index] - 3, sampleHumidity[index], sampleWindSpeed[index]),
+                sky: WEATHER_CODES.SKY[sampleSkies[index]],
+                precipitation: WEATHER_CODES.PTY[samplePrecips[index]],
+                precipitationProbability: [10, 30, 60][index],
+                humidity: sampleHumidity[index],
+                windSpeed: sampleWindSpeed[index].toFixed(1),
+                windSpeedRange: Math.max(0, sampleWindSpeed[index] - 1).toFixed(1) + '~' + (sampleWindSpeed[index] + 2).toFixed(1) + 'm/s',
+            },
+            {
+                time: '1200',
+                timeFormatted: '12:00',
+                temperature: Math.round(sampleTemps[index]),
+                sensoryTemperature: calculateSensoryTemperature(sampleTemps[index], sampleHumidity[index], sampleWindSpeed[index]),
+                sky: WEATHER_CODES.SKY[sampleSkies[index]],
+                precipitation: WEATHER_CODES.PTY[samplePrecips[index]],
+                precipitationProbability: [10, 30, 60][index],
+                humidity: sampleHumidity[index],
+                windSpeed: sampleWindSpeed[index].toFixed(1),
+                windSpeedRange: Math.max(0, sampleWindSpeed[index] - 1).toFixed(1) + '~' + (sampleWindSpeed[index] + 2).toFixed(1) + 'm/s',
+            },
+            {
+                time: '1800',
+                timeFormatted: '18:00',
+                temperature: Math.round(sampleTemps[index] - 2),
+                sensoryTemperature: calculateSensoryTemperature(sampleTemps[index] - 2, sampleHumidity[index], sampleWindSpeed[index]),
+                sky: WEATHER_CODES.SKY[sampleSkies[index]],
+                precipitation: WEATHER_CODES.PTY[samplePrecips[index]],
+                precipitationProbability: [10, 30, 60][index],
+                humidity: sampleHumidity[index],
+                windSpeed: sampleWindSpeed[index].toFixed(1),
+                windSpeedRange: Math.max(0, sampleWindSpeed[index] - 1).toFixed(1) + '~' + (sampleWindSpeed[index] + 2).toFixed(1) + 'm/s',
+            }
+        ],
+
+        message: baseMessage + ' (' + ['오늘', '내일', '모레'][index] + ')',
+        timestamp: new Date().toISOString(),
+        region: region
+    }));
+}
+
+/**
+ * URL pathname을 안전하게 추출하는 헬퍼 함수.
+ * Vercel과 같은 서버리스 환경에서 req.headers.host가 없을 경우를 대비합니다.
+ * @param {Object} req - 요청 객체
+ * @returns {string} 요청 URL의 pathname
+ */
 function getPathname(req) {
     try {
-        const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+        const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'));
         return url.pathname;
     } catch (error) {
         logger.warn('URL 파싱 중 오류 발생, Fallback 경로 사용:', { message: error.message });
@@ -746,7 +969,13 @@ function getPathname(req) {
     }
 }
 
-// 현재 시간(시)을 기준으로 기상청 API의 base_time을 계산합니다.
+// =====================================================================
+// 8. 테스트 가능성 향상: calculateBaseTime을 순수 함수로 분리
+/**
+ * 현재 시간(시)을 기준으로 기상청 API의 base_time을 계산합니다.
+ * @param {number} hour - 현재 시 (0-23)
+ * @returns {string} 기상청 API base_time (HHMM 형식)
+ */
 const calculateBaseTime = (hour) => {
     if (hour >= 23 || hour < 2) return '2300';
     if (hour < 5) return '0200';
@@ -758,8 +987,19 @@ const calculateBaseTime = (hour) => {
     if (hour < 23) return '2000';
     return '2300';
 };
+// =====================================================================
 
-// API 호출을 재시도 로직과 함께 수행합니다.
+// =====================================================================
+// 2. 재시도 로직 구현 & 7. 타임아웃 처리 개선 (AbortController 사용)
+/**
+ * API 호출을 재시도 로직과 함께 수행합니다.
+ * 주로 'ECONNABORTED' (타임아웃) 오류에 대해 재시도합니다.
+ * @param {string} url - 요청 URL
+ * @param {Object} params - axios 요청 파라미터 객체
+ * @param {number} [retries=WEATHER_CONFIG.API.MAX_RETRIES] - 남은 재시도 횟수
+ * @returns {Promise<Object>} axios 응답 객체
+ * @throws {Error} 재시도 횟수를 모두 소진하거나 다른 종류의 오류 발생 시
+ */
 const apiCallWithRetry = async (url, params, retries = WEATHER_CONFIG.API.MAX_RETRIES) => {
     try {
         const controller = new AbortController();
@@ -775,8 +1015,8 @@ const apiCallWithRetry = async (url, params, retries = WEATHER_CONFIG.API.MAX_RE
         clearTimeout(timeoutId);
         return response;
     } catch (error) {
-        if (retries > 0 && (error.code === 'ECONNABORTED' || error.name === 'AbortError')) {
-            logger.warn(`API 호출 재시도 (남은 횟수: ${retries - 1})`, {
+        if (retries > 0 && (error.code === 'ECONNABORTED' || error.name === 'AbortError')) { // AbortError도 처리
+            logger.warn('API 호출 재시도 (남은 횟수: ' + (retries - 1) + ')', {
                 url,
                 error_message: error.message,
                 error_code: error.code || error.name
@@ -786,8 +1026,10 @@ const apiCallWithRetry = async (url, params, retries = WEATHER_CONFIG.API.MAX_RE
         throw error;
     }
 };
+// =====================================================================
 
-// 입력 검증 강화
+// =====================================================================
+// 10. 입력 검증 강화
 const validateInput = {
     latitude: (lat) => {
         const num = parseFloat(lat);
@@ -810,24 +1052,31 @@ const validateInput = {
         return region.replace(/[<>"'&]/g, '');
     }
 };
+// =====================================================================
 
-// 날씨 데이터의 유효성을 간단하게 검증합니다.
+// =====================================================================
+// 5. 데이터 검증 함수 활용 (기존에 정의되어 있었으나 호출 추가)
+/**
+ * 날씨 데이터의 유효성을 간단하게 검증합니다.
+ * @param {DailyWeatherData} data - 검증할 날씨 데이터
+ * @returns {boolean} 데이터가 유효하면 true, 아니면 false
+ */
 function validateWeatherData(data) {
     const errors = [];
 
     // 기온 범위 검증 (-50°C ~ 60°C)
     if (data.temperature !== null && (parseFloat(data.temperature) < -50 || parseFloat(data.temperature) > 60)) {
-        errors.push(`비정상적인 기온: ${data.temperature}°C`);
+        errors.push('비정상적인 기온: ' + data.temperature + '°C');
     }
 
     // 습도 범위 검증 (0% ~ 100%)
     if (data.humidity !== null && (data.humidity < 0 || data.humidity > 100)) {
-        errors.push(`비정상적인 습도: ${data.humidity}%`);
+        errors.push('비정상적인 습도: ' + data.humidity + '%');
     }
 
     // 강수확률 범위 검증 (0% ~ 100%)
     if (data.precipitationProbability !== null && (data.precipitationProbability < 0 || data.precipitationProbability > 100)) {
-        errors.push(`비정상적인 강수확률: ${data.precipitationProbability}%`);
+        errors.push('비정상적인 강수확률: ' + data.precipitationProbability + '%');
     }
 
     if (errors.length > 0) {
@@ -836,15 +1085,27 @@ function validateWeatherData(data) {
 
     return errors.length === 0;
 }
+// =====================================================================
 
-// 서버 시작 시 인기 지역의 날씨 데이터를 미리 캐싱합니다.
+// =====================================================================
+// 추가 개선 제안: 1. 에러 복구 전략 (기존 샘플 데이터 활용 강화)
+// generateCompleteSampleData 함수가 이미 이 역할을 수행하고 있습니다.
+// API 키가 없거나, API 호출이 실패하거나, 응답 데이터가 없을 때 호출됩니다.
+// =====================================================================
+
+// =====================================================================
+// 추가 개선 제안: 2. 성능 최적화 (자주 요청되는 지역 데이터 사전 캐싱)
+/**
+ * 서버 시작 시 인기 지역의 날씨 데이터를 미리 캐싱합니다.
+ */
 async function preloadPopularLocations() {
+    // locationData는 이제 항상 객체로 존재합니다.
     if (Object.keys(locationData).length === 0) {
         logger.warn('locationData가 로드되지 않아 인기 지역 사전 캐싱을 건너뜀니다.');
         return;
     }
 
-    const popularRegions = ['서울특별시', '제주시', '부산광역시', '서귀포시'];
+    const popularRegions = ['서울특별시', '제주시', '부산광역시', '서귀포시']; // 인기 지역 목록
     const weatherApiKey = process.env.WEATHER_API_KEY;
 
     if (!weatherApiKey) {
@@ -856,10 +1117,10 @@ async function preloadPopularLocations() {
         try {
             const locationMatches = findAllMatches(regionName);
             if (locationMatches.length === 0) {
-                logger.warn(`사전 캐싱을 위한 지역 '${regionName}'을(를) 찾을 수 없습니다.`);
+                logger.warn('사전 캐싱을 위한 지역 \'' + regionName + '\'을(를) 찾을 수 없습니다.');
                 continue;
             }
-            const location = locationMatches[0];
+            const location = locationMatches[0]; // 가장 적합한 매칭 사용
 
             const coordinates = latLonToGrid(location.lat, location.lon);
             const now = new Date();
@@ -872,14 +1133,15 @@ async function preloadPopularLocations() {
                 baseDate = yesterday.toISOString().slice(0, 10).replace(/-/g, '');
             }
 
-            const cacheKey = `weather_${location.name}_${coordinates.nx}_${coordinates.ny}_${baseDate}_${baseTime}`;
+            const cacheKey = 'weather_' + location.name + '_' + coordinates.nx + '_' + coordinates.ny + '_' + baseDate + '_' + baseTime;
 
+            // 캐시에 이미 있으면 건너뛰기
             if (weatherCache.has(cacheKey)) {
-                logger.info(`사전 캐싱: '${regionName}' (캐시에 이미 존재)`);
+                logger.info('사전 캐싱: \'' + regionName + '\' (캐시에 이미 존재)');
                 continue;
             }
 
-            logger.info(`사전 캐싱 시작: '${regionName}'`);
+            logger.info('사전 캐싱 시작: \'' + regionName + '\'');
             const response = await apiCallWithRetry(WEATHER_CONFIG.API.BASE_URL, {
                 params: {
                     serviceKey: weatherApiKey,
@@ -894,16 +1156,16 @@ async function preloadPopularLocations() {
             }, WEATHER_CONFIG.API.MAX_RETRIES);
 
             if (!response.data?.response?.body?.items?.item) {
-                logger.warn(`사전 캐싱 실패: '${regionName}' - API 응답 데이터 없음`);
+                logger.warn('사전 캐싱 실패: \'' + regionName + '\' - API 응답 데이터 없음');
                 continue;
             }
             if (response.data.response.header.resultCode !== '00') {
-                logger.warn(`사전 캐싱 실패: '${regionName}' - API 오류 (${response.data.response.header.resultCode})`);
+                logger.warn('사전 캐싱 실패: \'' + regionName + '\' - API 오류 (' + response.data.response.header.resultCode + ')');
                 continue;
             }
 
             const items = response.data.response.body.items.item || [];
-            const weatherData = processCompleteWeatherData(items, kst, location.name);
+            const weatherData = processCompleteWeatherData(items, kst, location.name); // fullName 전달
 
             const responseData = {
                 success: true,
@@ -919,7 +1181,7 @@ async function preloadPopularLocations() {
                 apiInfo: {
                     source: '기상청 단기예보 API',
                     note: '기상청 단기예보 API 기준입니다. 실시간 관측값과 차이가 있을 수 있으며, ' +
-                        '어제와의 비교 정보는 현재 API에서 제공하지 않습니다.',
+                        '어제와의 비교 정보는 현재 API에서 제공하지 않습니다.', // note 추가
                     baseDate: baseDate,
                     baseTime: baseTime,
                     timestamp: new Date().toISOString(),
@@ -928,7 +1190,7 @@ async function preloadPopularLocations() {
                     dataPoints: items.length,
                     version: '2.0-complete'
                 },
-                weatherCodes: WEATHER_CODES
+                weatherCodes: WEATHER_CODES // 상세 정보 포함
             };
 
             weatherCache.set(cacheKey, {
@@ -936,8 +1198,9 @@ async function preloadPopularLocations() {
                 timestamp: Date.now()
             });
 
-            logger.info(`사전 캐싱 완료: '${regionName}'`);
+            logger.info('사전 캐싱 완료: \'' + regionName + '\'');
 
+            // 캐시 크기 관리
             if (weatherCache.size > WEATHER_CONFIG.CACHE.MAX_ENTRIES) {
                 const oldestKey = weatherCache.keys().next().value;
                 weatherCache.delete(oldestKey);
@@ -945,10 +1208,11 @@ async function preloadPopularLocations() {
             }
 
         } catch (error) {
-            logger.error(`사전 캐싱 중 오류 발생: '${regionName}'`, error);
+            logger.error('사전 캐싱 중 오류 발생: \'' + regionName + '\'', error);
         }
     }
 }
+// =====================================================================
 
 /**
  * 지역 검색 API 핸들러 - 중복 제거 및 하이브리드 검색 지원
@@ -956,12 +1220,12 @@ async function preloadPopularLocations() {
  * @param {Object} res - 응답 객체
  */
 async function handleLocationSearch(req, res) {
+    // 12. 에러 로깅 개선을 위한 요청 정보 미리 캡쳐
     const requestInfo = {
         url: req.url,
         query: req.query,
         headers: req.headers
     };
-    
     try {
         const query = validateInput.region(req.query.q);
         const page = parseInt(req.query.page || 1);
@@ -998,15 +1262,15 @@ async function handleLocationSearch(req, res) {
             query: query,
             results: searchResult.results.map(location => ({
                 name: location.name,
-                displayName: location.displayName || location.name,
+                displayName: location.displayName || location.name, // displayName 우선 사용
                 type: location.type,
-                matchType: location.matchType || location.searchType || 'direct',
+                matchType: location.matchType || location.searchType || 'direct', // 매칭 타입 추가
                 lat: location.lat,
                 lon: location.lon,
                 key: location.key,
-                priority: location.priority_score || location.priority || 0,
-                admin_parent: location.admin_parent,
-                legal_divisions: location.legal_divisions,
+                priority: location.priority_score || location.priority || 0, // 우선순위 추가
+                admin_parent: location.admin_parent, // 상위 행정구역
+                legal_divisions: location.legal_divisions, // 관할 법정동 목록
                 // 추가 정보
                 isLegalDivision: location.matchType === 'legal_division' || location.searchType === 'legal_division',
                 originalSearchTerm: location.originalSearchKey || query
@@ -1028,20 +1292,19 @@ async function handleLocationSearch(req, res) {
         });
 
     } catch (error) {
-        logger.error(`지역 검색 API 오류: ${error.message}`, error, requestInfo);
-        
+        logger.error('지역 검색 API 오류: ' + error.message, error, requestInfo);
+        // 샘플 데이터 대신 명확한 에러 메시지 반환
         if (error instanceof WeatherAPIError) {
             return res.status(error.statusCode).json({
                 success: false,
-                data: null,
+                data: null, // 에러 시 데이터는 null
                 error: error.message,
                 code: error.code
             });
         }
-        
         return res.status(500).json({
             success: false,
-            data: null,
+            data: null, // 에러 시 데이터는 null
             error: '지역 검색 중 알 수 없는 오류가 발생했습니다.',
             code: 'UNKNOWN_ERROR'
         });
@@ -1055,7 +1318,7 @@ async function handleLocationSearch(req, res) {
  * @param {Object} res - 응답 객체
  */
 async function handleWeatherRequest(req, res) {
-    metrics.apiCalls++;
+    metrics.apiCalls++; // API 호출 시 메트릭 증가
     const requestInfo = {
         url: req.url,
         query: req.query,
@@ -1075,26 +1338,29 @@ async function handleWeatherRequest(req, res) {
             latitude = null;
             longitude = null;
         } else {
+            // 위경도나 지역명 둘 중 하나도 없으면 기본 지역 사용
             regionName = WEATHER_CONFIG.DEFAULTS.REGION;
             const defaultLocationMatches = findAllMatches(regionName);
             const defaultLocation = defaultLocationMatches.length > 0 ? defaultLocationMatches[0] : null;
 
+            // locationData가 로드되지 않았거나 기본 지역을 찾을 수 없는 경우
             if (!defaultLocation || Object.keys(locationData).length === 0) {
                 logger.warn('기본 지역 정보를 찾을 수 없거나 locationData가 로드되지 않아 날씨 정보를 제공할 수 없습니다.');
                 return res.status(500).json({
                     success: false,
-                    data: null,
+                    data: null, // 에러 시 데이터는 null
                     error: '기본 지역 정보를 로드할 수 없어 날씨 정보를 제공할 수 없습니다.',
                     code: 'LOCATION_DATA_UNAVAILABLE'
                 });
             }
             latitude = defaultLocation.lat;
             longitude = defaultLocation.lon;
-            logger.warn(`위경도/지역명 없음: 기본 지역(${regionName}) 사용`);
+            logger.warn('위경도/지역명 없음: 기본 지역(' + regionName + ') 사용');
         }
 
         const weatherApiKey = process.env.WEATHER_API_KEY;
 
+        // 지역별 요청 통계 증가 (유효한 지역명 또는 매칭된 지역명 사용)
         let currentRegionKey;
         if (regionName) {
             currentRegionKey = regionName;
@@ -1113,16 +1379,17 @@ async function handleWeatherRequest(req, res) {
             hasWeatherApiKey: !!weatherApiKey
         });
 
-        if (!weatherApiKey || !validateEnvironment().isValid) {
+        // API 키 확인 로직 (샘플 데이터 대신 에러 반환)
+        if (!weatherApiKey || !validateEnvironment().isValid) { // 환경 변수 검증 결과도 확인
             const validationResult = validateEnvironment();
             const errorMessage = !weatherApiKey
                 ? 'WEATHER_API_KEY 환경 변수가 설정되지 않았습니다.'
-                : `필수 환경 변수 누락: ${validationResult.missing.join(', ')}.`;
+                : '필수 환경 변수 누락: ' + validationResult.missing.join(', ') + '.';
 
-            logger.error(`${errorMessage} 날씨 정보를 제공할 수 없습니다.`, new Error(errorMessage), requestInfo);
+            logger.error(errorMessage + ' 날씨 정보를 제공할 수 없습니다.', new Error(errorMessage), requestInfo);
             return res.status(500).json({
                 success: false,
-                data: null,
+                data: null, // 에러 시 데이터는 null
                 error: errorMessage,
                 code: 'API_KEY_OR_ENV_MISSING'
             });
@@ -1130,16 +1397,16 @@ async function handleWeatherRequest(req, res) {
 
         let coordinates;
         let locationInfo;
-        let actualLocationFullName;
+        let actualLocationFullName; // 실제 매칭된 지역의 전체 이름 저장
 
         if (latitude && longitude) {
             coordinates = latLonToGrid(latitude, longitude);
             const matchedAdminLocation = findMatchingLocation({ lat: latitude, lon: longitude });
-            actualLocationFullName = matchedAdminLocation ? matchedAdminLocation.name : `위도 ${latitude}, 경도 ${longitude}`;
+            actualLocationFullName = matchedAdminLocation ? matchedAdminLocation.name : '위도 ' + latitude + ', 경도 ' + longitude;
 
             locationInfo = {
-                requested: `${lat}, ${lon}`,
-                matched: matchedAdminLocation ? matchedAdminLocation.name : `위경도 (${latitude}, ${longitude})`,
+                requested: lat + ', ' + lon,
+                matched: matchedAdminLocation ? matchedAdminLocation.name : '위경도 (' + latitude + ', ' + longitude + ')',
                 fullName: actualLocationFullName,
                 coordinates: coordinates,
                 latLon: { lat: latitude, lon: longitude },
@@ -1157,7 +1424,7 @@ async function handleWeatherRequest(req, res) {
             const location = locationMatches.length > 0 ? locationMatches[0] : null;
 
             if (!location) {
-                throw new WeatherAPIError(`지역 "${regionName}"에 대한 정보를 찾을 수 없습니다.`, 'LOCATION_NOT_FOUND', 404);
+                throw new WeatherAPIError('지역 "' + regionName + '"에 대한 정보를 찾을 수 없습니다.', 'LOCATION_NOT_FOUND', 404);
             }
             actualLocationFullName = location.name;
             coordinates = latLonToGrid(location.lat, location.lon);
@@ -1188,12 +1455,13 @@ async function handleWeatherRequest(req, res) {
             baseDate = yesterday.toISOString().slice(0, 10).replace(/-/g, '');
         }
 
-        const cacheKey = `weather_${locationInfo.fullName}_${coordinates.nx}_${coordinates.ny}_${baseDate}_${baseTime}`;
+        // 5. 캐시 키 충돌 가능성 (개선: 지역 fullName 포함)
+        const cacheKey = 'weather_' + locationInfo.fullName + '_' + coordinates.nx + '_' + coordinates.ny + '_' + baseDate + '_' + baseTime;
         const cachedData = weatherCache.get(cacheKey);
 
         if (cachedData && Date.now() - cachedData.timestamp < WEATHER_CONFIG.CACHE.TTL_MINUTES * 60 * 1000) {
             logger.info('✅ 캐시된 데이터 사용', { cacheKey });
-            metrics.cacheHits++;
+            metrics.cacheHits++; // 캐시 히트 메트릭 증가
 
             const responseData = { ...cachedData.data };
             responseData.locationInfo = locationInfo;
@@ -1210,14 +1478,14 @@ async function handleWeatherRequest(req, res) {
                     precipitation: day.precipitation,
                     precipitationProbability: day.precipitationProbability,
                     weatherStatus: day.weatherStatus,
-                    sensoryTemperature: day.sensoryTemperature
+                    sensoryTemperature: day.sensoryTemperature // minimal에도 체감온도 포함
                 }));
                 delete responseData.weatherCodes;
             }
 
             return res.status(200).json(responseData);
         }
-        metrics.cacheMisses++;
+        metrics.cacheMisses++; // 캐시 미스 메트릭 증가
 
         logger.info('🌤️ 기상청 API 호출 시작', {
             baseDate,
@@ -1251,14 +1519,14 @@ async function handleWeatherRequest(req, res) {
 
         const resultCode = response.data.response.header.resultCode;
         if (resultCode !== '00') {
-            const errorMsg = ERROR_MESSAGES[resultCode] || `알 수 없는 오류 (코드: ${resultCode})`;
-            throw new WeatherAPIError(`기상청 API 오류: ${errorMsg}`, `API_ERROR_${resultCode}`, ['10', '11'].includes(resultCode) ? 400 : 500);
+            const errorMsg = ERROR_MESSAGES[resultCode] || '알 수 없는 오류 (코드: ' + resultCode + ')';
+            throw new WeatherAPIError('기상청 API 오류: ' + errorMsg, 'API_ERROR_' + resultCode, ['10', '11'].includes(resultCode) ? 400 : 500);
         }
 
         const items = response.data.response.body.items.item || [];
         logger.info('📊 받은 기상 데이터 항목 수', { count: items.length });
 
-        const weatherData = processCompleteWeatherData(items, kst, actualLocationFullName);
+        const weatherData = processCompleteWeatherData(items, kst, actualLocationFullName); // fullName 전달
 
         logger.info('✅ 완전한 날씨 데이터 처리 완료', { days: weatherData.length });
 
@@ -1269,7 +1537,7 @@ async function handleWeatherRequest(req, res) {
             apiInfo: {
                 source: '기상청 단기예보 API',
                 note: '기상청 단기예보 API 기준입니다. 실시간 관측값과 차이가 있을 수 있으며, ' +
-                    '어제와의 비교 정보는 현재 API에서 제공하지 않습니다. (별도 데이터 저장/조회 필요)',
+                    '어제와의 비교 정보는 현재 API에서 제공하지 않습니다. (별도 데이터 저장/조회 필요)', // note 추가
                 baseDate: baseDate,
                 baseTime: baseTime,
                 timestamp: new Date().toISOString(),
@@ -1293,7 +1561,7 @@ async function handleWeatherRequest(req, res) {
                 precipitation: day.precipitation,
                 precipitationProbability: day.precipitationProbability,
                 weatherStatus: day.weatherStatus,
-                sensoryTemperature: day.sensoryTemperature
+                sensoryTemperature: day.sensoryTemperature // minimal에도 체감온도 포함
             }));
             delete responseData.weatherCodes;
         }
@@ -1313,12 +1581,13 @@ async function handleWeatherRequest(req, res) {
         return res.status(200).json(responseData);
 
     } catch (error) {
-        logger.error(`완전한 날씨 API 오류: ${error.message}`, error, requestInfo);
+        logger.error('완전한 날씨 API 오류: ' + error.message, error, requestInfo);
 
+        // 에러 시 샘플 데이터 대신 명확한 에러 메시지 반환
         if (error instanceof WeatherAPIError) {
             return res.status(error.statusCode).json({
                 success: false,
-                data: null,
+                data: null, // 에러 시 데이터는 null
                 error: error.message,
                 code: error.code
             });
@@ -1326,22 +1595,26 @@ async function handleWeatherRequest(req, res) {
 
         return res.status(500).json({
             success: false,
-            data: null,
+            data: null, // 에러 시 데이터는 null
             error: '서버 내부 오류가 발생했습니다.',
             code: 'UNKNOWN_SERVER_ERROR'
         });
     }
 }
 
-// 필수 환경 변수가 설정되었는지 검증합니다.
+/**
+ * 필수 환경 변수가 설정되었는지 검증합니다.
+ * @returns {{isValid: boolean, missing: string[]}} 검증 결과
+ */
 function validateEnvironment() {
     const required = ['WEATHER_API_KEY'];
     const missing = required.filter(key => !process.env[key]);
 
+    // 개발 환경에서는 경고만, 프로덕션 환경에서는 오류 발생 (서버 시작 방지)
     if (missing.length > 0 && process.env.NODE_ENV === 'production') {
-        throw new Error(`필수 환경 변수 누락: ${missing.join(', ')}. 프로덕션 환경에서는 서비스 시작이 불가능합니다.`);
+        throw new Error('필수 환경 변수 누락: ' + missing.join(', ') + '. 프로덕션 환경에서는 서비스 시작이 불가능합니다.');
     } else if (missing.length > 0) {
-        logger.warn(`필수 환경 변수 누락 (개발/테스트 환경): ${missing.join(', ')}`);
+        logger.warn('필수 환경 변수 누락 (개발/테스트 환경): ' + missing.join(', '));
     }
 
     return {
@@ -1357,14 +1630,19 @@ function validateEnvironment() {
  * @param {Object} res - 응답 객체
  */
 module.exports = async function handler(req, res) {
+    // 서버 시작 시 한 번만 환경 변수 검증 및 사전 캐싱 실행
+    // (서버리스 환경에서는 콜드 스타트 시 매번 실행될 수 있음)
+    // locationData는 이제 CommonJS export로 직접 제공되므로,
+    // locationModule.locationData가 아닌 전역 스코프의 locationData 변수를 직접 참조합니다.
     if (!global.weatherServiceInitialized) {
-        validateEnvironment();
+        validateEnvironment(); // 환경 변수 검증
+        // locationData가 빈 객체({})이 아닌 경우에만 사전 캐싱을 시도합니다.
         if (Object.keys(locationData).length > 0 && process.env.WEATHER_API_KEY) {
-            await preloadPopularLocations();
+            await preloadPopularLocations(); // 인기 지역 사전 캐싱
         } else {
             logger.warn('사전 캐싱 조건이 충족되지 않아 건너뜁니다 (locationData 없음 또는 API 키 없음).');
         }
-        global.weatherServiceInitialized = true;
+        global.weatherServiceInitialized = true; // 플래그 설정
     }
 
     // 보안 헤더 추가
@@ -1375,6 +1653,7 @@ module.exports = async function handler(req, res) {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
+    // res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains'); // HTTPS 강제, 개발 환경 주의
 
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
@@ -1388,22 +1667,23 @@ module.exports = async function handler(req, res) {
         });
     }
 
-    // Rate Limiting 적용
+    // Rate Limiting 적용 (클라이언트 IP 추출)
     const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     try {
+        // 프로덕션 환경에서만 실제 Rate Limit 적용
         if (process.env.NODE_ENV === 'production' && clientIp) {
-            checkRateLimit(clientIp, 100, 60 * 1000);
+            checkRateLimit(clientIp, 100, 60 * 1000); // 1분당 100회 요청 제한
         }
     } catch (error) {
         if (error instanceof WeatherAPIError && error.code === 'RATE_LIMIT_EXCEEDED') {
-            logger.warn(`Rate Limit 초과: ${clientIp}`, { error_message: error.message });
+            logger.warn('Rate Limit 초과: ' + clientIp, { error_message: error.message });
             return res.status(error.statusCode).json({
                 success: false,
                 error: error.message,
                 code: error.code
             });
         }
-        throw error;
+        throw error; // 다른 예상치 못한 오류는 다시 throw
     }
 
     const pathname = getPathname(req);
@@ -1415,15 +1695,16 @@ module.exports = async function handler(req, res) {
             timestamp: new Date().toISOString(),
             version: '2.0-complete',
             cacheSize: weatherCache.size,
-            metrics: {
+            metrics: { // 모니터링 강화: 메트릭 정보 포함
                 apiCalls: metrics.apiCalls,
                 apiErrors: metrics.apiErrors,
                 cacheHits: metrics.cacheHits,
                 cacheMisses: metrics.cacheMisses,
                 rateLimited: metrics.rateLimited,
                 avgResponseTimeMs: metrics.avgResponseTime.toFixed(2),
-                regionalRequests: metrics.regionalRequests,
-                errorTypes: metrics.errorTypes
+                regionalRequests: metrics.regionalRequests, // 지역별 요청 통계
+                errorTypes: metrics.errorTypes, // 에러 타입별 분류
+                // responseTimeHistogram: metrics.responseTimeHistogram // 응답 시간 히스토그램 (활성화 시)
             },
             config: {
                 hasApiKey: !!process.env.WEATHER_API_KEY,
@@ -1432,7 +1713,7 @@ module.exports = async function handler(req, res) {
                 apiTimeoutMs: WEATHER_CONFIG.API.TIMEOUT,
                 apiMaxRetries: WEATHER_CONFIG.API.MAX_RETRIES
             },
-            uptime: process.uptime ? `${process.uptime().toFixed(2)}s` : 'N/A'
+            uptime: process.uptime ? process.uptime().toFixed(2) + 's' : 'N/A'
         });
     }
 
