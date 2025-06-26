@@ -1,7 +1,9 @@
 /**
- * weather.js
- * @description 기상청 API 연동 및 날씨 정보 제공 서버.
- * Vercel 서버리스 함수로 배포 가능합니다.
+ * @file weather.js
+ * @description 기상청 날씨 API 연동 및 지역 검색을 위한 서버리스 함수.
+ * Vercel 환경에 최적화되어 있으며, 캐싱, 에러 처리, 로깅, 성능 모니터링,
+ * Rate Limiting, 데이터 검증 기능을 포함합니다.
+ * locationData.js 파일을 로드하여 지역 정보를 활용합니다.
  */
 
 const axios = require('axios');
@@ -19,7 +21,7 @@ const metrics = {
     totalResponseTime: 0,
     responseTimeCount: 0,
     regionalRequests: {}, // 지역별 요청 통계 (예: { '서울특별시': 10, '제주시': 5 })
-    errorTypes: {},       // 에러 타입별 분류 (예: { 'API_ERROR_22': 3, 'LOCATION_NOT_FOUND': 1 }
+    errorTypes: {},       // 에러 타입별 분류 (예: { 'API_ERROR_22': 3, 'LOCATION_NOT_FOUND': 1 })
     // responseTimeHistogram: { '0-100ms': 0, '101-500ms': 0, '501-1000ms': 0, '>1000ms': 0 }, // 응답 시간 히스토그램 (더 복잡한 구현 필요)
 
     // 메트릭 초기화
@@ -104,9 +106,7 @@ let locationModule = {
     latLonToGrid: (lat, lon) => {
         // locationData.js가 없어 기본 격자 좌표(서울)를 반환합니다.
         return { nx: 60, ny: 127 };
-    },
-    // 중복 제거된 검색 함수 추가
-    searchLocationsWithDedup: (q, p, s) => ({ results: [], pagination: { currentPage: p, totalPages: 0, totalResults: 0 } })
+    }
 };
 
 try {
@@ -127,7 +127,7 @@ try {
 
 // locationModule에서 필요한 변수들을 구조 분해 할당합니다.
 // 이제 locationData는 항상 객체이므로 안전하게 Object.keys() 등을 사용할 수 있습니다.
-const { locationData, searchLocations, findMatchingLocation, findAllMatches, latLonToGrid, searchLocationsWithDedup } = locationModule;
+const { locationData, searchLocations, findMatchingLocation, findAllMatches, latLonToGrid } = locationModule;
 
 // =====================================================================
 
@@ -306,11 +306,11 @@ const performanceLogger = {
 // 2. Rate Limiting 구현
 const rateLimitMap = new Map(); // IP별 요청 시간을 저장 (서버리스 인스턴스별)
 
-/*
- * Rate Limit 데이터 영속성 재고:
+/**
+ * **Rate Limit 데이터 영속성 재고:**
  * 현재 `rateLimitMap`은 인메모리 Map을 사용하므로, 서버리스 환경에서 콜드 스타트가 발생하면 데이터가 초기화됩니다.
  * 이는 단일 인스턴스에서는 문제가 없지만, 다수의 인스턴스가 동시에 실행되는 분산 환경에서는 정확한 Rate Limiting이 어렵습니다.
- * 개선안: 분산 환경에서는 Redis, Vercel KV, 또는 기타 영속적인 외부 캐시/저장소 서비스를 활용하여 Rate Limit 데이터를 공유하고 관리해야 합니다.
+ * **개선안:** 분산 환경에서는 Redis, Vercel KV, 또는 기타 영속적인 외부 캐시/저장소 서비스를 활용하여 Rate Limit 데이터를 공유하고 관리해야 합니다.
  */
 /**
  * IP 주소 기반 요청 Rate Limit을 체크합니다.
@@ -889,7 +889,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
         windSpeed: errorMessage ? null : sampleWindSpeed[index].toFixed(1),
         windSpeedUnit: 'm/s',
         windSpeedDescription: errorMessage ? '정보없음' : getWindSpeedDescription(sampleWindSpeed[index], region.includes('제주')),
-        windSpeedRange: errorMessage ? null : `${Math.max(0, sampleWindSpeed[index] - 1).toFixed(1)}~${(sampleWindSpeed[index] + 2).toFixed(1)}m/s`,
+        windSpeedRange: errorMessage ? null : `${Math.max(0, sampleWindSpeed[index] - 1).toFixed(1)}~${(parseFloat(sampleWindSpeed[index]) + 2).toFixed(1)}m/s`,
         windDirection: errorMessage ? '정보없음' : ['북동', '남', '서'][index],
         windDirectionDegree: errorMessage ? null : [45, 180, 270][index],
         windDirectionDescription: errorMessage ? '정보없음' : `${['북동', '남', '서'][index]} (${[45, 180, 270][index]}도)`,
@@ -924,7 +924,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
                 precipitationProbability: [10, 30, 60][index],
                 humidity: sampleHumidity[index],
                 windSpeed: sampleWindSpeed[index].toFixed(1),
-                windSpeedRange: `${Math.max(0, sampleWindSpeed[index] - 1).toFixed(1)}~${(sampleWindSpeed[index] + 2).toFixed(1)}m/s`,
+                windSpeedRange: `${Math.max(0, sampleWindSpeed[index] - 1).toFixed(1)}~${(parseFloat(sampleWindSpeed[index]) + 2).toFixed(1)}m/s`,
             },
             {
                 time: '1200',
@@ -936,7 +936,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
                 precipitationProbability: [10, 30, 60][index],
                 humidity: sampleHumidity[index],
                 windSpeed: sampleWindSpeed[index].toFixed(1),
-                windSpeedRange: `${Math.max(0, sampleWindSpeed[index] - 1).toFixed(1)}~${(sampleWindSpeed[index] + 2).toFixed(1)}m/s`,
+                windSpeedRange: `${Math.max(0, sampleWindSpeed[index] - 1).toFixed(1)}~${(parseFloat(sampleWindSpeed[index]) + 2).toFixed(1)}m/s`,
             },
             {
                 time: '1800',
@@ -948,7 +948,7 @@ function generateCompleteSampleData(region, errorMessage = null) {
                 precipitationProbability: [10, 30, 60][index],
                 humidity: sampleHumidity[index],
                 windSpeed: sampleWindSpeed[index].toFixed(1),
-                windSpeedRange: `${Math.max(0, sampleWindSpeed[index] - 1).toFixed(1)}~${(sampleWindSpeed[index] + 2).toFixed(1)}m/s`,
+                windSpeedRange: `${Math.max(0, sampleWindSpeed[index] - 1).toFixed(1)}~${(parseFloat(sampleWindSpeed[index]) + 2).toFixed(1)}m/s`,
             }
         ],
 
@@ -1170,7 +1170,7 @@ async function preloadPopularLocations() {
             }
 
             const items = response.data.response.body.items.item || [];
-            const weatherData = processCompleteWeatherData(items, kst, location.fullName); // fullName 전달
+            const weatherData = processCompleteWeatherData(items, kst, location.name); // fullName 전달
 
             const responseData = {
                 success: true,
@@ -1239,10 +1239,8 @@ async function handleLocationSearch(req, res) {
             throw new WeatherAPIError('유효하지 않은 페이지 번호입니다.', 'INVALID_PAGE_NUMBER', 400);
         }
 
-        // searchLocationsWithDedup 함수가 있으면 사용, 없으면 기본 searchLocations 사용
-        // locationData 모듈에서 searchLocationsWithDedup 함수를 제공해야 합니다.
-        const searchFunction = searchLocationsWithDedup || searchLocations;
-        const searchResult = searchFunction(query, page, WEATHER_CONFIG.DEFAULTS.PAGE_SIZE);
+        // searchLocations 함수를 호출하여 페이지네이션된 결과를 받음
+        const searchResult = searchLocations(query, page, WEATHER_CONFIG.DEFAULTS.PAGE_SIZE);
 
         logger.info('지역 검색 성공', {
             query: query,
@@ -1252,47 +1250,64 @@ async function handleLocationSearch(req, res) {
 
         // 검색 결과를 행정구역과 관련 장소로 분류
         const adminResults = [];
-        const relatedResults = [];
+        const relatedResults = []; // 여기에는 카카오 API 결과가 들어갈 예정
 
-        searchResult.results.forEach(location => {
-            // matchType이나 searchType으로 분류
-            if (location.matchType === 'legal_division' || location.searchType === 'legal_division') {
-                relatedResults.push(location);
-            } else {
-                adminResults.push(location);
+        // 각 결과 항목의 displayName 로직을 개선
+        const processedResults = searchResult.results.map(location => {
+            let display = location.name; // 기본값은 공식 이름
+
+            // 1단계: 표시 방식 개선 - 법정동/리 또는 별칭 검색 시
+            // location.searchType 또는 location.matchType이 'legal_division' 또는 'alias'인 경우 처리
+            // location.originalSearchTerm은 searchLocations 함수에서 넘어와야 함
+            if (location.searchType === 'legal_division' && location.originalSearchTerm) {
+                const adminDivisionShortName = location.name.split(' ').pop(); // '대륜동'
+                display = `${location.originalSearchTerm} (${adminDivisionShortName} 관할)`;
+            } else if (location.searchType === 'alias' && location.originalSearchTerm && location.type !== '별칭') {
+                // '성산일출봉'처럼 별칭이지만, 실제 데이터는 행정동 객체를 참조하는 경우
+                const adminDivisionShortName = location.name.split(' ').pop(); // '성산읍'
+                display = `${location.originalSearchTerm} (${adminDivisionShortName} 관할)`;
+            } else if (location.type === '별칭' && location.originalSearchTerm) {
+                // locationData.js에서 type이 '별칭'으로 직접 정의된 랜드마크 (예: 제주공항, 한라산)
+                // 이 경우 displayName은 originalSearchTerm을 따르고, 관할 정보는 필요시 추가
+                const adminDivisionShortName = location.admin_parent ? location.admin_parent.split(' ').pop() : '';
+                display = `${location.originalSearchTerm}${adminDivisionShortName ? ` (${adminDivisionShortName} 관할)` : ''}`;
             }
-        });
 
-        return res.json({
-            success: true,
-            query: query,
-            results: searchResult.results.map(location => ({
-                name: location.name,
-                displayName: location.displayName || location.name, // displayName 우선 사용
+            return {
+                name: location.name, // 공식 행정구역 이름
+                displayName: display, // 사용자에게 보여줄 이름 (개선된 형태)
                 type: location.type,
-                matchType: location.matchType || location.searchType || 'direct', // 매칭 타입 추가
+                searchType: location.searchType || 'direct', // 매칭 타입 추가 (searchType이 없으면 direct)
                 lat: location.lat,
                 lon: location.lon,
                 key: location.key,
                 priority: location.priority_score || location.priority || 0, // 우선순위 추가
                 admin_parent: location.admin_parent, // 상위 행정구역
                 legal_divisions: location.legal_divisions, // 관할 법정동 목록
-                // 추가 정보
-                isLegalDivision: location.matchType === 'legal_division' || location.searchType === 'legal_division',
-                originalSearchTerm: location.originalSearchKey || query
-            })),
+                originalSearchTerm: location.originalSearchTerm || query // 원본 검색어 (검색된 방식과 관계없이)
+            };
+        });
+
+        // 현재는 locationData.js에서 반환되는 모든 결과를 'adminDivisions'로 간주
+        // 2단계에서 카카오 API 통합 시 'relatedPlaces'에 실제 장소 데이터 추가
+        processedResults.forEach(loc => {
+            adminResults.push({
+                name: loc.name,
+                displayName: loc.displayName,
+                type: loc.type,
+                originalSearchTerm: loc.originalSearchTerm // 분류 시 원본 검색어 유지
+            });
+        });
+
+
+        return res.json({
+            success: true,
+            query: query,
+            results: processedResults, // 개선된 displayName이 적용된 결과
             // 분류된 결과도 함께 제공 (프론트엔드에서 활용 가능)
             categorizedResults: {
-                adminDivisions: adminResults.map(loc => ({
-                    name: loc.name,
-                    displayName: loc.displayName || loc.name,
-                    type: loc.type
-                })),
-                relatedPlaces: relatedResults.map(loc => ({
-                    name: loc.originalSearchKey || loc.key,
-                    adminDivision: loc.name,
-                    displayName: loc.displayName
-                }))
+                adminDivisions: adminResults,
+                relatedPlaces: relatedResults // 카카오 API 연동 시 채워질 부분
             },
             pagination: searchResult.pagination
         });
@@ -1438,7 +1453,7 @@ async function handleWeatherRequest(req, res) {
                 requested: regionName,
                 matched: location.name,
                 fullName: actualLocationFullName,
-                displayName: location.displayName, // displayName 추가
+                displayName: location.displayName, // locationData에서 넘어온 displayName 사용
                 coordinates: coordinates,
                 latLon: { lat: location.lat, lon: location.lon },
                 source: '지역명 검색'
