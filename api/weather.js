@@ -1,14 +1,3 @@
-/**
- * @file weather.js
- * @description 기상청 단기예보 조회서비스 API 가이드 완전 준수 버전
- * - 정확한 좌표 변환 공식 (문서 C 코드 기준)
- * - 정확한 API 호출 시점 (매시각 10분 이후)
- * - Missing 값 처리 (+900이상, -900이하)
- * - 해상 마스킹 처리
- * - 16방위 풍향 변환 공식
- * - 강수량/적설량 범위 처리
- * @version 3.0-KMA-SPEC-COMPLIANT
- */
 
 const axios = require('axios');
 
