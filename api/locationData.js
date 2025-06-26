@@ -111,9 +111,43 @@ const locationData = (() => {
         '명동': 850, '홍대': 850, '강남': 850, '이태원': 850, '잠실': 850,
         '여의도': 850, '신촌': 850, '동대문': 850, '종로': 850,
 
-        // 부산광역시
-        '부산광역시': 980,
-        '해운대구': 880, '광안리': 840, '서면': 840, '남포동': 840, '태종대': 830, '기장군': 820,
+ '종각': 850, '경복궁': 850, '남산타워': 850, '남대문시장': 840, '광장시장': 830,
+        '이태원': 850, '신촌': 850, '홍대': 850, '여의도': 850, '강남역': 850, '강남': 840,
+        '가로수길': 830, '코엑스': 830, '잠실': 850,
+
+        
+
+    // 부산광역시
+    '부산광역시': 980,
+    '중구': 890, '서구': 890, '동구': 890, '영도구': 890, '부산진구': 890,
+    '동래구': 890, '남구': 890, '북구': 890, '해운대구': 880, '사하구': 890,
+    '금정구': 890, '강서구': 890, '연제구': 890, '수영구': 890, '사상구': 890,
+    '기장군': 820,
+
+    // 부산 주요 지역/별칭
+    '해운대': 840,
+    '광안리': 840,
+    '서면': 840,
+    '남포동': 840,
+    '태종대': 830,
+    '부산역': 830,
+
+    // 기장군 하위 읍/면
+    '기장읍': 810,
+    '장안읍': 810,
+    '정관읍': 810,
+    '일광읍': 810,
+    '철마면': 810,
+
+  // 부산 주요 별칭
+        '자갈치시장': 800, '국제시장': 790, '부산역': 780, '광복로': 770, '범어사': 760,
+        '벡스코': 750, '부산항': 740, '깡통시장': 730, '송도해수욕장': 720, '광안대교': 710
+
+
+
+
+
+        
 
         // 대구광역시
         '대구광역시': 970,
@@ -177,6 +211,7 @@ const locationData = (() => {
 
         // 기타 국립공원
         '지리산국립공원': 800, '북한산국립공원': 790, '계룡산국립공원': 780,
+      
         // 관광지명 추가
         '성산일출봉': 700, // 성산읍보다 약간 낮은 우선순위 (관광지는 보통 행정구역보다 넓은 범위로 검색되지 않으므로)
         '한라산': 800,
@@ -185,6 +220,9 @@ const locationData = (() => {
         '협재해수욕장': 600,
         '새별오름': 580
     };
+
+
+
 
 
     /**
@@ -529,6 +567,969 @@ const locationData = (() => {
 
     
 
+// 부산광역시 (광역시)
+addLocation('부산광역시', {
+    lat: 35.1770194444444, lon: 129.076952777777, name: '부산광역시', type: '광역시', admin_parent: '',
+    legal_divisions: [], aliases: [], priority_score: priorityMap['부산광역시']
+});
+
+// 부산광역시 중구 (기초자치단체)
+addLocation('중구', {
+    lat: 35.1032166666666, lon: 129.034508333333, name: '부산광역시 중구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['중앙동1가', '중앙동2가', '중앙동3가', '중앙동4가', '중앙동5가', '중앙동6가', '중앙동7가',
+                     '동광동1가', '동광동2가', '동광동3가', '동광동4가', '동광동5가',
+                     '대청동1가', '대청동2가', '대청동3가', '대청동4가',
+                     '보수동1가', '보수동2가', '보수동3가',
+                     '부평동1가', '부평동2가', '부평동3가', '부평동4가',
+                     '광복동1가', '광복동2가', '광복동3가',
+                     '남포동1가', '남포동2가', '남포동3가', '남포동4가', '남포동5가', '남포동6가',
+                     '영주동', '동광동'], aliases: [], priority_score: priorityMap['중구']
+});
+// 부산광역시 중구 행정동
+addLocation('중앙동', {
+    lat: 35.0981861111111, lon: 129.037588888888, name: '부산광역시 중구 중앙동', type: '행정동', admin_parent: '부산광역시 중구',
+    legal_divisions: ['중앙동1가', '중앙동2가', '중앙동3가', '중앙동4가', '중앙동5가', '중앙동6가', '중앙동7가'], aliases: [], priority_score: priorityMap['중앙동']
+});
+addLocation('동광동', {
+    lat: 35.1019333333333, lon: 129.036877777777, name: '부산광역시 중구 동광동', type: '행정동', admin_parent: '부산광역시 중구',
+    legal_divisions: ['동광동1가', '동광동2가', '동광동3가', '동광동4가', '동광동5가'], aliases: [], priority_score: priorityMap['동광동']
+});
+addLocation('대청동', {
+    lat: 35.1011472222222, lon: 129.033333333333, name: '부산광역시 중구 대청동', type: '행정동', admin_parent: '부산광역시 중구',
+    legal_divisions: ['대청동1가', '대청동2가', '대청동3가', '대청동4가'], aliases: [], priority_score: priorityMap['대청동']
+});
+addLocation('보수동', {
+    lat: 35.1007027777777, lon: 129.027622222222, name: '부산광역시 중구 보수동', type: '행정동', admin_parent: '부산광역시 중구',
+    legal_divisions: ['보수동1가', '보수동2가', '보수동3가'], aliases: [], priority_score: priorityMap['보수동']
+});
+addLocation('부평동', {
+    lat: 35.0972972222222, lon: 129.028797222222, name: '부산광역시 중구 부평동', type: '행정동', admin_parent: '부산광역시 중구',
+    legal_divisions: ['부평동1가', '부평동2가', '부평동3가', '부평동4가'], aliases: [], priority_score: priorityMap['부평동']
+});
+addLocation('광복동', {
+    lat: 35.0968583333333, lon: 129.032752777777, name: '부산광역시 중구 광복동', type: '행정동', admin_parent: '부산광역시 중구',
+    legal_divisions: ['광복동1가', '광복동2가', '광복동3가'], aliases: [], priority_score: priorityMap['광복동']
+});
+addLocation('남포동', {
+    lat: 35.0943055555555, lon: 129.034086111111, name: '부산광역시 중구 남포동', type: '행정동', admin_parent: '부산광역시 중구',
+    legal_divisions: ['남포동1가', '남포동2가', '남포동3가', '남포동4가', '남포동5가', '남포동6가'], aliases: ['남포동'], priority_score: priorityMap['남포동']
+});
+addLocation('영주제1동', {
+    lat: 35.1080472222222, lon: 129.037286111111, name: '부산광역시 중구 영주제1동', type: '행정동', admin_parent: '부산광역시 중구',
+    legal_divisions: ['영주동'], aliases: [], priority_score: priorityMap['영주제1동']
+});
+addLocation('영주제2동', {
+    lat: 35.1085083333333, lon: 129.034033333333, name: '부산광역시 중구 영주제2동', type: '행정동', admin_parent: '부산광역시 중구',
+    legal_divisions: ['영주동'], aliases: [], priority_score: priorityMap['영주제2동']
+});
+
+// 부산광역시 서구 (기초자치단체)
+addLocation('서구', {
+    lat: 35.0948361111111, lon: 129.026377777777, name: '부산광역시 서구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['동대신동', '서대신동', '부민동', '아미동', '초장동', '충무동', '남부민동', '암남동'], aliases: ['서구'], priority_score: priorityMap['서구']
+});
+// 부산광역시 서구 행정동
+addLocation('동대신제1동', {
+    lat: 35.1065361111111, lon: 129.022508333333, name: '부산광역시 서구 동대신제1동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['동대신동'], aliases: [], priority_score: priorityMap['동대신제1동']
+});
+addLocation('동대신제2동', {
+    lat: 35.1098527777777, lon: 129.025430555555, name: '부산광역시 서구 동대신제2동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['동대신동'], aliases: [], priority_score: priorityMap['동대신제2동']
+});
+addLocation('동대신제3동', {
+    lat: 35.1113388888888, lon: 129.019508333333, name: '부산광역시 서구 동대신제3동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['동대신동'], aliases: [], priority_score: priorityMap['동대신제3동']
+});
+addLocation('서대신제1동', {
+    lat: 35.1080138888888, lon: 129.016675, name: '부산광역시 서구 서대신제1동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['서대신동'], aliases: [], priority_score: priorityMap['동대신제1동'] // Changed to 서대신제1동
+});
+addLocation('서대신제3동', {
+    lat: 35.1103666666666, lon: 129.014188888888, name: '부산광역시 서구 서대신제3동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['서대신동'], aliases: [], priority_score: priorityMap['서대신제3동'] // Changed to 서대신제3동
+});
+addLocation('서대신제4동', {
+    lat: 35.1160722222222, lon: 129.014833333333, name: '부산광역시 서구 서대신제4동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['서대신동'], aliases: [], priority_score: priorityMap['서대신제4동'] // Changed to 서대신제4동
+});
+addLocation('부민동', {
+    lat: 35.1006861111111, lon: 129.020752777777, name: '부산광역시 서구 부민동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['부민동'], aliases: [], priority_score: priorityMap['부민동']
+});
+addLocation('아미동', {
+    lat: 35.0970888888888, lon: 129.017686111111, name: '부산광역시 서구 아미동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['아미동'], aliases: [], priority_score: priorityMap['아미동']
+});
+addLocation('초장동', {
+    lat: 35.0928777777777, lon: 129.022563888888, name: '부산광역시 서구 초장동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['초장동'], aliases: [], priority_score: priorityMap['초장동']
+});
+addLocation('충무동', {
+    lat: 35.0949361111111, lon: 129.023897222222, name: '부산광역시 서구 충무동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['충무동'], aliases: [], priority_score: priorityMap['충무동']
+});
+addLocation('남부민제1동', {
+    lat: 35.0896583333333, lon: 129.025563888888, name: '부산광역시 서구 남부민제1동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['남부민동'], aliases: [], priority_score: priorityMap['남부민제1동']
+});
+addLocation('남부민제2동', {
+    lat: 35.08155, lon: 129.021863888888, name: '부산광역시 서구 남부민제2동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['남부민동'], aliases: [], priority_score: priorityMap['남부민제2동']
+});
+addLocation('암남동', {
+    lat: 35.0769055555555, lon: 129.0236, name: '부산광역시 서구 암남동', type: '행정동', admin_parent: '부산광역시 서구',
+    legal_divisions: ['암남동'], aliases: [], priority_score: priorityMap['암남동']
+});
+
+// 부산광역시 동구 (기초자치단체)
+addLocation('동구', {
+    lat: 35.1358944444444, lon: 129.059175, name: '부산광역시 동구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['초량동', '수정동', '좌천동', '범일동'], aliases: ['동구'], priority_score: priorityMap['동구']
+});
+// 부산광역시 동구 행정동
+addLocation('초량제1동', {
+    lat: 35.1108777777777, lon: 129.039188888888, name: '부산광역시 동구 초량제1동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['초량동'], aliases: [], priority_score: priorityMap['초량제1동']
+});
+addLocation('초량제2동', {
+    lat: 35.1134472222222, lon: 129.0408, name: '부산광역시 동구 초량제2동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['초량동'], aliases: [], priority_score: priorityMap['초량제2동']
+});
+addLocation('초량제3동', {
+    lat: 35.1181861111111, lon: 129.042066666666, name: '부산광역시 동구 초량제3동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['초량동'], aliases: [], priority_score: priorityMap['초량제3동']
+});
+addLocation('초량제6동', {
+    lat: 35.1229083333333, lon: 129.036744444444, name: '부산광역시 동구 초량제6동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['초량동'], aliases: [], priority_score: priorityMap['초량제6동']
+});
+addLocation('수정제1동', {
+    lat: 35.122275, lon: 129.044533333333, name: '부산광역시 동구 수정제1동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['수정동'], aliases: [], priority_score: priorityMap['수정제1동']
+});
+addLocation('수정제2동', {
+    lat: 35.1252527777777, lon: 129.047263888888, name: '부산광역시 동구 수정제2동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['수정동'], aliases: [], priority_score: priorityMap['수정제2동']
+});
+addLocation('수정제4동', {
+    lat: 35.1239972222222, lon: 129.042963888888, name: '부산광역시 동구 수정제4동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['수정동'], aliases: [], priority_score: priorityMap['수정제4동']
+});
+addLocation('수정제5동', {
+    lat: 35.1307333333333, lon: 129.044688888888, name: '부산광역시 동구 수정제5동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['수정동'], aliases: [], priority_score: priorityMap['수정제5동']
+});
+addLocation('좌천동', {
+    lat: 35.1319861111111, lon: 129.052791666667, name: '부산광역시 동구 좌천동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['좌천동'], aliases: [], priority_score: priorityMap['좌천동']
+});
+addLocation('범일제1동', {
+    lat: 35.1362722222222, lon: 129.058308333333, name: '부산광역시 동구 범일제1동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['범일동'], aliases: [], priority_score: priorityMap['범일제1동']
+});
+addLocation('범일제2동', {
+    lat: 35.1318722222222, lon: 129.061986111111, name: '부산광역시 동구 범일제2동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['범일동'], aliases: [], priority_score: priorityMap['범일제2동']
+});
+addLocation('범일제5동', {
+    lat: 35.1273055555555, lon: 129.056019444444, name: '부산광역시 동구 범일제5동', type: '행정동', admin_parent: '부산광역시 동구',
+    legal_divisions: ['범일동'], aliases: [], priority_score: priorityMap['범일제5동']
+});
+
+// 부산광역시 영도구 (기초자치단체)
+addLocation('영도구', {
+    lat: 35.0881166666666, lon: 129.070186111111, name: '부산광역시 영도구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['남항동', '영선동', '신선동', '봉래동', '청학동', '동삼동'], aliases: ['영도구'], priority_score: priorityMap['영도구']
+});
+// 부산광역시 영도구 행정동
+addLocation('남항동', {
+    lat: 35.0867888888888, lon: 129.039852777777, name: '부산광역시 영도구 남항동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['남항동'], aliases: [], priority_score: priorityMap['남항동']
+});
+addLocation('영선제1동', {
+    lat: 35.0871611111111, lon: 129.047033333333, name: '부산광역시 영도구 영선제1동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['영선동'], aliases: [], priority_score: priorityMap['영선제1동']
+});
+addLocation('영선제2동', {
+    lat: 35.08385, lon: 129.043641666666, name: '부산광역시 영도구 영선제2동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['영선동'], aliases: [], priority_score: priorityMap['영선제2동']
+});
+addLocation('신선동', {
+    lat: 35.0802444444444, lon: 129.047455555555, name: '부산광역시 영도구 신선동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['신선동'], aliases: [], priority_score: priorityMap['신선동']
+});
+addLocation('봉래제1동', {
+    lat: 35.0903916666666, lon: 129.046622222222, name: '부산광역시 영도구 봉래제1동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['봉래동'], aliases: [], priority_score: priorityMap['봉래제1동']
+});
+addLocation('봉래제2동', {
+    lat: 35.0911083333333, lon: 129.048397222222, name: '부산광역시 영도구 봉래제2동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['봉래동'], aliases: [], priority_score: priorityMap['봉래제2동']
+});
+addLocation('청학제1동', {
+    lat: 35.0938333333333, lon: 129.060686111111, name: '부산광역시 영도구 청학제1동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['청학동'], aliases: [], priority_score: priorityMap['청학제1동']
+});
+addLocation('청학제2동', {
+    lat: 35.088825, lon: 129.068030555555, name: '부산광역시 영도구 청학제2동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['청학동'], aliases: [], priority_score: priorityMap['청학제2동']
+});
+addLocation('동삼제1동', {
+    lat: 35.0717944444444, lon: 129.070708333333, name: '부산광역시 영도구 동삼제1동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['동삼동'], aliases: [], priority_score: priorityMap['동삼제1동']
+});
+addLocation('동삼제2동', {
+    lat: 35.0647416666666, lon: 129.082922222222, name: '부산광역시 영도구 동삼제2동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['동삼동'], aliases: [], priority_score: priorityMap['동삼제2동']
+});
+addLocation('동삼제3동', {
+    lat: 35.0815805555555, lon: 129.070922222222, name: '부산광역시 영도구 동삼제3동', type: '행정동', admin_parent: '부산광역시 영도구',
+    legal_divisions: ['동삼동'], aliases: [], priority_score: priorityMap['동삼제3동']
+});
+
+// 부산광역시 부산진구 (기초자치단체)
+addLocation('부산진구', {
+    lat: 35.1599527777777, lon: 129.055319444444, name: '부산광역시 부산진구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['부전동', '연지동', '초읍동', '양정동', '전포동', '부암동', '당감동', '가야동', '개금동', '범천동'], aliases: ['부산진구'], priority_score: priorityMap['부산진구']
+});
+// 부산광역시 부산진구 행정동
+addLocation('부전제1동', {
+    lat: 35.1572583333333, lon: 129.060922222222, name: '부산광역시 부산진구 부전제1동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['부전동'], aliases: [], priority_score: priorityMap['부전제1동']
+});
+addLocation('부전제2동', {
+    lat: 35.1495222222222, lon: 129.059075, name: '부산광역시 부산진구 부전제2동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['부전동'], aliases: [], priority_score: priorityMap['부전제2동']
+});
+addLocation('연지동', {
+    lat: 35.1697138888888, lon: 129.055008333333, name: '부산광역시 부산진구 연지동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['연지동'], aliases: [], priority_score: priorityMap['연지동']
+});
+addLocation('초읍동', {
+    lat: 35.175625, lon: 129.049833333333, name: '부산광역시 부산진구 초읍동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['초읍동'], aliases: [], priority_score: priorityMap['초읍동']
+});
+addLocation('양정제1동', {
+    lat: 35.1713972222222, lon: 129.066655555555, name: '부산광역시 부산진구 양정제1동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['양정동'], aliases: [], priority_score: priorityMap['양정제1동']
+});
+addLocation('양정제2동', {
+    lat: 35.1697805555555, lon: 129.077988888888, name: '부산광역시 부산진구 양정제2동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['양정동'], aliases: [], priority_score: priorityMap['양정제2동']
+});
+addLocation('전포제1동', {
+    lat: 35.1512694444444, lon: 129.069622222222, name: '부산광역시 부산진구 전포제1동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['전포동'], aliases: [], priority_score: priorityMap['전포제1동']
+});
+addLocation('전포제2동', {
+    lat: 35.1586305555555, lon: 129.068444444444, name: '부산광역시 부산진구 전포제2동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['전포동'], aliases: [], priority_score: priorityMap['전포제2동']
+});
+addLocation('부암제1동', {
+    lat: 35.1604611111111, lon: 129.051777777777, name: '부산광역시 부산진구 부암제1동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['부암동'], aliases: [], priority_score: priorityMap['부암제1동']
+});
+addLocation('부암제3동', {
+    lat: 35.1659222222222, lon: 129.042055555555, name: '부산광역시 부산진구 부암제3동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['부암동'], aliases: [], priority_score: priorityMap['부암제3동']
+});
+addLocation('당감제1동', {
+    lat: 35.1597, lon: 129.042366666666, name: '부산광역시 부산진구 당감제1동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['당감동'], aliases: [], priority_score: priorityMap['당감제1동']
+});
+addLocation('당감제2동', {
+    lat: 35.1548888888888, lon: 129.050277777777, name: '부산광역시 부산진구 당감제2동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['당감동'], aliases: [], priority_score: priorityMap['당감제2동']
+});
+addLocation('당감제4동', {
+    lat: 35.1649138888888, lon: 129.038797222222, name: '부산광역시 부산진구 당감제4동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['당감동'], aliases: [], priority_score: priorityMap['당감제4동']
+});
+addLocation('가야제1동', {
+    lat: 35.1519111111111, lon: 129.044052777777, name: '부산광역시 부산진구 가야제1동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['가야동'], aliases: [], priority_score: priorityMap['가야제1동']
+});
+addLocation('가야제2동', {
+    lat: 35.1466805555555, lon: 129.031288888888, name: '부산광역시 부산진구 가야제2동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['가야동'], aliases: [], priority_score: priorityMap['가야제2동']
+});
+addLocation('개금제1동', {
+    lat: 35.1495666666666, lon: 129.024175, name: '부산광역시 부산진구 개금제1동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['개금동'], aliases: [], priority_score: priorityMap['개금제1동']
+});
+addLocation('개금제2동', {
+    lat: 35.1417055555555, lon: 129.021688888888, name: '부산광역시 부산진구 개금제2동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['개금동'], aliases: [], priority_score: priorityMap['개금제2동']
+});
+addLocation('개금제3동', {
+    lat: 35.1526861111111, lon: 129.024222222222, name: '부산광역시 부산진구 개금제3동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['개금동'], aliases: [], priority_score: priorityMap['개금제3동']
+});
+addLocation('범천제1동', {
+    lat: 35.14385, lon: 129.0633, name: '부산광역시 부산진구 범천제1동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['범천동'], aliases: [], priority_score: priorityMap['범천제1동']
+});
+addLocation('범천제2동', {
+    lat: 35.1432777777777, lon: 129.058397222222, name: '부산광역시 부산진구 범천제2동', type: '행정동', admin_parent: '부산광역시 부산진구',
+    legal_divisions: ['범천동'], aliases: [], priority_score: priorityMap['범천제2동']
+});
+
+// 부산광역시 동래구 (기초자치단체)
+addLocation('동래구', {
+    lat: 35.2018722222222, lon: 129.085855555555, name: '부산광역시 동래구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['수민동', '복산동', '명륜동', '온천동', '사직동', '안락동', '명장동'], aliases: ['동래구'], priority_score: priorityMap['동래구']
+});
+// 부산광역시 동래구 행정동
+addLocation('수민동', {
+    lat: 35.192975, lon: 129.093388888888, name: '부산광역시 동래구 수민동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['수민동'], aliases: [], priority_score: priorityMap['수민동']
+});
+addLocation('복산동', {
+    lat: 35.2027083333333, lon: 129.088375, name: '부산광역시 동래구 복산동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['복산동'], aliases: [], priority_score: priorityMap['복산동']
+});
+addLocation('명륜동', {
+    lat: 35.2124914, lon: 129.081561, name: '부산광역시 동래구 명륜동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['명륜동'], aliases: [], priority_score: priorityMap['명륜동']
+});
+addLocation('온천제1동', {
+    lat: 35.2169666666666, lon: 129.082386111111, name: '부산광역시 동래구 온천제1동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['온천동'], aliases: [], priority_score: priorityMap['온천제1동']
+});
+addLocation('온천제2동', {
+    lat: 35.2048833333333, lon: 129.075252777777, name: '부산광역시 동래구 온천제2동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['온천동'], aliases: [], priority_score: priorityMap['온천제2동']
+});
+addLocation('온천제3동', {
+    lat: 35.2018666666666, lon: 129.068552777777, name: '부산광역시 동래구 온천제3동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['온천동'], aliases: [], priority_score: priorityMap['온천제3동']
+});
+addLocation('사직제1동', {
+    lat: 35.1959333333333, lon: 129.064344444444, name: '부산광역시 동래구 사직제1동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['사직동'], aliases: [], priority_score: priorityMap['사직제1동']
+});
+addLocation('사직제2동', {
+    lat: 35.1971749999999, lon: 129.059166666666, name: '부산광역시 동래구 사직제2동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['사직동'], aliases: [], priority_score: priorityMap['사직제2동']
+});
+addLocation('사직제3동', {
+    lat: 35.1963888888888, lon: 129.071722222222, name: '부산광역시 동래구 사직제3동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['사직동'], aliases: [], priority_score: priorityMap['사직제3동']
+});
+addLocation('안락제1동', {
+    lat: 35.1940472222222, lon: 129.100911111111, name: '부산광역시 동래구 안락제1동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['안락동'], aliases: [], priority_score: priorityMap['안락제1동']
+});
+addLocation('안락제2동', {
+    lat: 35.1946444444444, lon: 129.112311111111, name: '부산광역시 동래구 안락제2동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['안락동'], aliases: [], priority_score: priorityMap['안락제2동']
+});
+addLocation('명장제1동', {
+    lat: 35.2015805555555, lon: 129.106499999999, name: '부산광역시 동래구 명장제1동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['명장동'], aliases: [], priority_score: priorityMap['명장제1동']
+});
+addLocation('명장제2동', {
+    lat: 35.2048666666666, lon: 129.104655555555, name: '부산광역시 동래구 명장제2동', type: '행정동', admin_parent: '부산광역시 동래구',
+    legal_divisions: ['명장동'], aliases: [], priority_score: priorityMap['명장제2동']
+});
+
+// 부산광역시 남구 (기초자치단체)
+addLocation('남구', {
+    lat: 35.1334083333333, lon: 129.0865, name: '부산광역시 남구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['대연동', '용호동', '용당동', '감만동', '우암동', '문현동'], aliases: ['남구'], priority_score: priorityMap['남구']
+});
+// 부산광역시 남구 행정동
+addLocation('대연제1동', {
+    lat: 35.1314638888888, lon: 129.095719444444, name: '부산광역시 남구 대연제1동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['대연동'], aliases: [], priority_score: priorityMap['대연제1동']
+});
+addLocation('대연제3동', {
+    lat: 35.1316361111111, lon: 129.102577777777, name: '부산광역시 남구 대연제3동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['대연동'], aliases: [], priority_score: priorityMap['대연제3동']
+});
+addLocation('대연제4동', {
+    lat: 35.1267111111111, lon: 129.093619444444, name: '부산광역시 남구 대연제4동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['대연동'], aliases: [], priority_score: priorityMap['대연제4동']
+});
+addLocation('대연제5동', {
+    lat: 35.1353694444444, lon: 129.092488888888, name: '부산광역시 남구 대연제5동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['대연동'], aliases: [], priority_score: priorityMap['대연제5동']
+});
+addLocation('대연제6동', {
+    lat: 35.1318666666666, lon: 129.085841666666, name: '부산광역시 남구 대연제6동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['대연동'], aliases: [], priority_score: priorityMap['대연제6동']
+});
+addLocation('용호제1동', {
+    lat: 35.1177138888888, lon: 129.111297222222, name: '부산광역시 남구 용호제1동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['용호동'], aliases: [], priority_score: priorityMap['용호제1동']
+});
+addLocation('용호제2동', {
+    lat: 35.11175, lon: 129.115686111111, name: '부산광역시 남구 용호제2동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['용호동'], aliases: [], priority_score: priorityMap[' 용호제2동']
+});
+addLocation('용호제3동', {
+    lat: 35.1179222222222, lon: 129.115063888888, name: '부산광역시 남구 용호제3동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['용호동'], aliases: [], priority_score: priorityMap['용호제3동']
+});
+addLocation('용호제4동', {
+    lat: 35.1101444444444, lon: 129.112663888888, name: '부산광역시 남구 용호제4동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['용호동'], aliases: [], priority_score: priorityMap['용호제4동']
+});
+addLocation('용당동', {
+    lat: 35.1144111111111, lon: 129.097455555555, name: '부산광역시 남구 용당동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['용당동'], aliases: [], priority_score: priorityMap['용당동']
+});
+addLocation('감만제1동', {
+    lat: 35.1137888888888, lon: 129.082888888888, name: '부산광역시 남구 감만제1동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['감만동'], aliases: [], priority_score: priorityMap['감만제1동']
+});
+addLocation('감만제2동', {
+    lat: 35.1194583333333, lon: 129.086777777777, name: '부산광역시 남구 감만제2동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['감만동'], aliases: [], priority_score: priorityMap['감만제2동']
+});
+addLocation('우암동', {
+    lat: 35.12499999, lon: 129.0758507, name: '부산광역시 남구 우암동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['우암동'], aliases: [], priority_score: priorityMap['우암동']
+});
+addLocation('문현제1동', {
+    lat: 35.1393944444444, lon: 129.073577777777, name: '부산광역시 남구 문현제1동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['문현동'], aliases: [], priority_score: priorityMap['문현제1동']
+});
+addLocation('문현제2동', {
+    lat: 35.1422222222222, lon: 129.070997222222, name: '부산광역시 남구 문현제2동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['문현동'], aliases: [], priority_score: priorityMap['문현제2동']
+});
+addLocation('문현제3동', {
+    lat: 35.1351222222222, lon: 129.073919444444, name: '부산광역시 남구 문현제3동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['문현동'], aliases: [], priority_score: priorityMap['문현제3동']
+});
+addLocation('문현제4동', {
+    lat: 35.1330305555555, lon: 129.0712, name: '부산광역시 남구 문현제4동', type: '행정동', admin_parent: '부산광역시 남구',
+    legal_divisions: ['문현동'], aliases: [], priority_score: priorityMap['문현제4동']
+});
+
+// 부산광역시 북구 (기초자치단체)
+addLocation('북구', {
+    lat: 35.1941805555555, lon: 128.992474999999, name: '부산광역시 북구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['구포동', '금곡동', '화명동', '덕천동', '만덕동'], aliases: ['북구'], priority_score: priorityMap['북구']
+});
+// 부산광역시 북구 행정동
+addLocation('구포제1동', {
+    lat: 35.2033694444444, lon: 129.003411111111, name: '부산광역시 북구 구포제1동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['구포동'], aliases: [], priority_score: priorityMap['구포제1동']
+});
+addLocation('구포제2동', {
+    lat: 35.1996361111111, lon: 129.000244444444, name: '부산광역시 북구 구포제2동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['구포동'], aliases: [], priority_score: priorityMap['구포제2동']
+});
+addLocation('구포제3동', {
+    lat: 35.1917583333333, lon: 129.011044444444, name: '부산광역시 북구 구포제3동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['구포동'], aliases: [], priority_score: priorityMap['구포제3동']
+});
+addLocation('금곡동', {
+    lat: 35.2470055555555, lon: 129.015088888888, name: '부산광역시 북구 금곡동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['금곡동'], aliases: [], priority_score: priorityMap['금곡동']
+});
+addLocation('화명제1동', {
+    lat: 35.2216944444444, lon: 129.012466666666, name: '부산광역시 북구 화명제1동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['화명동'], aliases: [], priority_score: priorityMap['화명제1동']
+});
+addLocation('화명제2동', {
+    lat: 35.240525, lon: 129.022022222222, name: '부산광역시 북구 화명제2동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['화명동'], aliases: [], priority_score: priorityMap['화명제2동']
+});
+addLocation('화명제3동', {
+    lat: 35.2287722222222, lon: 129.012333333333, name: '부산광역시 북구 화명제3동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['화명동'], aliases: [], priority_score: priorityMap['화명제3동']
+});
+addLocation('덕천제1동', {
+    lat: 35.2093888888888, lon: 129.019019444444, name: '부산광역시 북구 덕천제1동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['덕천동'], aliases: [], priority_score: priorityMap['덕천제1동']
+});
+addLocation('덕천제2동', {
+    lat: 35.2092666666666, lon: 129.010244444444, name: '부산광역시 북구 덕천제2동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['덕천동'], aliases: [], priority_score: priorityMap[' 덕천제2동']
+});
+addLocation('덕천제3동', {
+    lat: 35.2068194444444, lon: 129.019697222222, name: '부산광역시 북구 덕천제3동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['덕천동'], aliases: [], priority_score: priorityMap['덕천제3동']
+});
+addLocation('만덕제1동', {
+    lat: 35.2103666666666, lon: 129.038519444444, name: '부산광역시 북구 만덕제1동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['만덕동'], aliases: [], priority_score: priorityMap['만덕제1동']
+});
+addLocation('만덕제2동', {
+    lat: 35.2071194444444, lon: 129.039466666666, name: '부산광역시 북구 만덕제2동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['만덕동'], aliases: [], priority_score: priorityMap['만덕제2동']
+});
+addLocation('만덕제3동', {
+    lat: 35.2083083333333, lon: 129.031397222222, name: '부산광역시 북구 만덕제3동', type: '행정동', admin_parent: '부산광역시 북구',
+    legal_divisions: ['만덕동'], aliases: [], priority_score: priorityMap['만덕제3동']
+});
+
+// 부산광역시 해운대구 (기초자치단체)
+addLocation('해운대구', {
+    lat: 35.1600194444444, lon: 129.165808333333, name: '부산광역시 해운대구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['우동', '중동', '좌동', '송정동', '반여동', '반송동', '재송동'], aliases: ['해운대구', '해운대'], priority_score: priorityMap['해운대구']
+});
+// 부산광역시 해운대구 행정동
+addLocation('우제1동', {
+    lat: 35.1598111111111, lon: 129.160286111111, name: '부산광역시 해운대구 우제1동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['우동'], aliases: [], priority_score: priorityMap['우제1동']
+});
+addLocation('우제2동', {
+    lat: 35.1681555555555, lon: 129.142211111111, name: '부산광역시 해운대구 우제2동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['우동'], aliases: [], priority_score: priorityMap['우제2동']
+});
+addLocation('우제3동', {
+    lat: 35.1592915, lon: 129.1424022, name: '부산광역시 해운대구 우제3동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['우동'], aliases: [], priority_score: priorityMap['우제3동']
+});
+addLocation('중제1동', {
+    lat: 35.1594583333333, lon: 129.166477777777, name: '부산광역시 해운대구 중제1동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['중동'], aliases: [], priority_score: priorityMap['중제1동']
+});
+addLocation('중제2동', {
+    lat: 35.1587972222222, lon: 129.182108333333, name: '부산광역시 해운대구 중제2동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['중동'], aliases: [], priority_score: priorityMap['중제2동']
+});
+addLocation('좌제1동', {
+    lat: 35.1678222222222, lon: 129.176552777777, name: '부산광역시 해운대구 좌제1동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['좌동'], aliases: [], priority_score: priorityMap['좌제1동']
+});
+addLocation('좌제2동', {
+    lat: 35.1660611111111, lon: 129.184919444444, name: '부산광역시 해운대구 좌제2동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['좌동'], aliases: [], priority_score: priorityMap['좌제2동']
+});
+addLocation('좌제3동', {
+    lat: 35.1692638888888, lon: 129.168986111111, name: '부산광역시 해운대구 좌제3동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['좌동'], aliases: [], priority_score: priorityMap['좌제3동']
+});
+addLocation('좌제4동', {
+    lat: 35.1748666666666, lon: 129.178477777777, name: '부산광역시 해운대구 좌제4동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['좌동'], aliases: [], priority_score: priorityMap['좌제4동']
+});
+addLocation('송정동', {
+    lat: 35.1805611111111, lon: 129.205897222222, name: '부산광역시 해운대구 송정동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['송정동'], aliases: [], priority_score: priorityMap['송정동']
+});
+addLocation('반여제1동', {
+    lat: 35.1980555555555, lon: 129.121188888888, name: '부산광역시 해운대구 반여제1동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['반여동'], aliases: [], priority_score: priorityMap['반여제1동']
+});
+addLocation('반여제2동', {
+    lat: 35.1928305555555, lon: 129.132352777777, name: '부산광역시 해운대구 반여제2동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['반여동'], aliases: [], priority_score: priorityMap['반여제2동']
+});
+addLocation('반여제3동', {
+    lat: 35.1980055555555, lon: 129.135699999999, name: '부산광역시 해운대구 반여제3동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['반여동'], aliases: [], priority_score: priorityMap['반여제3동']
+});
+addLocation('반여제4동', {
+    lat: 35.2061027777777, lon: 129.119344444444, name: '부산광역시 해운대구 반여제4동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['반여동'], aliases: [], priority_score: priorityMap['반여제4동']
+});
+addLocation('반송제1동', {
+    lat: 35.2220527777777, lon: 129.150008333333, name: '부산광역시 해운대구 반송제1동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['반송동'], aliases: [], priority_score: priorityMap['반송제1동']
+});
+addLocation('반송제2동', {
+    lat: 35.2257638888888, lon: 129.162697222222, name: '부산광역시 해운대구 반송제2동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['반송동'], aliases: [], priority_score: priorityMap['반송제2동']
+});
+addLocation('재송제1동', {
+    lat: 35.1808638888888, lon: 129.125644444444, name: '부산광역시 해운대구 재송제1동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['재송동'], aliases: [], priority_score: priorityMap['재송제1동']
+});
+addLocation('재송제2동', {
+    lat: 35.18655, lon: 129.127719444444, name: '부산광역시 해운대구 재송제2동', type: '행정동', admin_parent: '부산광역시 해운대구',
+    legal_divisions: ['재송동'], aliases: [], priority_score: priorityMap['재송제2동']
+});
+
+// 부산광역시 사하구 (기초자치단체)
+addLocation('사하구', {
+    lat: 35.1014277777777, lon: 128.977041666666, name: '부산광역시 사하구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['괴정동', '당리동', '하단동', '신평동', '장림동', '다대동', '구평동', '감천동'], aliases: ['사하구'], priority_score: priorityMap['사하구']
+});
+// 부산광역시 사하구 행정동
+addLocation('괴정제1동', {
+    lat: 35.0965027777777, lon: 128.991622222222, name: '부산광역시 사하구 괴정제1동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['괴정동'], aliases: [], priority_score: priorityMap['괴정제1동']
+});
+addLocation('괴정제2동', {
+    lat: 35.1004305555555, lon: 129.006275, name: '부산광역시 사하구 괴정제2동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['괴정동'], aliases: [], priority_score: priorityMap['괴정제2동']
+});
+addLocation('괴정제3동', {
+    lat: 35.0972111111111, lon: 129.000422222222, name: '부산광역시 사하구 괴정제3동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['괴정동'], aliases: [], priority_score: priorityMap['괴정제3동']
+});
+addLocation('괴정제4동', {
+    lat: 35.0960166666666, lon: 128.9854, name: '부산광역시 사하구 괴정제4동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['괴정동'], aliases: [], priority_score: priorityMap['괴정제4동']
+});
+addLocation('당리동', {
+    lat: 35.0998444444444, lon: 128.978930555555, name: '부산광역시 사하구 당리동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['당리동'], aliases: [], priority_score: priorityMap['당리동']
+});
+addLocation('하단제1동', {
+    lat: 35.1008333333333, lon: 128.966533333333, name: '부산광역시 사하구 하단제1동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['하단동'], aliases: [], priority_score: priorityMap['하단제1동']
+});
+addLocation('하단제2동', {
+    lat: 35.1114333333333, lon: 128.962686111111, name: '부산광역시 사하구 하단제2동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['하단동'], aliases: [], priority_score: priorityMap['하단제2동']
+});
+addLocation('신평제1동', {
+    lat: 35.0869138888888, lon: 128.976575, name: '부산광역시 사하구 신평제1동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['신평동'], aliases: [], priority_score: priorityMap['신평제1동']
+});
+addLocation('신평제2동', {
+    lat: 35.0915333333333, lon: 128.961633333333, name: '부산광역시 사하구 신평제2동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['신평동'], aliases: [], priority_score: priorityMap['신평제2동']
+});
+addLocation('장림제1동', {
+    lat: 35.0798194444444, lon: 128.969141666666, name: '부산광역시 사하구 장림제1동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['장림동'], aliases: [], priority_score: priorityMap['장림제1동']
+});
+addLocation('장림제2동', {
+    lat: 35.0747277777777, lon: 128.974844444444, name: '부산광역시 사하구 장림제2동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['장림동'], aliases: [], priority_score: priorityMap['장림제2동']
+});
+addLocation('다대제1동', {
+    lat: 35.0561027777777, lon: 128.973577777777, name: '부산광역시 사하구 다대제1동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['다대동'], aliases: [], priority_score: priorityMap['다대제1동']
+});
+addLocation('다대제2동', {
+    lat: 35.0603222222222, lon: 128.984433333333, name: '부산광역시 사하구 다대제2동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['다대동'], aliases: [], priority_score: priorityMap['다대제2동']
+});
+addLocation('구평동', {
+    lat: 35.0788194444444, lon: 128.990041666666, name: '부산광역시 사하구 구평동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['구평동'], aliases: [], priority_score: priorityMap['구평동']
+});
+addLocation('감천제1동', {
+    lat: 35.0849055555555, lon: 129.006911111111, name: '부산광역시 사하구 감천제1동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['감천동'], aliases: [], priority_score: priorityMap['감천제1동']
+});
+addLocation('감천제2동', {
+    lat: 35.091525, lon: 129.0116, name: '부산광역시 사하구 감천제2동', type: '행정동', admin_parent: '부산광역시 사하구',
+    legal_divisions: ['감천동'], aliases: [], priority_score: priorityMap['감천제2동']
+});
+
+// 부산광역시 금정구 (기초자치단체)
+addLocation('금정구', {
+    lat: 35.2400777777777, lon: 129.094319444444, name: '부산광역시 금정구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['서동', '금사동', '회동동', '선동', '두구동', '철마면', '노포동', '청룡동', '남산동', '구서동', '장전동', '부곡동', '금성동'], aliases: ['금정구'], priority_score: priorityMap['금정구']
+});
+// 부산광역시 금정구 행정동
+addLocation('서제1동', {
+    lat: 35.2152611111111, lon: 129.101397222222, name: '부산광역시 금정구 서제1동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['서동'], aliases: [], priority_score: priorityMap['서제1동']
+});
+addLocation('서제2동', {
+    lat: 35.2097805555555, lon: 129.106933333333, name: '부산광역시 금정구 서제2동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['서동'], aliases: [], priority_score: priorityMap['서제2동']
+});
+addLocation('서제3동', {
+    lat: 35.212375, lon: 129.109730555555, name: '부산광역시 금정구 서제3동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['서동'], aliases: [], priority_score: priorityMap['서제3동']
+});
+addLocation('금사회동동', {
+    lat: 35.2172361111111, lon: 129.113375, name: '부산광역시 금정구 금사회동동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['회동동', '금사동'], aliases: [], priority_score: priorityMap['금사회동동']
+});
+addLocation('부곡제1동', {
+    lat: 35.22135, lon: 129.0944, name: '부산광역시 금정구 부곡제1동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['부곡동'], aliases: [], priority_score: priorityMap['부곡제1동']
+});
+addLocation('부곡제2동', {
+    lat: 35.2267277777777, lon: 129.095, name: '부산광역시 금정구 부곡제2동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['부곡동'], aliases: [], priority_score: priorityMap['부곡제2동']
+});
+addLocation('부곡제3동', {
+    lat: 35.2374055555555, lon: 129.096133333333, name: '부산광역시 금정구 부곡제3동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['부곡동'], aliases: [], priority_score: priorityMap['부곡제3동']
+});
+addLocation('부곡제4동', {
+    lat: 35.2168138888888, lon: 129.090875, name: '부산광역시 금정구 부곡제4동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['부곡동'], aliases: [], priority_score: priorityMap['부곡제4동']
+});
+addLocation('장전제1동', {
+    lat: 35.2346666666666, lon: 129.087211111111, name: '부산광역시 금정구 장전제1동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['장전동'], aliases: [], priority_score: priorityMap['장전제1동']
+});
+addLocation('장전제2동', {
+    lat: 35.2225305555555, lon: 129.084377777777, name: '부산광역시 금정구 장전제2동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['장전동'], aliases: [], priority_score: priorityMap['장전제2동']
+});
+addLocation('선두구동', {
+    lat: 35.2952083333333, lon: 129.115597222222, name: '부산광역시 금정구 선두구동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['선동', '두구동'], aliases: [], priority_score: priorityMap['선두구동']
+});
+addLocation('청룡노포동', {
+    lat: 35.27205, lon: 129.092055555555, name: '부산광역시 금정구 청룡노포동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['청룡동', '노포동'], aliases: [], priority_score: priorityMap['청룡노포동']
+});
+addLocation('남산동', {
+    lat: 35.2685555555555, lon: 129.094622222222, name: '부산광역시 금정구 남산동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['남산동'], aliases: [], priority_score: priorityMap['남산동']
+});
+addLocation('구서제1동', {
+    lat: 35.2419916666666, lon: 129.089230555555, name: '부산광역시 금정구 구서제1동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['구서동'], aliases: [], priority_score: priorityMap['구서제1동']
+});
+addLocation('구서제2동', {
+    lat: 35.2520833333333, lon: 129.092888888888, name: '부산광역시 금정구 구서제2동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['구서동'], aliases: [], priority_score: priorityMap['구서제2동']
+});
+addLocation('금성동', {
+    lat: 35.2472527777777, lon: 129.058341666666, name: '부산광역시 금정구 금성동', type: '행정동', admin_parent: '부산광역시 금정구',
+    legal_divisions: ['금성동'], aliases: [], priority_score: priorityMap['금성동']
+});
+
+// 부산광역시 강서구 (기초자치단체)
+addLocation('강서구', {
+    lat: 35.2091638888888, lon: 128.982908333333, name: '부산광역시 강서구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['대저동', '강동동', '명지동', '가락동', '녹산동', '천가동', '대항동', '동선동', '성북동', '눌차동', '천성동', '대항동', '동선동', '성북동', '눌차동', '천성동'], aliases: ['강서구'], priority_score: priorityMap['강서구']
+});
+// 부산광역시 강서구 행정동
+addLocation('대저1동', {
+    lat: 35.2113944444444, lon: 128.982855555555, name: '부산광역시 강서구 대저1동', type: '행정동', admin_parent: '부산광역시 강서구',
+    legal_divisions: ['대저동'], aliases: [], priority_score: priorityMap['대저1동']
+});
+addLocation('대저2동', {
+    lat: 35.1753944444444, lon: 128.9587, name: '부산광역시 강서구 대저2동', type: '행정동', admin_parent: '부산광역시 강서구',
+    legal_divisions: ['대저동'], aliases: [], priority_score: priorityMap['대저2동']
+});
+addLocation('강동동', {
+    lat: 35.2114638888888, lon: 128.937508333333, name: '부산광역시 강서구 강동동', type: '행정동', admin_parent: '부산광역시 강서구',
+    legal_divisions: ['강동동'], aliases: [], priority_score: priorityMap['강동동']
+});
+addLocation('명지1동', {
+    lat: 35.108091, lon: 128.926502, name: '부산광역시 강서구 명지1동', type: '행정동', admin_parent: '부산광역시 강서구',
+    legal_divisions: ['명지동'], aliases: [], priority_score: priorityMap['명지1동']
+});
+addLocation('명지2동', {
+    lat: 35.084587, lon: 128.899758, name: '부산광역시 강서구 명지2동', type: '행정동', admin_parent: '부산광역시 강서구',
+    legal_divisions: ['명지동'], aliases: [], priority_score: priorityMap['명지2동']
+});
+addLocation('가락동', {
+    lat: 35.1933166666666, lon: 128.904075, name: '부산광역시 강서구 가락동', type: '행정동', admin_parent: '부산광역시 강서구',
+    legal_divisions: ['가락동'], aliases: [], priority_score: priorityMap['가락동']
+});
+addLocation('녹산동', {
+    lat: 35.1234638888888, lon: 128.860808333333, name: '부산광역시 강서구 녹산동', type: '행정동', admin_parent: '부산광역시 강서구',
+    legal_divisions: ['녹산동'], aliases: [], priority_score: priorityMap['녹산동']
+});
+addLocation('가덕도동', {
+    lat: 35.0526166666667, lon: 128.814033333333, name: '부산광역시 강서구 가덕도동', type: '행정동', admin_parent: '부산광역시 강서구',
+    legal_divisions: ['대항동', '동선동', '성북동', '눌차동', '천성동'], aliases: [], priority_score: priorityMap['가덕도동']
+});
+addLocation('신호동', {
+    lat: 35.085443537101, lon: 128.879107082157, name: '부산광역시 강서구 신호동', type: '행정동', admin_parent: '부산광역시 강서구',
+    legal_divisions: ['신호동'], aliases: [], priority_score: priorityMap['신호동']
+});
+
+// 부산광역시 연제구 (기초자치단체)
+addLocation('연제구', {
+    lat: 35.1731861111111, lon: 129.082075, name: '부산광역시 연제구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['거제동', '연산동'], aliases: ['연제구'], priority_score: priorityMap['연제구']
+});
+// 부산광역시 연제구 행정동
+addLocation('거제제1동', {
+    lat: 35.1917194444444, lon: 129.083022222222, name: '부산광역시 연제구 거제제1동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['거제동'], aliases: [], priority_score: priorityMap['거제제1동']
+});
+addLocation('거제제2동', {
+    lat: 35.1845722222222, lon: 129.072541666666, name: '부산광역시 연제구 거제제2동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['거제동'], aliases: [], priority_score: priorityMap['거제제2동']
+});
+addLocation('거제제3동', {
+    lat: 35.1810333333333, lon: 129.075308333333, name: '부산광역시 연제구 거제제3동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['거제동'], aliases: [], priority_score: priorityMap['거제제3동']
+});
+addLocation('거제제4동', {
+    lat: 35.1761305555555, lon: 129.070022222222, name: '부산광역시 연제구 거제제4동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['거제동'], aliases: [], priority_score: priorityMap['거제제4동']
+});
+addLocation('연산제1동', {
+    lat: 35.1858777777777, lon: 129.093844444444, name: '부산광역시 연제구 연산제1동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['연산동'], aliases: [], priority_score: priorityMap['연산제1동']
+});
+addLocation('연산제2동', {
+    lat: 35.1768333333333, lon: 129.081575, name: '부산광역시 연제구 연산제2동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['연산동'], aliases: [], priority_score: priorityMap['연산제2동']
+});
+addLocation('연산제3동', {
+    lat: 35.1702694444444, lon: 129.096511111111, name: '부산광역시 연제구 연산제3동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['연산동'], aliases: [], priority_score: priorityMap['연산제3동']
+});
+addLocation('연산제4동', {
+    lat: 35.1832166666666, lon: 129.087155555555, name: '부산광역시 연제구 연산제4동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['연산동'], aliases: [], priority_score: priorityMap['연산제4동']
+});
+addLocation('연산제5동', {
+    lat: 35.1814194444444, lon: 129.078355555555, name: '부산광역시 연제구 연산제5동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['연산동'], aliases: [], priority_score: priorityMap['연산제5동']
+});
+addLocation('연산제6동', {
+    lat: 35.1757722222222, lon: 129.087941666666, name: '부산광역시 연제구 연산제6동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['연산동'], aliases: [], priority_score: priorityMap['연산제6동']
+});
+addLocation('연산제8동', {
+    lat: 35.1840333333333, lon: 129.103333333333, name: '부산광역시 연제구 연산제8동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['연산동'], aliases: [], priority_score: priorityMap['연산제8동']
+});
+addLocation('연산제9동', {
+    lat: 35.1855472222222, lon: 129.107197222222, name: '부산광역시 연제구 연산제9동', type: '행정동', admin_parent: '부산광역시 연제구',
+    legal_divisions: ['연산동'], aliases: [], priority_score: priorityMap['연산제9동']
+});
+
+// 부산광역시 수영구 (기초자치단체)
+addLocation('수영구', {
+    lat: 35.1424666666666, lon: 129.115375, name: '부산광역시 수영구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['남천동', '수영동', '망미동', '광안동', '민락동'], aliases: ['수영구', '광안리'], priority_score: priorityMap['수영구']
+});
+// 부산광역시 수영구 행정동
+addLocation('남천제1동', {
+    lat: 35.139575, lon: 129.112597222222, name: '부산광역시 수영구 남천제1동', type: '행정동', admin_parent: '부산광역시 수영구',
+    legal_divisions: ['남천동'], aliases: [], priority_score: priorityMap['남천제1동']
+});
+addLocation('남천제2동', {
+    lat: 35.1407527777777, lon: 129.116986111111, name: '부산광역시 수영구 남천제2동', type: '행정동', admin_parent: '부산광역시 수영구',
+    legal_divisions: ['남천동'], aliases: [], priority_score: priorityMap['남천제2동']
+});
+addLocation('수영동', {
+    lat: 35.1673583333333, lon: 129.118288888888, name: '부산광역시 수영구 수영동', type: '행정동', admin_parent: '부산광역시 수영구',
+    legal_divisions: ['수영동'], aliases: [], priority_score: priorityMap['수영동']
+});
+addLocation('망미제1동', {
+    lat: 35.1713555555555, lon: 129.103241666666, name: '부산광역시 수영구 망미제1동', type: '행정동', admin_parent: '부산광역시 수영구',
+    legal_divisions: ['망미동'], aliases: [], priority_score: priorityMap['망미제1동']
+});
+addLocation('망미제2동', {
+    lat: 35.1721527777777, lon: 129.117541666666, name: '부산광역시 수영구 망미제2동', type: '행정동', admin_parent: '부산광역시 수영구',
+    legal_divisions: ['망미동'], aliases: [], priority_score: priorityMap['망미제2동']
+});
+addLocation('광안제1동', {
+    lat: 35.1598666666666, lon: 129.114730555555, name: '부산광역시 수영구 광안제1동', type: '행정동', admin_parent: '부산광역시 수영구',
+    legal_divisions: ['광안동'], aliases: ['광안리'], priority_score: priorityMap['광안리']
+});
+addLocation('광안제2동', {
+    lat: 35.1506777777777, lon: 129.114866666666, name: '부산광역시 수영구 광안제2동', type: '행정동', admin_parent: '부산광역시 수영구',
+    legal_divisions: ['광안동'], aliases: [], priority_score: priorityMap['광안제2동']
+});
+addLocation('광안제3동', {
+    lat: 35.1648222222222, lon: 129.115855555555, name: '부산광역시 수영구 광안제3동', type: '행정동', admin_parent: '부산광역시 수영구',
+    legal_divisions: ['광안동'], aliases: [], priority_score: priorityMap['광안제3동']
+});
+addLocation('광안제4동', {
+    lat: 35.1519666666666, lon: 129.113666666666, name: '부산광역시 수영구 광안제4동', type: '행정동', admin_parent: '부산광역시 수영구',
+    legal_divisions: ['광안동'], aliases: [], priority_score: priorityMap['광안제4동']
+});
+addLocation('민락동', {
+    lat: 35.1541666666666, lon: 129.127677777777, name: '부산광역시 수영구 민락동', type: '행정동', admin_parent: '부산광역시 수영구',
+    legal_divisions: ['민락동'], aliases: [], priority_score: priorityMap['민락동']
+});
+
+// 부산광역시 사상구 (기초자치단체)
+addLocation('사상구', {
+    lat: 35.1494666666666, lon: 128.993333333333, name: '부산광역시 사상구', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['삼락동', '모라동', '덕포동', '괘법동', '감전동', '주례동', '학장동', '엄궁동'], aliases: ['사상구'], priority_score: priorityMap['사상구']
+});
+// 부산광역시 사상구 행정동
+addLocation('삼락동', {
+    lat: 35.1738944444444, lon: 128.979966666666, name: '부산광역시 사상구 삼락동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['삼락동'], aliases: [], priority_score: priorityMap['삼락동']
+});
+addLocation('모라제1동', {
+    lat: 35.1845361111111, lon: 128.989688888888, name: '부산광역시 사상구 모라제1동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['모라동'], aliases: [], priority_score: priorityMap['모라제1동']
+});
+addLocation('모라제3동', {
+    lat: 35.1815583333333, lon: 128.998333333333, name: '부산광역시 사상구 모라제3동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['모라동'], aliases: [], priority_score: priorityMap['모라제3동']
+});
+addLocation('덕포제1동', {
+    lat: 35.1672833333333, lon: 128.985530555555, name: '부산광역시 사상구 덕포제1동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['덕포동'], aliases: [], priority_score: priorityMap['덕포제1동']
+});
+addLocation('덕포제2동', {
+    lat: 35.1713805555555, lon: 128.985177777777, name: '부산광역시 사상구 덕포제2동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['덕포동'], aliases: [], priority_score: priorityMap['덕포제2동']
+});
+addLocation('괘법동', {
+    lat: 35.1606722222222, lon: 128.989444444444, name: '부산광역시 사상구 괘법동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['괘법동'], aliases: [], priority_score: priorityMap['괘법동']
+});
+addLocation('감전동', {
+    lat: 35.1512333333333, lon: 128.981708333333, name: '부산광역시 사상구 감전동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['감전동'], aliases: [], priority_score: priorityMap['감전동']
+});
+addLocation('주례제1동', {
+    lat: 35.1486194444444, lon: 129.000144444444, name: '부산광역시 사상구 주례제1동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['주례동'], aliases: [], priority_score: priorityMap['주례제1동']
+});
+addLocation('주례제2동', {
+    lat: 35.1469888888888, lon: 129.012733333333, name: '부산광역시 사상구 주례제2동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['주례동'], aliases: [], priority_score: priorityMap['주례제2동']
+});
+addLocation('주례제3동', {
+    lat: 35.1442888888888, lon: 129.003722222222, name: '부산광역시 사상구 주례제3동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['주례동'], aliases: [], priority_score: priorityMap['주례제3동']
+});
+addLocation('학장동', {
+    lat: 35.1409916666666, lon: 128.989677777777, name: '부산광역시 사상구 학장동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['학장동'], aliases: [], priority_score: priorityMap['학장동']
+});
+addLocation('엄궁동', {
+    lat: 35.1256, lon: 128.974444444444, name: '부산광역시 사상구 엄궁동', type: '행정동', admin_parent: '부산광역시 사상구',
+    legal_divisions: ['엄궁동'], aliases: [], priority_score: priorityMap['엄궁동']
+});
+
+// 부산광역시 기장군 (기초자치단체)
+addLocation('기장군', {
+    lat: 35.24135, lon: 129.224475, name: '부산광역시 기장군', type: '기초자치단체', admin_parent: '부산광역시',
+    legal_divisions: ['기장읍', '장안읍', '정관읍', '일광읍', '철마면'], aliases: ['기장군'], priority_score: priorityMap['기장군']
+});
+// 부산광역시 기장군 읍·면
+addLocation('기장읍', {
+    lat: 35.2356027777777, lon: 129.218177777777, name: '부산광역시 기장군 기장읍', type: '읍', admin_parent: '부산광역시 기장군',
+    legal_divisions: [
+        '대라리', '동부리', '서부리', '죽성리', '연화리', '대변리', '청강리', '시랑리', '만화리', '석산리', '교리', '대룡리', '용소리'
+    ],
+    aliases: [], priority_score: priorityMap['기장읍']
+});
+addLocation('장안읍', {
+    lat: 35.3107027777777, lon: 129.246288888888, name: '부산광역시 기장군 장안읍', type: '읍', admin_parent: '부산광역시 기장군',
+    legal_divisions: [
+        '좌천리', '임랑리', '길천리', '반룡리', '명례리', '월내리', '덕선리', '오리', '장안리'
+    ],
+    aliases: [], priority_score: priorityMap['장안읍']
+});
+addLocation('정관읍', {
+    lat: 35.322375, lon: 129.182677777777, name: '부산광역시 기장군 정관읍', type: '읍', admin_parent: '부산광역시 기장군',
+    legal_divisions: [
+        '방곡리', '병산리', '달산리', '예림리', '임곡리', '웅천리', '용수리', '매학리', '월평리', '곰내리', '두명리'
+    ],
+    aliases: [], priority_score: priorityMap['정관읍']
+});
+addLocation('일광읍', {
+    lat: 35.2639371829939, lon: 129.23228251585, name: '부산광역시 기장군 일광읍', type: '읍', admin_parent: '부산광역시 기장군',
+    legal_divisions: [
+        '삼성리', '학리', '동백리', '칠암리', '문동리', '횡계리', '용천리', '원리', '이천리'
+    ],
+    aliases: [], priority_score: priorityMap['일광읍']
+});
+addLocation('철마면', {
+    lat: 35.2721972222222, lon: 129.152022222222, name: '부산광역시 기장군 철마면', type: '면', admin_parent: '부산광역시 기장군',
+    legal_divisions: [
+        '연구리', '송정리', '장전리', '웅천리', '고촌리', '백길리', '와여리', '이곡리', '미동리'
+    ],
+    aliases: [], priority_score: priorityMap['철마면']
+});
 
 
 
