@@ -1110,6 +1110,208 @@ addLocation('부산광역시 기장군 철마면', { lat: 35.2721972222222, lon:
 
 
 
+// 대구광역시 (광역자치단체)
+addLocation('대구광역시', { lat: 35.8685416666666, lon: 128.603552777777, name: '대구광역시', type: '광역시', admin_parent: '', aliases: ['대구', '대구시'] });
+
+// 대구광역시 중구 (기초자치단체)
+addLocation('대구광역시 중구', { lat: 35.8662861111111, lon: 128.608397222222, name: '대구광역시 중구', type: '기초자치단체', admin_parent: '대구광역시', aliases: ['중구'] });
+// 중구 하위 행정동 (legal_divisions 포함)
+addLocation('대구광역시 중구 동인동', { lat: 35.86790482, lon: 128.609131, name: '대구광역시 중구 동인동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['동인동'] });
+addLocation('대구광역시 중구 삼덕동', { lat: 35.862575, lon: 128.611166666666, name: '대구광역시 중구 삼덕동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['삼덕동'] });
+addLocation('대구광역시 중구 성내1동', { lat: 35.86625, lon: 128.600355555555, name: '대구광역시 중구 성내1동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['성내동'] });
+addLocation('대구광역시 중구 성내2동', { lat: 35.8653472222222, lon: 128.592622222222, name: '대구광역시 중구 성내2동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['성내동'] });
+addLocation('대구광역시 중구 성내3동', { lat: 35.8696111111111, lon: 128.587941666666, name: '대구광역시 중구 성내3동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['성내동'] });
+addLocation('대구광역시 중구 대신동', { lat: 35.8632027777777, lon: 128.579444444444, name: '대구광역시 중구 대신동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['대신동'] });
+addLocation('대구광역시 중구 남산1동', { lat: 35.8563944444444, lon: 128.592644444444, name: '대구광역시 중구 남산1동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['남산동'] });
+addLocation('대구광역시 중구 남산2동', { lat: 35.8610611111111, lon: 128.591755555555, name: '대구광역시 중구 남산2동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['남산동'] });
+addLocation('대구광역시 중구 남산3동', { lat: 35.8565333333333, lon: 128.587197222222, name: '대구광역시 중구 남산3동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['남산동'] });
+addLocation('대구광역시 중구 남산4동', { lat: 35.8552388888888, lon: 128.582719444444, name: '대구광역시 중구 남산4동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['남산동'] });
+addLocation('대구광역시 중구 대봉1동', { lat: 35.8586722222222, lon: 128.606575, name: '대구광역시 중구 대봉1동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['대봉동'] });
+addLocation('대구광역시 중구 대봉2동', { lat: 35.8552055555555, lon: 128.601952777777, name: '대구광역시 중구 대봉2동', type: '행정동', admin_parent: '대구광역시 중구', legal_divisions: ['대봉동'] });
+
+// 대구광역시 동구 (기초자치단체)
+addLocation('대구광역시 동구', { lat: 35.8836166666666, lon: 128.637711111111, name: '대구광역시 동구', type: '기초자치단체', admin_parent: '대구광역시', aliases: ['동구'] });
+// 동구 하위 행정동 (legal_divisions 포함)
+addLocation('대구광역시 동구 신암1동', { lat: 35.8812777777777, lon: 128.618552777777, name: '대구광역시 동구 신암1동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['신암동'] });
+addLocation('대구광역시 동구 신암2동', { lat: 35.8764277777777, lon: 128.616533333333, name: '대구광역시 동구 신암2동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['신암동'] });
+addLocation('대구광역시 동구 신암3동', { lat: 35.8766277777777, lon: 128.625375, name: '대구광역시 동구 신암3동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['신암동'] });
+addLocation('대구광역시 동구 신암4동', { lat: 35.8820972222222, lon: 128.631511111111, name: '대구광역시 동구 신암4동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['신암동'] });
+addLocation('대구광역시 동구 신암5동', { lat: 35.886725, lon: 128.635244444444, name: '대구광역시 동구 신암5동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['신암동'] });
+addLocation('대구광역시 동구 신천1.2동', { lat: 35.8671194444444, lon: 128.616797222222, name: '대구광역시 동구 신천1.2동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['신천동'] });
+addLocation('대구광역시 동구 신천3동', { lat: 35.8722666666666, lon: 128.625897222222, name: '대구광역시 동구 신천3동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['신천동'] });
+addLocation('대구광역시 동구 신천4동', { lat: 35.8687861111111, lon: 128.631486111111, name: '대구광역시 동구 신천4동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['신천동'] });
+addLocation('대구광역시 동구 효목1동', { lat: 35.8781555555555, lon: 128.647466666666, name: '대구광역시 동구 효목1동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['효목동'] });
+addLocation('대구광역시 동구 효목2동', { lat: 35.8746361111111, lon: 128.640422222222, name: '대구광역시 동구 효목2동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['효목동'] });
+addLocation('대구광역시 동구 도평동', { lat: 35.9079305555555, lon: 128.655986111111, name: '대구광역시 동구 도평동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['도평동'] });
+addLocation('대구광역시 동구 불로.봉무동', { lat: 35.9072833333333, lon: 128.641622222222, name: '대구광역시 동구 불로.봉무동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['불로동', '봉무동'] });
+addLocation('대구광역시 동구 지저동', { lat: 35.8907305555555, lon: 128.640455555555, name: '대구광역시 동구 지저동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['지저동'] });
+addLocation('대구광역시 동구 동촌동', { lat: 35.8838888888888, lon: 128.6519, name: '대구광역시 동구 동촌동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['동촌동'] });
+addLocation('대구광역시 동구 방촌동', { lat: 35.8770833333333, lon: 128.667475, name: '대구광역시 동구 방촌동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['방촌동'] });
+addLocation('대구광역시 동구 해안동', { lat: 35.8921916666666, lon: 128.684330555555, name: '대구광역시 동구 해안동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['해안동'] });
+addLocation('대구광역시 동구 안심1동', { lat: 35.8673833333333, lon: 128.704330555555, name: '대구광역시 동구 안심1동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['안심동'] });
+addLocation('대구광역시 동구 안심2동', { lat: 35.8724361111111, lon: 128.689263888888, name: '대구광역시 동구 안심2동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['안심동'] });
+addLocation('대구광역시 동구 안심3동', { lat: 35.8678684, lon: 128.7224295, name: '대구광역시 동구 안심3동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['안심동'] });
+addLocation('대구광역시 동구 안심4동', { lat: 35.870105, lon: 128.711046, name: '대구광역시 동구 안심4동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['안심동'] });
+addLocation('대구광역시 동구 혁신동', { lat: 35.8796992, lon: 128.7109768, name: '대구광역시 동구 혁신동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['율암동', '숙천동', '신서동', '각산동', '동내동', '괴전동'] });
+addLocation('대구광역시 동구 공산동', { lat: 35.9372222222222, lon: 128.646466666666, name: '대구광역시 동구 공산동', type: '행정동', admin_parent: '대구광역시 동구', legal_divisions: ['미대동', '내동', '신무동', '용수동', '송정동', '중대동', '덕곡동', '지묘동', '신용동', '도학동', '능성동', '진인동', '백안동', '상동'] });
+
+// 대구광역시 서구 (기초자치단체)
+addLocation('대구광역시 서구', { lat: 35.8687944444444, lon: 128.561411111111, name: '대구광역시 서구', type: '기초자치단체', admin_parent: '대구광역시', aliases: ['서구'] });
+// 서구 하위 행정동 (legal_divisions 포함)
+addLocation('대구광역시 서구 내당1동', { lat: 35.857675, lon: 128.562963888888, name: '대구광역시 서구 내당1동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['내당동'] });
+addLocation('대구광역시 서구 내당2.3동', { lat: 35.8642833333333, lon: 128.576688888888, name: '대구광역시 서구 내당2.3동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['내당동'] });
+addLocation('대구광역시 서구 내당4동', { lat: 35.8577666666666, lon: 128.553808333333, name: '대구광역시 서구 내당4동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['내당동'] });
+addLocation('대구광역시 서구 비산1동', { lat: 35.8781916666666, lon: 128.571241666666, name: '대구광역시 서구 비산1동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['비산동'] });
+addLocation('대구광역시 서구 비산2.3동', { lat: 35.8727222222222, lon: 128.576975, name: '대구광역시 서구 비산2.3동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['비산동'] });
+addLocation('대구광역시 서구 비산4동', { lat: 35.8667833333333, lon: 128.576297222222, name: '대구광역시 서구 비산4동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['비산동'] });
+addLocation('대구광역시 서구 비산5동', { lat: 35.8833777777777, lon: 128.571844444444, name: '대구광역시 서구 비산5동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['비산동'] });
+addLocation('대구광역시 서구 비산6동', { lat: 35.8733333333333, lon: 128.571330555555, name: '대구광역시 서구 비산6동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['비산동'] });
+addLocation('대구광역시 서구 비산7동', { lat: 35.8850361111111, lon: 128.555741666666, name: '대구광역시 서구 비산7동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['비산동'] });
+addLocation('대구광역시 서구 평리1동', { lat: 35.8726055555555, lon: 128.565488888888, name: '대구광역시 서구 평리1동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['평리동'] });
+addLocation('대구광역시 서구 평리2동', { lat: 35.8682638888888, lon: 128.565963888888, name: '대구광역시 서구 평리2동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['평리동'] });
+addLocation('대구광역시 서구 평리3동', { lat: 35.8728833333333, lon: 128.563519444444, name: '대구광역시 서구 평리3동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['평리동'] });
+addLocation('대구광역시 서구 평리4동', { lat: 35.8643444444444, lon: 128.558888888888, name: '대구광역시 서구 평리4동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['평리동'] });
+addLocation('대구광역시 서구 평리5동', { lat: 35.8708, lon: 128.550955555555, name: '대구광역시 서구 평리5동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['평리동'] });
+addLocation('대구광역시 서구 평리6동', { lat: 35.8722416666666, lon: 128.550333333333, name: '대구광역시 서구 평리6동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['평리동'] });
+addLocation('대구광역시 서구 상중이동', { lat: 35.8649833333333, lon: 128.546477777777, name: '대구광역시 서구 상중이동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['상리동', '중리동', '이현동'] });
+addLocation('대구광역시 서구 원대동', { lat: 35.8837861111111, lon: 128.576622222222, name: '대구광역시 서구 원대동', type: '행정동', admin_parent: '대구광역시 서구', legal_divisions: ['원대동'] });
+
+// 대구광역시 남구 (기초자치단체)
+addLocation('대구광역시 남구', { lat: 35.8429777777777, lon: 128.5998, name: '대구광역시 남구', type: '기초자치단체', admin_parent: '대구광역시', aliases: ['남구'] });
+// 남구 하위 행정동 (legal_divisions 포함)
+addLocation('대구광역시 남구 이천동', { lat: 35.8507138888888, lon: 128.601666666666, name: '대구광역시 남구 이천동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['이천동'] });
+addLocation('대구광역시 남구 봉덕1동', { lat: 35.8425694444444, lon: 128.600111111111, name: '대구광역시 남구 봉덕1동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['봉덕동'] });
+addLocation('대구광역시 남구 봉덕2동', { lat: 35.8408555555555, lon: 128.603288888888, name: '대구광역시 남구 봉덕2동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['봉덕동'] });
+addLocation('대구광역시 남구 봉덕3동', { lat: 35.8386944444444, lon: 128.600463888888, name: '대구광역시 남구 봉덕3동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['봉덕동'] });
+addLocation('대구광역시 남구 대명1동', { lat: 35.8372805555555, lon: 128.579122222222, name: '대구광역시 남구 대명1동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['대명동'] });
+addLocation('대구광역시 남구 대명2동', { lat: 35.8523055555555, lon: 128.588877777777, name: '대구광역시 남구 대명2동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['대명동'] });
+addLocation('대구광역시 남구 대명3동', { lat: 35.8493638888888, lon: 128.581322222222, name: '대구광역시 남구 대명3동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['대명동'] });
+addLocation('대구광역시 남구 대명4동', { lat: 35.8449527777777, lon: 128.574555555555, name: '대구광역시 남구 대명4동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['대명동'] });
+addLocation('대구광역시 남구 대명5동', { lat: 35.8402611111111, lon: 128.589988888888, name: '대구광역시 남구 대명5동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['대명동'] });
+addLocation('대구광역시 남구 대명6동', { lat: 35.8320916666666, lon: 128.568044444444, name: '대구광역시 남구 대명6동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['대명동'] });
+addLocation('대구광역시 남구 대명9동', { lat: 35.8342722222222, lon: 128.581397222222, name: '대구광역시 남구 대명9동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['대명동'] });
+addLocation('대구광역시 남구 대명10동', { lat: 35.83705, lon: 128.571188888888, name: '대구광역시 남구 대명10동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['대명동'] });
+addLocation('대구광역시 남구 대명11동', { lat: 35.8331638888888, lon: 128.562652777777, name: '대구광역시 남구 대명11동', type: '행정동', admin_parent: '대구광역시 남구', legal_divisions: ['대명동'] });
+
+// 대구광역시 북구 (기초자치단체)
+addLocation('대구광역시 북구', { lat: 35.8827, lon: 128.585022222222, name: '대구광역시 북구', type: '기초자치단체', admin_parent: '대구광역시', aliases: ['북구'] });
+// 북구 하위 행정동 (legal_divisions 포함)
+addLocation('대구광역시 북구 고성동', { lat: 35.87895, lon: 128.585822222222, name: '대구광역시 북구 고성동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['고성동'] });
+addLocation('대구광역시 북구 칠성동', { lat: 35.8762111111111, lon: 128.602108333333, name: '대구광역시 북구 칠성동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['칠성동'] });
+addLocation('대구광역시 북구 침산1동', { lat: 35.887375, lon: 128.583388888888, name: '대구광역시 북구 침산1동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['침산동'] });
+addLocation('대구광역시 북구 침산2동', { lat: 35.8842722222222, lon: 128.599175, name: '대구광역시 북구 침산2동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['침산동'] });
+addLocation('대구광역시 북구 침산3동', { lat: 35.8891444444444, lon: 128.591552777777, name: '대구광역시 북구 침산3동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['침산동'] });
+addLocation('대구광역시 북구 산격1동', { lat: 35.8896527777777, lon: 128.596911111111, name: '대구광역시 북구 산격1동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['산격동'] });
+addLocation('대구광역시 북구 산격2동', { lat: 35.8987111111111, lon: 128.611486111111, name: '대구광역시 북구 산격2동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['산격동'] });
+addLocation('대구광역시 북구 산격3동', { lat: 35.8905305555555, lon: 128.610497222222, name: '대구광역시 북구 산격3동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['산격동'] });
+addLocation('대구광역시 북구 산격4동', { lat: 35.8893055555555, lon: 128.606419444444, name: '대구광역시 북구 산격4동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['산격동'] });
+addLocation('대구광역시 북구 대현동', { lat: 35.88218385, lon: 128.6058302, name: '대구광역시 북구 대현동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['대현동'] });
+addLocation('대구광역시 북구 복현1동', { lat: 35.8907388888888, lon: 128.620752777777, name: '대구광역시 북구 복현1동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['복현동'] });
+addLocation('대구광역시 북구 복현2동', { lat: 35.8924361111111, lon: 128.627663888888, name: '대구광역시 북구 복현2동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['복현동'] });
+addLocation('대구광역시 북구 검단동', { lat: 35.9104555555555, lon: 128.6294, name: '대구광역시 북구 검단동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['검단동'] });
+addLocation('대구광역시 북구 무태조야동', { lat: 35.9182944444444, lon: 128.5994, name: '대구광역시 북구 무태조야동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['무태동', '조야동'] });
+addLocation('대구광역시 북구 관문동', { lat: 35.8986722222222, lon: 128.544377777777, name: '대구광역시 북구 관문동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['관음동', '조야동'] });
+addLocation('대구광역시 북구 태전1동', { lat: 35.9207222222222, lon: 128.545799999999, name: '대구광역시 북구 태전1동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['태전동'] });
+addLocation('대구광역시 북구 태전2동', { lat: 35.9185305555555, lon: 128.551011111111, name: '대구광역시 북구 태전2동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['태전동'] });
+addLocation('대구광역시 북구 구암동', { lat: 35.9373694444444, lon: 128.571641666666, name: '대구광역시 북구 구암동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['구암동'] });
+addLocation('대구광역시 북구 관음동', { lat: 35.9413722222222, lon: 128.549630555555, name: '대구광역시 북구 관음동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['관음동'] });
+addLocation('대구광역시 북구 읍내동', { lat: 35.9426166666666, lon: 128.553077777777, name: '대구광역시 북구 읍내동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['읍내동'] });
+addLocation('대구광역시 북구 동천동', { lat: 35.9401222222222, lon: 128.557733333333, name: '대구광역시 북구 동천동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['동천동'] });
+addLocation('대구광역시 북구 노원동', { lat: 35.8901321, lon: 128.5762125, name: '대구광역시 북구 노원동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['노원동'] });
+addLocation('대구광역시 북구 국우동', { lat: 35.9480283, lon: 128.5754397, name: '대구광역시 북구 국우동', type: '행정동', admin_parent: '대구광역시 북구', legal_divisions: ['국우동'] });
+
+// 대구광역시 수성구 (기초자치단체)
+addLocation('대구광역시 수성구', { lat: 35.8552083333333, lon: 128.632866666666, name: '대구광역시 수성구', type: '기초자치단체', admin_parent: '대구광역시', aliases: ['수성구'] });
+// 수성구 하위 행정동 (legal_divisions 포함)
+addLocation('대구광역시 수성구 범어1동', { lat: 35.8525, lon: 128.624277777777, name: '대구광역시 수성구 범어1동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['범어동'] });
+addLocation('대구광역시 수성구 범어2동', { lat: 35.8571138888888, lon: 128.633530555555, name: '대구광역시 수성구 범어2동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['범어동'] });
+addLocation('대구광역시 수성구 범어3동', { lat: 35.8631638888888, lon: 128.620088888888, name: '대구광역시 수성구 범어3동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['범어동'] });
+addLocation('대구광역시 수성구 범어4동', { lat: 35.8551472222222, lon: 128.643477777777, name: '대구광역시 수성구 범어4동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['범어동'] });
+addLocation('대구광역시 수성구 만촌1동', { lat: 35.8699138888888, lon: 128.649108333333, name: '대구광역시 수성구 만촌1동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['만촌동'] });
+addLocation('대구광역시 수성구 만촌2동', { lat: 35.8568972222222, lon: 128.649419444444, name: '대구광역시 수성구 만촌2동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['만촌동'] });
+addLocation('대구광역시 수성구 만촌3동', { lat: 35.8525055555555, lon: 128.652719444444, name: '대구광역시 수성구 만촌3동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['만촌동'] });
+addLocation('대구광역시 수성구 수성1가동', { lat: 35.8533944444444, lon: 128.6129, name: '대구광역시 수성구 수성1가동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['수성동1가'] });
+addLocation('대구광역시 수성구 수성2.3가동', { lat: 35.8527861111111, lon: 128.621344444444, name: '대구광역시 수성구 수성2.3가동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['수성동2가', '수성동3가'] });
+addLocation('대구광역시 수성구 수성4가동', { lat: 35.8596833333333, lon: 128.618863888888, name: '대구광역시 수성구 수성4가동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['수성동4가'] });
+addLocation('대구광역시 수성구 황금1동', { lat: 35.8409611111111, lon: 128.640422222222, name: '대구광역시 수성구 황금1동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['황금동'] });
+addLocation('대구광역시 수성구 황금2동', { lat: 35.8385555555555, lon: 128.627441666666, name: '대구광역시 수성구 황금2동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['황금동'] });
+addLocation('대구광역시 수성구 중동', { lat: 35.8444027777777, lon: 128.617222222222, name: '대구광역시 수성구 중동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['중동'] });
+addLocation('대구광역시 수성구 상동', { lat: 35.8291583333333, lon: 128.617622222222, name: '대구광역시 수성구 상동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['상동'] });
+addLocation('대구광역시 수성구 파동', { lat: 35.8124444444444, lon: 128.617311111111, name: '대구광역시 수성구 파동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['파동'] });
+addLocation('대구광역시 수성구 두산동', { lat: 35.82635, lon: 128.622808333333, name: '대구광역시 수성구 두산동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['두산동'] });
+addLocation('대구광역시 수성구 지산1동', { lat: 35.8218888888888, lon: 128.639352777777, name: '대구광역시 수성구 지산1동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['지산동'] });
+addLocation('대구광역시 수성구 지산2동', { lat: 35.8201388888888, lon: 128.630252777777, name: '대구광역시 수성구 지산2동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['지산동'] });
+addLocation('대구광역시 수성구 범물1동', { lat: 35.8148222222222, lon: 128.648186111111, name: '대구광역시 수성구 범물1동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['범물동'] });
+addLocation('대구광역시 수성구 범물2동', { lat: 35.8146194444444, lon: 128.645677777777, name: '대구광역시 수성구 범물2동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['범물동'] });
+addLocation('대구광역시 수성구 고산1동', { lat: 35.8341416666666, lon: 128.714641666666, name: '대구광역시 수성구 고산1동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['고산동'] });
+addLocation('대구광역시 수성구 고산2동', { lat: 35.8403472222222, lon: 128.697344444444, name: '대구광역시 수성구 고산2동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['고산동'] });
+addLocation('대구광역시 수성구 고산3동', { lat: 35.8412722222222, lon: 128.708911111111, name: '대구광역시 수성구 고산3동', type: '행정동', admin_parent: '대구광역시 수성구', legal_divisions: ['고산동'] });
+
+// 대구광역시 달서구 (기초자치단체)
+addLocation('대구광역시 달서구', { lat: 35.8269277777777, lon: 128.535063888888, name: '대구광역시 달서구', type: '기초자치단체', admin_parent: '대구광역시', aliases: ['달서구'] });
+// 달서구 하위 행정동 (legal_divisions 포함)
+addLocation('대구광역시 달서구 성당동', { lat: 35.84294152, lon: 128.549565, name: '대구광역시 달서구 성당동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['성당동'] });
+addLocation('대구광역시 달서구 두류1.2동', { lat: 35.85569344, lon: 128.572198, name: '대구광역시 달서구 두류1.2동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['두류동'] });
+addLocation('대구광역시 달서구 두류3동', { lat: 35.8507138888888, lon: 128.557644444444, name: '대구광역시 달서구 두류3동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['두류동'] });
+addLocation('대구광역시 달서구 감삼동', { lat: 35.8480694444444, lon: 128.544377777777, name: '대구광역시 달서구 감삼동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['감삼동'] });
+addLocation('대구광역시 달서구 죽전동', { lat: 35.8528388888888, lon: 128.542, name: '대구광역시 달서구 죽전동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['죽전동'] });
+addLocation('대구광역시 달서구 장기동', { lat: 35.8403916666666, lon: 128.532177777777, name: '대구광역시 달서구 장기동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['장기동'] });
+addLocation('대구광역시 달서구 용산1동', { lat: 35.8537166666666, lon: 128.533544444444, name: '대구광역시 달서구 용산1동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['용산동'] });
+addLocation('대구광역시 달서구 용산2동', { lat: 35.8554388888888, lon: 128.525152777777, name: '대구광역시 달서구 용산2동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['용산동'] });
+addLocation('대구광역시 달서구 이곡1동', { lat: 35.8487, lon: 128.5128, name: '대구광역시 달서구 이곡1동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['이곡동'] });
+addLocation('대구광역시 달서구 이곡2동', { lat: 35.852825, lon: 128.503097222222, name: '대구광역시 달서구 이곡2동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['이곡동'] });
+addLocation('대구광역시 달서구 신당동', { lat: 35.8560333333333, lon: 128.501044444444, name: '대구광역시 달서구 신당동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['신당동'] });
+addLocation('대구광역시 달서구 본리동', { lat: 35.8391277777777, lon: 128.539852777777, name: '대구광역시 달서구 본리동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['본리동'] });
+addLocation('대구광역시 달서구 월성1동', { lat: 35.8166499999999, lon: 128.525177777777, name: '대구광역시 달서구 월성1동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['월성동'] });
+addLocation('대구광역시 달서구 월성2동', { lat: 35.8279555555555, lon: 128.530497222222, name: '대구광역시 달서구 월성2동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['월성동'] });
+addLocation('대구광역시 달서구 진천동', { lat: 35.8122, lon: 128.526675, name: '대구광역시 달서구 진천동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['진천동'] });
+addLocation('대구광역시 달서구 유천동', { lat: 35.8172711258048, lon: 128.514012692477, name: '대구광역시 달서구 유천동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['유천동'] });
+addLocation('대구광역시 달서구 상인1동', { lat: 35.8112555555555, lon: 128.547197222222, name: '대구광역시 달서구 상인1동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['상인동'] });
+addLocation('대구광역시 달서구 상인2동', { lat: 35.8095416666666, lon: 128.538519444444, name: '대구광역시 달서구 상인2동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['상인동'] });
+addLocation('대구광역시 달서구 상인3동', { lat: 35.8070888888888, lon: 128.552419444444, name: '대구광역시 달서구 상인3동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['상인동'] });
+addLocation('대구광역시 달서구 도원동', { lat: 35.8044666666666, lon: 128.5344, name: '대구광역시 달서구 도원동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['도원동'] });
+addLocation('대구광역시 달서구 송현1동', { lat: 35.8263805555555, lon: 128.555619444444, name: '대구광역시 달서구 송현1동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['송현동'] });
+addLocation('대구광역시 달서구 송현2동', { lat: 35.8298361111111, lon: 128.547819444444, name: '대구광역시 달서구 송현2동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['송현동'] });
+addLocation('대구광역시 달서구 본동', { lat: 35.8314861111111, lon: 128.543288888888, name: '대구광역시 달서구 본동', type: '행정동', admin_parent: '대구광역시 달서구', legal_divisions: ['본동'] });
+
+// 대구광역시 달성군 (기초자치단체)
+addLocation('대구광역시 달성군', { lat: 35.7716805555555, lon: 128.433274999999, name: '대구광역시 달성군', type: '기초자치단체', admin_parent: '대구광역시', aliases: ['달성군'] });
+// 달성군 하위 읍/면 (legal_divisions 포함)
+addLocation('대구광역시 달성군 화원읍', { lat: 35.8011166666666, lon: 128.503055555555, name: '대구광역시 달성군 화원읍', type: '읍', admin_parent: '대구광역시 달성군', legal_divisions: ['천내리', '화원리', '구라리', '명곡리', '설화리'] });
+addLocation('대구광역시 달성군 논공읍', { lat: 35.7711, lon: 128.422555555555, name: '대구광역시 달성군 논공읍', type: '읍', admin_parent: '대구광역시 달성군', legal_divisions: ['논공읍'] });
+addLocation('대구광역시 달성군 다사읍', { lat: 35.8588333333333, lon: 128.456175, name: '대구광역시 달성군 다사읍', type: '읍', admin_parent: '대구광역시 달성군', legal_divisions: ['매곡리', '죽곡리', '다사리', '서재리', '방천리', '문산리', '이천리', '강정리'] });
+addLocation('대구광역시 달성군 유가읍', { lat: 35.693876, lon: 128.459773, name: '대구광역시 달성군 유가읍', type: '읍', admin_parent: '대구광역시 달성군', legal_divisions: ['유가읍'] });
+addLocation('대구광역시 달성군 옥포읍', { lat: 35.7866416666666, lon: 128.465977777777, name: '대구광역시 달성군 옥포읍', type: '읍', admin_parent: '대구광역시 달성군', legal_divisions: ['옥포읍'] });
+addLocation('대구광역시 달성군 현풍읍', { lat: 35.6943138888888, lon: 128.449786111111, name: '대구광역시 달성군 현풍읍', type: '읍', admin_parent: '대구광역시 달성군', legal_divisions: ['현풍읍'] });
+addLocation('대구광역시 달성군 가창면', { lat: 35.7998305555555, lon: 128.624688888888, name: '대구광역시 달성군 가창면', type: '면', admin_parent: '대구광역시 달성군', legal_divisions: ['용계리', '정대리', '오리', '단산리', '대일리', '냉천리', '가창리', '주리', '우록리'] });
+addLocation('대구광역시 달성군 하빈면', { lat: 35.8979444444444, lon: 128.447711111111, name: '대구광역시 달성군 하빈면', type: '면', admin_parent: '대구광역시 달성군', legal_divisions: ['하빈면'] });
+addLocation('대구광역시 달성군 구지면', { lat: 35.6557638888888, lon: 128.415666666666, name: '대구광역시 달성군 구지면', type: '면', admin_parent: '대구광역시 달성군', legal_divisions: ['구지면'] });
+
+// 대구광역시 군위군 (기초자치단체)
+addLocation('대구광역시 군위군', { lat: 36.2399972222222, lon: 128.575077777777, name: '대구광역시 군위군', type: '기초자치단체', admin_parent: '대구광역시', aliases: ['군위군'] });
+// 군위군 하위 읍/면 (legal_divisions 포함)
+addLocation('대구광역시 군위군 군위읍', { lat: 36.2369194444444, lon: 128.571019444444, name: '대구광역시 군위군 군위읍', type: '읍', admin_parent: '대구광역시 군위군', legal_divisions: ['군위읍'] });
+addLocation('대구광역시 군위군 소보면', { lat: 36.2519055555555, lon: 128.477622222222, name: '대구광역시 군위군 소보면', type: '면', admin_parent: '대구광역시 군위군', legal_divisions: ['소보면'] });
+addLocation('대구광역시 군위군 효령면', { lat: 36.1538777777777, lon: 128.587677777777, name: '대구광역시 군위군 효령면', type: '면', admin_parent: '대구광역시 군위군', legal_divisions: ['효령면'] });
+addLocation('대구광역시 군위군 부계면', { lat: 36.0979083333333, lon: 128.666452777777, name: '대구광역시 군위군 부계면', type: '면', admin_parent: '대구광역시 군위군', legal_divisions: ['부계면'] });
+addLocation('대구광역시 군위군 우보면', { lat: 36.1920361111111, lon: 128.664041666666, name: '대구광역시 군위군 우보면', type: '면', admin_parent: '대구광역시 군위군', legal_divisions: ['우보면'] });
+addLocation('대구광역시 군위군 의흥면', { lat: 36.172875, lon: 128.717408333333, name: '대구광역시 군위군 의흥면', type: '면', admin_parent: '대구광역시 군위군', legal_divisions: ['의흥면'] });
+addLocation('대구광역시 군위군 산성면', { lat: 36.1201444444444, lon: 128.697197222222, name: '대구광역시 군위군 산성면', type: '면', admin_parent: '대구광역시 군위군', legal_divisions: ['산성면'] });
+addLocation('대구광역시 군위군 삼국유사면', { lat: 36.1180083333333, lon: 128.791486111111, name: '대구광역시 군위군 삼국유사면', type: '면', admin_parent: '대구광역시 군위군', legal_divisions: ['삼국유사면'] });
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     
     
     // =============================================================
