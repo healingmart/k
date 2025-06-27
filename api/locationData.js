@@ -304,6 +304,306 @@ const locationData = (() => {
 
 
 
+// 서울특별시 (광역자치단체)
+addLocation('서울특별시', { lat: 37.5635694444444, lon: 126.980008333333, name: '서울특별시', type: '광역자치단체', admin_parent: '', aliases: ['서울', '서울시'] });
+
+// 종로구 및 하위 동
+addLocation('서울특별시 종로구', { lat: 37.5703777777777, lon: 126.981641666666, name: '서울특별시 종로구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['종로구'] });
+addLocation('서울특별시 종로구 청운효자동', { lat: 37.5841367, lon: 126.9706519, name: '서울특별시 종로구 청운효자동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['청운동', '효자동', '궁정동', '신교동', '창성동', '통인동', '누하동', '옥인동', '신교동', '필운동', '내자동'] });
+addLocation('서울특별시 종로구 사직동', { lat: 37.5732694444444, lon: 126.970955555555, name: '서울특별시 종로구 사직동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['사직동', '내수동', '도렴동', '당주동', '신문로1가', '신문로2가'] });
+addLocation('서울특별시 종로구 삼청동', { lat: 37.582425, lon: 126.983977777777, name: '서울특별시 종로구 삼청동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['삼청동', '팔판동', '안국동', '소격동', '화동', '재동', '계동', '원서동'] });
+addLocation('서울특별시 종로구 부암동', { lat: 37.5898555555555, lon: 126.966444444444, name: '서울특별시 종로구 부암동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['부암동', '홍지동', '신영동'] });
+addLocation('서울특별시 종로구 평창동', { lat: 37.6025222222222, lon: 126.968877777777, name: '서울특별시 종로구 평창동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['평창동', '구기동'] });
+addLocation('서울특별시 종로구 무악동', { lat: 37.5715388888888, lon: 126.961208333333, name: '서울특별시 종로구 무악동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['무악동'] });
+addLocation('서울특별시 종로구 교남동', { lat: 37.569075, lon: 126.9641, name: '서울특별시 종로구 교남동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['교남동', '평동', '송월동', '홍파동', '교북동', '행촌동'] });
+addLocation('서울특별시 종로구 가회동', { lat: 37.5772527777777, lon: 126.986911111111, name: '서울특별시 종로구 가회동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['가회동', '재동', '계동', '원서동'] });
+addLocation('서울특별시 종로구 종로1.2.3.4가동', { lat: 37.5678861111111, lon: 126.991066666666, name: '서울특별시 종로구 종로1.2.3.4가동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['종로1가', '종로2가', '종로3가', '종로4가', '관철동', '인사동', '경운동', '공평동', '낙원동', '익선동', '운니동', '와룡동', '묘동', '돈의동', '장사동', '관수동', '수표동', '이의동', '예지동'] });
+addLocation('서울특별시 종로구 종로5.6가동', { lat: 37.5692111111111, lon: 127.007155555555, name: '서울특별시 종로구 종로5.6가동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['종로5가', '종로6가', '연건동', '효제동', '충신동', '동숭동'] });
+addLocation('서울특별시 종로구 이화동', { lat: 37.5742138888888, lon: 127.006397222222, name: '서울특별시 종로구 이화동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['이화동', '연건동', '동숭동'] });
+addLocation('서울특별시 종로구 혜화동', { lat: 37.5839888888888, lon: 127.002622222222, name: '서울특별시 종로구 혜화동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['혜화동', '명륜1가', '명륜2가', '명륜3가', '명륜4가', '창경궁로35길'] });
+addLocation('서울특별시 종로구 창신제1동', { lat: 37.5679361111111, lon: 127.018463888888, name: '서울특별시 종로구 창신제1동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['창신동'] });
+addLocation('서울특별시 종로구 창신제2동', { lat: 37.5716444444444, lon: 127.012963888888, name: '서울특별시 종로구 창신제2동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['창신동'] });
+addLocation('서울특별시 종로구 창신제3동', { lat: 37.5750472222222, lon: 127.017163888888, name: '서울특별시 종로구 창신제3동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['창신동'] });
+addLocation('서울특별시 종로구 숭인제1동', { lat: 37.5750277777777, lon: 127.017663888888, name: '서울특별시 종로구 숭인제1동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['숭인동'] });
+addLocation('서울특별시 종로구 숭인제2동', { lat: 37.5720361111111, lon: 127.022055555555, name: '서울특별시 종로구 숭인제2동', type: '행정동', admin_parent: '서울특별시 종로구', legal_divisions: ['숭인동'] });
+
+// 중구 및 하위 동
+addLocation('서울특별시 중구', { lat: 37.5610027777777, lon: 126.999641666666, name: '서울특별시 중구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['중구'] });
+addLocation('서울특별시 중구 소공동', { lat: 37.5596305555555, lon: 126.979108333333, name: '서울특별시 중구 소공동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['소공동', '남대문로2가', '남대문로3가', '남대문로4가', '봉래동1가', '북창동', '태평로1가'] });
+addLocation('서울특별시 중구 회현동', { lat: 37.5544833333333, lon: 126.981444444444, name: '서울특별시 중구 회현동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['회현동1가', '회현동2가', '회현동3가', '남창동', '남대문로5가'] });
+addLocation('서울특별시 중구 명동', { lat: 37.5572361111111, lon: 126.987888888888, name: '서울특별시 중구 명동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['명동1가', '명동2가', '충무로1가', '충무로2가', '저동1가', '저동2가', '을지로2가', '남산동1가', '남산동2가', '남산동3가'] });
+addLocation('서울특별시 중구 필동', { lat: 37.5573527777777, lon: 126.997711111111, name: '서울특별시 중구 필동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['필동1가', '필동2가', '필동3가', '충무로3가', '충무로4가', '충무로5가', '묵정동', '남학동', '주자동', '예장동'] });
+addLocation('서울특별시 중구 장충동', { lat: 37.5591166666666, lon: 127.009933333333, name: '서울특별시 중구 장충동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['장충동1가', '장충동2가', '묵정동', '필동3가'] });
+addLocation('서울특별시 중구 광희동', { lat: 37.5617305555555, lon: 127.007163888888, name: '서울특별시 중구 광희동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['광희동1가', '광희동2가', '오장동', '쌍림동', '을지로6가', '을지로7가'] });
+addLocation('서울특별시 중구 을지로동', { lat: 37.5639, lon: 126.993430555555, name: '서울특별시 중구 을지로동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['을지로1가', '을지로2가', '을지로3가', '을지로4가', '을지로5가', '수하동', '장교동', '삼각동', '입정동', '산림동'] });
+addLocation('서울특별시 중구 신당동', { lat: 37.5593111111111, lon: 127.016633333333, name: '서울특별시 중구 신당동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['신당동'] });
+addLocation('서울특별시 중구 다산동', { lat: 37.5516166666666, lon: 127.010308333333, name: '서울특별시 중구 다산동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['신당동', '흥인동'] });
+addLocation('서울특별시 중구 약수동', { lat: 37.5496583333333, lon: 127.011086111111, name: '서울특별시 중구 약수동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['신당동'] });
+addLocation('서울특별시 중구 청구동', { lat: 37.5542583333333, lon: 127.016788888888, name: '서울특별시 중구 청구동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['신당동'] });
+addLocation('서울특별시 중구 신당제5동', { lat: 37.5623305555555, lon: 127.023966666666, name: '서울특별시 중구 신당제5동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['신당동'] });
+addLocation('서울특별시 중구 동화동', { lat: 37.5572277777777, lon: 127.021541666666, name: '서울특별시 중구 동화동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['신당동'] });
+addLocation('서울특별시 중구 황학동', { lat: 37.5646638888888, lon: 127.023497222222, name: '서울특별시 중구 황학동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['황학동'] });
+addLocation('서울특별시 중구 중림동', { lat: 37.5520333333333, lon: 126.9666, name: '서울특별시 중구 중림동', type: '행정동', admin_parent: '서울특별시 중구', legal_divisions: ['중림동', '만리동1가', '만리동2가'] });
+
+// 용산구 및 하위 동
+addLocation('서울특별시 용산구', { lat: 37.5360944444444, lon: 126.967522222222, name: '서울특별시 용산구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['용산구'] });
+addLocation('서울특별시 용산구 후암동', { lat: 37.5458805555555, lon: 126.980266666666, name: '서울특별시 용산구 후암동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['후암동'] });
+addLocation('서울특별시 용산구 용산2가동', { lat: 37.5431194444444, lon: 126.987563888888, name: '서울특별시 용산구 용산2가동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['용산동2가', '용산동3가', '용산동4가', '용산동5가', '용산동6가'] });
+addLocation('서울특별시 용산구 남영동', { lat: 37.5428333333333, lon: 126.976966666666, name: '서울특별시 용산구 남영동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['남영동', '갈월동', '동자동'] });
+addLocation('서울특별시 용산구 청파동', { lat: 37.5425555555555, lon: 126.972041666666, name: '서울특별시 용산구 청파동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['청파동1가', '청파동2가', '청파동3가'] });
+addLocation('서울특별시 용산구 원효로제1동', { lat: 37.5358694444444, lon: 126.968341666666, name: '서울특별시 용산구 원효로제1동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['원효로1가', '원효로2가', '원효로3가'] });
+addLocation('서울특별시 용산구 원효로제2동', { lat: 37.5315916666666, lon: 126.953577777777, name: '서울특별시 용산구 원효로제2동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['원효로4가', '산천동', '청암동', '신계동'] });
+addLocation('서울특별시 용산구 효창동', { lat: 37.5389527777777, lon: 126.963397222222, name: '서울특별시 용산구 효창동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['효창동', '용문동'] });
+addLocation('서울특별시 용산구 용문동', { lat: 37.5362499999999, lon: 126.959663888888, name: '서울특별시 용산구 용문동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['용문동', '도원동'] });
+addLocation('서울특별시 용산구 한강로동', { lat: 37.5262416666666, lon: 126.971533333333, name: '서울특별시 용산구 한강로동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['한강로1가', '한강로2가', '한강로3가', '용산동3가'] });
+addLocation('서울특별시 용산구 이촌제1동', { lat: 37.5184027777777, lon: 126.975355555555, name: '서울특별시 용산구 이촌제1동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['이촌동'] });
+addLocation('서울특별시 용산구 이촌제2동', { lat: 37.5240305555555, lon: 126.956330555555, name: '서울특별시 용산구 이촌제2동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['이촌동'] });
+addLocation('서울특별시 용산구 이태원제1동', { lat: 37.5294916666666, lon: 126.997041666666, name: '서울특별시 용산구 이태원제1동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['이태원동', '한남동'] });
+addLocation('서울특별시 용산구 이태원제2동', { lat: 37.5379722222222, lon: 126.991844444444, name: '서울특별시 용산구 이태원제2동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['이태원동', '보광동'] });
+addLocation('서울특별시 용산구 한남동', { lat: 37.5318861111111, lon: 127.002644444444, name: '서울특별시 용산구 한남동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['한남동', '동빙고동', '서빙고동', '주성동'] });
+addLocation('서울특별시 용산구 서빙고동', { lat: 37.5176055555555, lon: 126.996777777777, name: '서울특별시 용산구 서빙고동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['서빙고동', '동빙고동', '주성동'] });
+addLocation('서울특별시 용산구 보광동', { lat: 37.5234638888888, lon: 127.002333333333, name: '서울특별시 용산구 보광동', type: '행정동', admin_parent: '서울특별시 용산구', legal_divisions: ['보광동', '이태원동'] });
+
+// 성동구 및 하위 동
+addLocation('서울특별시 성동구', { lat: 37.5606111111111, lon: 127.039, name: '서울특별시 성동구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['성동구'] });
+addLocation('서울특별시 성동구 왕십리제2동', { lat: 37.5583361111111, lon: 127.032711111111, name: '서울특별시 성동구 왕십리제2동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['왕십리2동', '행당1동', '행당2동', '응봉동'] });
+addLocation('서울특별시 성동구 왕십리도선동', { lat: 37.5677544, lon: 127.0255591, name: '서울특별시 성동구 왕십리도선동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['왕십리동', '도선동'] });
+addLocation('서울특별시 성동구 마장동', { lat: 37.5634333333333, lon: 127.047563888888, name: '서울특별시 성동구 마장동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['마장동'] });
+addLocation('서울특별시 성동구 사근동', { lat: 37.5584055555555, lon: 127.047955555555, name: '서울특별시 성동구 사근동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['사근동', '행당동'] });
+addLocation('서울특별시 성동구 행당제1동', { lat: 37.5553527777777, lon: 127.038077777777, name: '서울특별시 성동구 행당제1동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['행당동'] });
+addLocation('서울특별시 성동구 행당제2동', { lat: 37.555575, lon: 127.031533333333, name: '서울특별시 성동구 행당제2동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['행당동'] });
+addLocation('서울특별시 성동구 응봉동', { lat: 37.5503472222222, lon: 127.035497222222, name: '서울특별시 성동구 응봉동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['응봉동'] });
+addLocation('서울특별시 성동구 금호1가동', { lat: 37.5520694444444, lon: 127.023944444444, name: '서울특별시 성동구 금호1가동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['금호동1가'] });
+addLocation('서울특별시 성동구 금호2.3가동', { lat: 37.553188, lon: 127.020859, name: '서울특별시 성동구 금호2.3가동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['금호동2가', '금호동3가'] });
+addLocation('서울특별시 성동구 금호4가동', { lat: 37.5444722222222, lon: 127.024475, name: '서울특별시 성동구 금호4가동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['금호동4가'] });
+addLocation('서울특별시 성동구 옥수동', { lat: 37.543717, lon: 127.013463, name: '서울특별시 성동구 옥수동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['옥수동'] });
+addLocation('서울특별시 성동구 성수1가제1동', { lat: 37.5389583333333, lon: 127.051986111111, name: '서울특별시 성동구 성수1가제1동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['성수동1가'] });
+addLocation('서울특별시 성동구 성수1가제2동', { lat: 37.5435277777777, lon: 127.046363888888, name: '서울특별시 성동구 성수1가제2동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['성수동1가'] });
+addLocation('서울특별시 성동구 성수2가제1동', { lat: 37.5367027777777, lon: 127.0562, name: '서울특별시 성동구 성수2가제1동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['성수동2가'] });
+addLocation('서울특별시 성동구 성수2가제3동', { lat: 37.5454305555555, lon: 127.057333333333, name: '서울특별시 성동구 성수2가제3동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['성수동2가'] });
+addLocation('서울특별시 성동구 송정동', { lat: 37.5517277777777, lon: 127.071708333333, name: '서울특별시 성동구 송정동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['송정동'] });
+addLocation('서울특별시 성동구 용답동', { lat: 37.5613666666666, lon: 127.057433333333, name: '서울특별시 성동구 용답동', type: '행정동', admin_parent: '서울특별시 성동구', legal_divisions: ['용답동'] });
+
+// 광진구 및 하위 동
+addLocation('서울특별시 광진구', { lat: 37.5357388888888, lon: 127.084533333333, name: '서울특별시 광진구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['광진구'] });
+addLocation('서울특별시 광진구 화양동', { lat: 37.5437861111111, lon: 127.073463888888, name: '서울특별시 광진구 화양동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['화양동'] });
+addLocation('서울특별시 광진구 군자동', { lat: 37.5523527777777, lon: 127.077997222222, name: '서울특별시 광진구 군자동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['군자동'] });
+addLocation('서울특별시 광진구 중곡제1동', { lat: 37.5578416666666, lon: 127.082163888888, name: '서울특별시 광진구 중곡제1동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['중곡동'] });
+addLocation('서울특별시 광진구 중곡제2동', { lat: 37.557475, lon: 127.083544444444, name: '서울특별시 광진구 중곡제2동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['중곡동'] });
+addLocation('서울특별시 광진구 중곡제3동', { lat: 37.5659166666666, lon: 127.082252777777, name: '서울특별시 광진구 중곡제3동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['중곡동'] });
+addLocation('서울특별시 광진구 중곡제4동', { lat: 37.5625111111111, lon: 127.089352777777, name: '서울특별시 광진구 중곡제4동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['중곡동'] });
+addLocation('서울특별시 광진구 능동', { lat: 37.5510277777777, lon: 127.082644444444, name: '서울특별시 광진구 능동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['능동'] });
+addLocation('서울특별시 광진구 광장동', { lat: 37.5442138888888, lon: 127.105308333333, name: '서울특별시 광진구 광장동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['광장동'] });
+addLocation('서울특별시 광진구 자양제1동', { lat: 37.5316861111111, lon: 127.084419444444, name: '서울특별시 광진구 자양제1동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['자양동'] });
+addLocation('서울특별시 광진구 자양제2동', { lat: 37.5259999999999, lon: 127.086599999999, name: '서울특별시 광진구 자양제2동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['자양동'] });
+addLocation('서울특별시 광진구 자양제3동', { lat: 37.5310333333333, lon: 127.075030555555, name: '서울특별시 광진구 자양제3동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['자양동'] });
+addLocation('서울특별시 광진구 자양제4동', { lat: 37.5374861111111, lon: 127.067252777777, name: '서울특별시 광진구 자양제4동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['자양동'] });
+addLocation('서울특별시 광진구 구의제1동', { lat: 37.5396749999999, lon: 127.087866666666, name: '서울특별시 광진구 구의제1동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['구의동'] });
+addLocation('서울특별시 광진구 구의제2동', { lat: 37.5444388888888, lon: 127.092108333333, name: '서울특별시 광진구 구의제2동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['구의동'] });
+addLocation('서울특별시 광진구 구의제3동', { lat: 37.5361388888888, lon: 127.099688888888, name: '서울특별시 광진구 구의제3동', type: '행정동', admin_parent: '서울특별시 광진구', legal_divisions: ['구의동'] });
+
+// 동대문구 및 하위 동
+addLocation('서울특별시 동대문구', { lat: 37.571625, lon: 127.042141666666, name: '서울특별시 동대문구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['동대문구'] });
+addLocation('서울특별시 동대문구 용신동', { lat: 37.5758185, lon: 127.0372169, name: '서울특별시 동대문구 용신동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['용두동', '신설동'] });
+addLocation('서울특별시 동대문구 제기동', { lat: 37.5830767, lon: 127.0377843, name: '서울특별시 동대문구 제기동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['제기동'] });
+addLocation('서울특별시 동대문구 전농제1동', { lat: 37.5752111111111, lon: 127.049866666666, name: '서울특별시 동대문구 전농제1동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['전농동'] });
+addLocation('서울특별시 동대문구 전농제2동', { lat: 37.5817027777777, lon: 127.053863888888, name: '서울특별시 동대문구 전농제2동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['전농동'] });
+addLocation('서울특별시 동대문구 답십리제1동', { lat: 37.569275, lon: 127.054222222222, name: '서울특별시 동대문구 답십리제1동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['답십리동'] });
+addLocation('서울특별시 동대문구 답십리제2동', { lat: 37.5691527777777, lon: 127.061574999999, name: '서울특별시 동대문구 답십리제2동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['답십리동'] });
+addLocation('서울특별시 동대문구 장안제1동', { lat: 37.5649861111111, lon: 127.068477777777, name: '서울특별시 동대문구 장안제1동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['장안동'] });
+addLocation('서울특별시 동대문구 장안제2동', { lat: 37.5684083333333, lon: 127.075308333333, name: '서울특별시 동대문구 장안제2동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['장안동'] });
+addLocation('서울특별시 동대문구 청량리동', { lat: 37.5862586, lon: 127.0472767, name: '서울특별시 동대문구 청량리동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['청량리동', '제기동'] });
+addLocation('서울특별시 동대문구 회기동', { lat: 37.5880083333333, lon: 127.057488888888, name: '서울특별시 동대문구 회기동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['회기동', '휘경동'] });
+addLocation('서울특별시 동대문구 휘경제1동', { lat: 37.5901583333333, lon: 127.067819444444, name: '서울특별시 동대문구 휘경제1동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['휘경동'] });
+addLocation('서울특별시 동대문구 휘경제2동', { lat: 37.5884944444444, lon: 127.069655555555, name: '서울특별시 동대문구 휘경제2동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['휘경동'] });
+addLocation('서울특별시 동대문구 이문제1동', { lat: 37.595, lon: 127.067630555555, name: '서울특별시 동대문구 이문제1동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['이문동'] });
+addLocation('서울특별시 동대문구 이문제2동', { lat: 37.5917305555555, lon: 127.058619444444, name: '서울특별시 동대문구 이문제2동', type: '행정동', admin_parent: '서울특별시 동대문구', legal_divisions: ['이문동'] });
+
+// 중랑구 및 하위 동
+addLocation('서울특별시 중랑구', { lat: 37.6038055555555, lon: 127.094777777777, name: '서울특별시 중랑구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['중랑구'] });
+addLocation('서울특별시 중랑구 면목제2동', { lat: 37.5869833333333, lon: 127.081133333333, name: '서울특별시 중랑구 면목제2동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['면목동'] });
+addLocation('서울특별시 중랑구 면목제4동', { lat: 37.5718166666666, lon: 127.087622222222, name: '서울특별시 중랑구 면목제4동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['면목동'] });
+addLocation('서울특별시 중랑구 면목제5동', { lat: 37.5830472222222, lon: 127.081722222222, name: '서울특별시 중랑구 면목제5동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['면목동'] });
+addLocation('서울특별시 중랑구 면목본동', { lat: 37.5845611111111, lon: 127.089677777777, name: '서울특별시 중랑구 면목본동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['면목동'] });
+addLocation('서울특별시 중랑구 면목제7동', { lat: 37.5762, lon: 127.089086111111, name: '서울특별시 중랑구 면목제7동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['면목동'] });
+addLocation('서울특별시 중랑구 면목제3.8동', { lat: 37.5802361111111, lon: 127.090219444444, name: '서울특별시 중랑구 면목제3.8동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['면목동'] });
+addLocation('서울특별시 중랑구 상봉제1동', { lat: 37.5970277777777, lon: 127.089288888888, name: '서울특별시 중랑구 상봉제1동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['상봉동'] });
+addLocation('서울특별시 중랑구 상봉제2동', { lat: 37.5896111111111, lon: 127.085388888888, name: '서울특별시 중랑구 상봉제2동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['상봉동'] });
+addLocation('서울특별시 중랑구 중화제1동', { lat: 37.5983861111111, lon: 127.082777777777, name: '서울특별시 중랑구 중화제1동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['중화동'] });
+addLocation('서울특별시 중랑구 중화제2동', { lat: 37.5922166666666, lon: 127.077022222222, name: '서울특별시 중랑구 중화제2동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['중화동'] });
+addLocation('서울특별시 중랑구 묵제1동', { lat: 37.6096222222222, lon: 127.080586111111, name: '서울특별시 중랑구 묵제1동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['묵동'] });
+addLocation('서울특별시 중랑구 묵제2동', { lat: 37.6067972222222, lon: 127.078144444444, name: '서울특별시 중랑구 묵제2동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['묵동'] });
+addLocation('서울특별시 중랑구 망우본동', { lat: 37.5986916666666, lon: 127.108463888888, name: '서울특별시 중랑구 망우본동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['망우동'] });
+addLocation('서울특별시 중랑구 망우제3동', { lat: 37.5895777777777, lon: 127.100266666666, name: '서울특별시 중랑구 망우제3동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['망우동'] });
+addLocation('서울특별시 중랑구 신내1동', { lat: 37.6030833333333, lon: 127.101552777777, name: '서울특별시 중랑구 신내1동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['신내동'] });
+addLocation('서울특별시 중랑구 신내2동', { lat: 37.6034305555555, lon: 127.096274999999, name: '서울특별시 중랑구 신내2동', type: '행정동', admin_parent: '서울특별시 중랑구', legal_divisions: ['신내동'] });
+
+// 성북구 및 하위 동
+addLocation('서울특별시 성북구', { lat: 37.5863833333333, lon: 127.020333333333, name: '서울특별시 성북구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['성북구'] });
+addLocation('서울특별시 성북구 성북동', { lat: 37.5874416666666, lon: 127.006086111111, name: '서울특별시 성북구 성북동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['성북동', '성북동1가'] });
+addLocation('서울특별시 성북구 삼선동', { lat: 37.5828472222222, lon: 127.009555555555, name: '서울특별시 성북구 삼선동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['삼선동1가', '삼선동2가', '삼선동3가', '삼선동4가', '동소문동1가', '동소문동2가', '동소문동3가', '동소문동4가', '동소문동5가', '동소문동6가', '동소문동7가'] });
+addLocation('서울특별시 성북구 동선동', { lat: 37.5912777777777, lon: 127.022508333333, name: '서울특별시 성북구 동선동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['동선동1가', '동선동2가', '동선동3가', '동선동4가', '동선동5가'] });
+addLocation('서울특별시 성북구 돈암제1동', { lat: 37.6005083333333, lon: 127.028288888888, name: '서울특별시 성북구 돈암제1동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['돈암동'] });
+addLocation('서울특별시 성북구 돈암제2동', { lat: 37.5952555555555, lon: 127.012711111111, name: '서울특별시 성북구 돈암제2동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['돈암동'] });
+addLocation('서울특별시 성북구 안암동', { lat: 37.5830583333333, lon: 127.023477777777, name: '서울특별시 성북구 안암동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['안암동1가', '안암동2가', '안암동3가', '안암동4가', '안암동5가'] });
+addLocation('서울특별시 성북구 보문동', { lat: 37.5775888888888, lon: 127.0249, name: '서울특별시 성북구 보문동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['보문동1가', '보문동2가', '보문동3가', '보문동4가', '보문동5가', '보문동6가', '보문동7가'] });
+addLocation('서울특별시 성북구 정릉제1동', { lat: 37.5986416666666, lon: 127.018741666666, name: '서울특별시 성북구 정릉제1동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['정릉동'] });
+addLocation('서울특별시 성북구 정릉제2동', { lat: 37.6016666666666, lon: 127.013241666666, name: '서울특별시 성북구 정릉제2동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['정릉동'] });
+addLocation('서울특별시 성북구 정릉제3동', { lat: 37.6061666666666, lon: 127.006288888888, name: '서울특별시 성북구 정릉제3동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['정릉동'] });
+addLocation('서울특별시 성북구 정릉제4동', { lat: 37.6107861111111, lon: 127.008208333333, name: '서울특별시 성북구 정릉제4동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['정릉동'] });
+addLocation('서울특별시 성북구 길음제1동', { lat: 37.6017833333333, lon: 127.024166666666, name: '서울특별시 성북구 길음제1동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['길음동'] });
+addLocation('서울특별시 성북구 길음제2동', { lat: 37.60385, lon: 127.0294, name: '서울특별시 성북구 길음제2동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['길음동'] });
+addLocation('서울특별시 성북구 종암동', { lat: 37.5973305555555, lon: 127.033552777777, name: '서울특별시 성북구 종암동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['종암동'] });
+addLocation('서울특별시 성북구 월곡제1동', { lat: 37.6042027777777, lon: 127.036141666666, name: '서울특별시 성북구 월곡제1동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['월곡동'] });
+addLocation('서울특별시 성북구 월곡제2동', { lat: 37.5999416666666, lon: 127.041688888888, name: '서울특별시 성북구 월곡제2동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['월곡동'] });
+addLocation('서울특별시 성북구 장위제1동', { lat: 37.6111916666666, lon: 127.045855555555, name: '서울특별시 성북구 장위제1동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['장위동'] });
+addLocation('서울특별시 성북구 장위제2동', { lat: 37.6096638888888, lon: 127.056708333333, name: '서울특별시 성북구 장위제2동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['장위동'] });
+addLocation('서울특별시 성북구 장위제3동', { lat: 37.6137722222222, lon: 127.058722222222, name: '서울특별시 성북구 장위제3동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['장위동'] });
+addLocation('서울특별시 성북구 석관동', { lat: 37.6101611111111, lon: 127.063519444444, name: '서울특별시 성북구 석관동', type: '행정동', admin_parent: '서울특별시 성북구', legal_divisions: ['석관동'] });
+
+// 강북구 및 하위 동
+addLocation('서울특별시 강북구', { lat: 37.6369555555555, lon: 127.027719444444, name: '서울특별시 강북구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['강북구'] });
+addLocation('서울특별시 강북구 삼양동', { lat: 37.6244833333333, lon: 127.020511111111, name: '서울특별시 강북구 삼양동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['미아동'] });
+addLocation('서울특별시 강북구 미아동', { lat: 37.6241361111111, lon: 127.029019444444, name: '서울특별시 강북구 미아동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['미아동'] });
+addLocation('서울특별시 강북구 송중동', { lat: 37.6133611111111, lon: 127.035833333333, name: '서울특별시 강북구 송중동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['미아동'] });
+addLocation('서울특별시 강북구 송천동', { lat: 37.6155166666666, lon: 127.025955555555, name: '서울특별시 강북구 송천동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['미아동'] });
+addLocation('서울특별시 강북구 삼각산동', { lat: 37.6144305555555, lon: 127.019852777777, name: '서울특별시 강북구 삼각산동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['미아동'] });
+addLocation('서울특별시 강북구 번1동', { lat: 37.6351583333333, lon: 127.031019444444, name: '서울특별시 강북구 번1동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['번동'] });
+addLocation('서울특별시 강북구 번2동', { lat: 37.6293861111111, lon: 127.040944444444, name: '서울특별시 강북구 번2동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['번동'] });
+addLocation('서울특별시 강북구 번3동', { lat: 37.6230944444444, lon: 127.048688888888, name: '서울특별시 강북구 번3동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['번동'] });
+addLocation('서울특별시 강북구 수유1동', { lat: 37.6307333333333, lon: 127.019297222222, name: '서울특별시 강북구 수유1동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['수유동'] });
+addLocation('서울특별시 강북구 수유2동', { lat: 37.6418805555555, lon: 127.022041666666, name: '서울특별시 강북구 수유2동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['수유동'] });
+addLocation('서울특별시 강북구 수유3동', { lat: 37.6359722222222, lon: 127.025319444444, name: '서울특별시 강북구 수유3동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['수유동'] });
+addLocation('서울특별시 강북구 우이동', { lat: 37.6451944444444, lon: 127.014066666666, name: '서울특별시 강북구 우이동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['우이동'] });
+addLocation('서울특별시 강북구 인수동', { lat: 37.6387333333333, lon: 127.012766666666, name: '서울특별시 강북구 인수동', type: '행정동', admin_parent: '서울특별시 강북구', legal_divisions: ['수유동'] });
+
+// 도봉구 및 하위 동
+addLocation('서울특별시 도봉구', { lat: 37.6658333333333, lon: 127.049522222222, name: '서울특별시 도봉구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['도봉구'] });
+addLocation('서울특별시 도봉구 창제1동', { lat: 37.6456472222222, lon: 127.045997222222, name: '서울특별시 도봉구 창제1동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['창동'] });
+addLocation('서울특별시 도봉구 창제2동', { lat: 37.6387277777777, lon: 127.037766666666, name: '서울특별시 도봉구 창제2동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['창동'] });
+addLocation('서울특별시 도봉구 창제3동', { lat: 37.6352694444444, lon: 127.045008333333, name: '서울특별시 도봉구 창제3동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['창동'] });
+addLocation('서울특별시 도봉구 창제4동', { lat: 37.6493972222222, lon: 127.053666666666, name: '서울특별시 도봉구 창제4동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['창동'] });
+addLocation('서울특별시 도봉구 창제5동', { lat: 37.6492138888888, lon: 127.041297222222, name: '서울특별시 도봉구 창제5동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['창동'] });
+addLocation('서울특별시 도봉구 도봉제1동', { lat: 37.6758194444444, lon: 127.045511111111, name: '서울특별시 도봉구 도봉제1동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['도봉동'] });
+addLocation('서울특별시 도봉구 도봉제2동', { lat: 37.6669999999999, lon: 127.048708333333, name: '서울특별시 도봉구 도봉제2동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['도봉동'] });
+addLocation('서울특별시 도봉구 쌍문제1동', { lat: 37.6452472222222, lon: 127.028177777777, name: '서울특별시 도봉구 쌍문제1동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['쌍문동'] });
+addLocation('서울특별시 도봉구 쌍문제2동', { lat: 37.6550805555555, lon: 127.040911111111, name: '서울특별시 도봉구 쌍문제2동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['쌍문동'] });
+addLocation('서울특별시 도봉구 쌍문제3동', { lat: 37.6461944444444, lon: 127.030088888888, name: '서울특별시 도봉구 쌍문제3동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['쌍문동'] });
+addLocation('서울특별시 도봉구 쌍문제4동', { lat: 37.653625, lon: 127.030544444444, name: '서울특별시 도봉구 쌍문제4동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['쌍문동'] });
+addLocation('서울특별시 도봉구 방학제1동', { lat: 37.6614333333333, lon: 127.042766666666, name: '서울특별시 도봉구 방학제1동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['방학동'] });
+addLocation('서울특별시 도봉구 방학제2동', { lat: 37.6654361111111, lon: 127.037222222222, name: '서울특별시 도봉구 방학제2동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['방학동'] });
+addLocation('서울특별시 도봉구 방학제3동', { lat: 37.6562277777777, lon: 127.030077777777, name: '서울특별시 도봉구 방학제3동', type: '행정동', admin_parent: '서울특별시 도봉구', legal_divisions: ['방학동'] });
+
+// 노원구 및 하위 동
+addLocation('서울특별시 노원구', { lat: 37.6514611111111, lon: 127.058388888888, name: '서울특별시 노원구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['노원구'] });
+addLocation('서울특별시 노원구 월계1동', { lat: 37.6173194444444, lon: 127.065088888888, name: '서울특별시 노원구 월계1동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['월계동'] });
+addLocation('서울특별시 노원구 월계2동', { lat: 37.6297611111111, lon: 127.052997222222, name: '서울특별시 노원구 월계2동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['월계동'] });
+addLocation('서울특별시 노원구 월계3동', { lat: 37.6182055555555, lon: 127.071330555555, name: '서울특별시 노원구 월계3동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['월계동'] });
+addLocation('서울특별시 노원구 공릉1동', { lat: 37.62472748, lon: 127.0737518, name: '서울특별시 노원구 공릉1동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['공릉동'] });
+addLocation('서울특별시 노원구 공릉2동', { lat: 37.6185694444444, lon: 127.085441666666, name: '서울특별시 노원구 공릉2동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['공릉동'] });
+addLocation('서울특별시 노원구 하계1동', { lat: 37.6377833333333, lon: 127.074730555555, name: '서울특별시 노원구 하계1동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['하계동'] });
+addLocation('서울특별시 노원구 하계2동', { lat: 37.62925, lon: 127.070111111111, name: '서울특별시 노원구 하계2동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['하계동'] });
+addLocation('서울특별시 노원구 중계본동', { lat: 37.6450722222222, lon: 127.082455555555, name: '서울특별시 노원구 중계본동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['중계동'] });
+addLocation('서울특별시 노원구 중계1동', { lat: 37.6497861111111, lon: 127.079663888888, name: '서울특별시 노원구 중계1동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['중계동'] });
+addLocation('서울특별시 노원구 중계4동', { lat: 37.6559666666666, lon: 127.080088888888, name: '서울특별시 노원구 중계4동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['중계동'] });
+addLocation('서울특별시 노원구 중계2.3동', { lat: 37.6421829, lon: 127.0687126, name: '서울특별시 노원구 중계2.3동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['중계동'] });
+addLocation('서울특별시 노원구 상계1동', { lat: 37.6771027777777, lon: 127.057211111111, name: '서울특별시 노원구 상계1동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['상계동'] });
+addLocation('서울특별시 노원구 상계2동', { lat: 37.655975, lon: 127.070708333333, name: '서울특별시 노원구 상계2동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['상계동'] });
+addLocation('서울특별시 노원구 상계3.4동', { lat: 37.661, lon: 127.077466666666, name: '서울특별시 노원구 상계3.4동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['상계동'] });
+addLocation('서울특별시 노원구 상계5동', { lat: 37.6602194444444, lon: 127.071486111111, name: '서울특별시 노원구 상계5동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['상계동'] });
+addLocation('서울특별시 노원구 상계6.7동', { lat: 37.6520888888888, lon: 127.069066666666, name: '서울특별시 노원구 상계6.7동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['상계동'] });
+addLocation('서울특별시 노원구 상계8동', { lat: 37.6639444444444, lon: 127.053666666666, name: '서울특별시 노원구 상계8동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['상계동'] });
+addLocation('서울특별시 노원구 상계9동', { lat: 37.6617111111111, lon: 127.065955555555, name: '서울특별시 노원구 상계9동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['상계동'] });
+addLocation('서울특별시 노원구 상계10동', { lat: 37.6584333333333, lon: 127.062366666666, name: '서울특별시 노원구 상계10동', type: '행정동', admin_parent: '서울특별시 노원구', legal_divisions: ['상계동'] });
+
+// 은평구 및 하위 동
+addLocation('서울특별시 은평구', { lat: 37.5999694444444, lon: 126.931241666666, name: '서울특별시 은평구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['은평구'] });
+addLocation('서울특별시 은평구 녹번동', { lat: 37.5999611111111, lon: 126.936844444444, name: '서울특별시 은평구 녹번동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['녹번동'] });
+addLocation('서울특별시 은평구 불광제1동', { lat: 37.6075361111111, lon: 126.934188888888, name: '서울특별시 은평구 불광제1동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['불광동'] });
+addLocation('서울특별시 은평구 불광제2동', { lat: 37.6187944444444, lon: 126.929819444444, name: '서울특별시 은평구 불광제2동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['불광동'] });
+addLocation('서울특별시 은평구 갈현제1동', { lat: 37.6208972222222, lon: 126.918788888888, name: '서울특별시 은평구 갈현제1동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['갈현동'] });
+addLocation('서울특별시 은평구 갈현제2동', { lat: 37.6157666666666, lon: 126.917888888888, name: '서울특별시 은평구 갈현제2동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['갈현동'] });
+addLocation('서울특별시 은평구 구산동', { lat: 37.6090194444444, lon: 126.9125, name: '서울특별시 은평구 구산동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['구산동'] });
+addLocation('서울특별시 은평구 대조동', { lat: 37.6113388888888, lon: 126.922888888888, name: '서울특별시 은평구 대조동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['대조동'] });
+addLocation('서울특별시 은평구 응암제1동', { lat: 37.5979111111111, lon: 126.928863888888, name: '서울특별시 은평구 응암제1동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['응암동'] });
+addLocation('서울특별시 은평구 응암제2동', { lat: 37.5918166666666, lon: 126.925130555555, name: '서울특별시 은평구 응암제2동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['응암동'] });
+addLocation('서울특별시 은평구 응암제3동', { lat: 37.5893861111111, lon: 126.917841666666, name: '서울특별시 은평구 응암제3동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['응암동'] });
+addLocation('서울특별시 은평구 역촌동', { lat: 37.6016194444444, lon: 126.917277777777, name: '서울특별시 은평구 역촌동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['역촌동'] });
+addLocation('서울특별시 은평구 신사제1동', { lat: 37.5952194444444, lon: 126.914386111111, name: '서울특별시 은평구 신사제1동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['신사동'] });
+addLocation('서울특별시 은평구 신사제2동', { lat: 37.5893333333333, lon: 126.914833333333, name: '서울특별시 은평구 신사제2동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['신사동'] });
+addLocation('서울특별시 은평구 증산동', { lat: 37.5815305555555, lon: 126.909222222222, name: '서울특별시 은평구 증산동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['증산동'] });
+addLocation('서울특별시 은평구 수색동', { lat: 37.5813583333333, lon: 126.899641666666, name: '서울특별시 은평구 수색동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['수색동'] });
+addLocation('서울특별시 은평구 진관동', { lat: 37.6356, lon: 126.921111111111, name: '서울특별시 은평구 진관동', type: '행정동', admin_parent: '서울특별시 은평구', legal_divisions: ['진관동', '구파발동'] });
+
+// 서대문구 및 하위 동
+addLocation('서울특별시 서대문구', { lat: 37.5763666666666, lon: 126.938897222222, name: '서울특별시 서대문구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['서대문구'] });
+addLocation('서울특별시 서대문구 천연동', { lat: 37.5683027777777, lon: 126.961175, name: '서울특별시 서대문구 천연동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['천연동', '옥천동', '영천동'] });
+addLocation('서울특별시 서대문구 북아현동', { lat: 37.5568694444444, lon: 126.958911111111, name: '서울특별시 서대문구 북아현동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['북아현동'] });
+addLocation('서울특별시 서대문구 충현동', { lat: 37.5620611111111, lon: 126.956844444444, name: '서울특별시 서대문구 충현동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['충현동', '미근동'] });
+addLocation('서울특별시 서대문구 신촌동', { lat: 37.5567388888888, lon: 126.945586111111, name: '서울특별시 서대문구 신촌동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['신촌동', '창천동', '대현동', '연세로'] });
+addLocation('서울특별시 서대문구 연희동', { lat: 37.5711222222222, lon: 126.937352777777, name: '서울특별시 서대문구 연희동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['연희동'] });
+addLocation('서울특별시 서대문구 홍제제1동', { lat: 37.5849, lon: 126.946986111111, name: '서울특별시 서대문구 홍제제1동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['홍제동'] });
+addLocation('서울특별시 서대문구 홍제제3동', { lat: 37.5924444444444, lon: 126.951166666666, name: '서울특별시 서대문구 홍제제3동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['홍제동'] });
+addLocation('서울특별시 서대문구 홍제제2동', { lat: 37.5833388888888, lon: 126.951466666666, name: '서울특별시 서대문구 홍제제2동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['홍제동'] });
+addLocation('서울특별시 서대문구 홍은제1동', { lat: 37.5904305555555, lon: 126.945955555555, name: '서울특별시 서대문구 홍은제1동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['홍은동'] });
+addLocation('서울특별시 서대문구 홍은제2동', { lat: 37.5801583333333, lon: 126.938486111111, name: '서울특별시 서대문구 홍은제2동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['홍은동'] });
+addLocation('서울특별시 서대문구 남가좌제1동', { lat: 37.5711944444444, lon: 126.915577777777, name: '서울특별시 서대문구 남가좌제1동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['남가좌동'] });
+addLocation('서울특별시 서대문구 남가좌제2동', { lat: 37.5756277777777, lon: 126.925911111111, name: '서울특별시 서대문구 남가좌제2동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['남가좌동'] });
+addLocation('서울특별시 서대문구 북가좌제1동', { lat: 37.5767111111111, lon: 126.908977777777, name: '서울특별시 서대문구 북가좌제1동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['북가좌동'] });
+addLocation('서울특별시 서대문구 북가좌제2동', { lat: 37.5786027777777, lon: 126.913219444444, name: '서울특별시 서대문구 북가좌제2동', type: '행정동', admin_parent: '서울특별시 서대문구', legal_divisions: ['북가좌동'] });
+
+// 마포구 및 하위 동
+addLocation('서울특별시 마포구', { lat: 37.5607055555555, lon: 126.910530555555, name: '서울특별시 마포구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['마포구'] });
+addLocation('서울특별시 마포구 아현동', { lat: 37.5443444444444, lon: 126.954222222222, name: '서울특별시 마포구 아현동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['아현동', '공덕동'] });
+addLocation('서울특별시 마포구 공덕동', { lat: 37.5474416666666, lon: 126.962088888888, name: '서울특별시 마포구 공덕동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['공덕동', '신공덕동'] });
+addLocation('서울특별시 마포구 도화동', { lat: 37.5349, lon: 126.952130555555, name: '서울특별시 마포구 도화동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['도화동', '마포동'] });
+addLocation('서울특별시 마포구 용강동', { lat: 37.5392472222222, lon: 126.943733333333, name: '서울특별시 마포구 용강동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['용강동', '토정동', '하중동'] });
+addLocation('서울특별시 마포구 대흥동', { lat: 37.55305, lon: 126.944811111111, name: '서울특별시 마포구 대흥동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['대흥동', '신수동'] });
+addLocation('서울특별시 마포구 염리동', { lat: 37.5443861111111, lon: 126.947719444444, name: '서울특별시 마포구 염리동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['염리동'] });
+addLocation('서울특별시 마포구 신수동', { lat: 37.5440666666666, lon: 126.936641666666, name: '서울특별시 마포구 신수동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['신수동', '구수동'] });
+addLocation('서울특별시 마포구 서강동', { lat: 37.5444472222222, lon: 126.934155555555, name: '서울특별시 마포구 서강동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['신정동', '하중동'] });
+addLocation('서울특별시 마포구 서교동', { lat: 37.5496555555555, lon: 126.922975, name: '서울특별시 마포구 서교동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['서교동', '동교동', '합정동', '망원동'] });
+addLocation('서울특별시 마포구 합정동', { lat: 37.5467222222222, lon: 126.907752777777, name: '서울특별시 마포구 합정동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['합정동'] });
+addLocation('서울특별시 마포구 망원제1동', { lat: 37.5524333333333, lon: 126.907766666666, name: '서울특별시 마포구 망원제1동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['망원동'] });
+addLocation('서울특별시 마포구 망원제2동', { lat: 37.5575638888888, lon: 126.904311111111, name: '서울특별시 마포구 망원제2동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['망원동'] });
+addLocation('서울특별시 마포구 연남동', { lat: 37.5616944444444, lon: 126.924066666666, name: '서울특별시 마포구 연남동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['연남동'] });
+addLocation('서울특별시 마포구 성산제1동', { lat: 37.5605833333333, lon: 126.910022222222, name: '서울특별시 마포구 성산제1동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['성산동'] });
+addLocation('서울특별시 마포구 성산제2동', { lat: 37.5659305555555, lon: 126.911152777777, name: '서울특별시 마포구 성산제2동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['성산동', '중동'] });
+addLocation('서울특별시 마포구 상암동', { lat: 37.5755138888888, lon: 126.896811111111, name: '서울특별시 마포구 상암동', type: '행정동', admin_parent: '서울특별시 마포구', legal_divisions: ['상암동'] });
+
+// 양천구 및 하위 동
+addLocation('서울특별시 양천구', { lat: 37.5142305555555, lon: 126.868708333333, name: '서울특별시 양천구', type: '기초자치단체', admin_parent: '서울특별시', aliases: ['양천구'] });
+addLocation('서울특별시 양천구 목1동', { lat: 37.5275388888888, lon: 126.873233333333, name: '서울특별시 양천구 목1동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['목동'] });
+addLocation('서울특별시 양천구 목2동', { lat: 37.5433527777777, lon: 126.873808333333, name: '서울특별시 양천구 목2동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['목동'] });
+addLocation('서울특별시 양천구 목3동', { lat: 37.5420972222222, lon: 126.866599999999, name: '서울특별시 양천구 목3동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['목동'] });
+addLocation('서울특별시 양천구 목4동', { lat: 37.5295333333333, lon: 126.870497222222, name: '서울특별시 양천구 목4동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['목동'] });
+addLocation('서울특별시 양천구 목5동', { lat: 37.5324166666666, lon: 126.880752777777, name: '서울특별시 양천구 목5동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['목동'] });
+addLocation('서울특별시 양천구 신월1동', { lat: 37.5300055555555, lon: 126.833599999999, name: '서울특별시 양천구 신월1동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신월동'] });
+addLocation('서울특별시 양천구 신월2동', { lat: 37.5221722222222, lon: 126.846586111111, name: '서울특별시 양천구 신월2동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신월동'] });
+addLocation('서울특별시 양천구 신월3동', { lat: 37.5308472222222, lon: 126.831175, name: '서울특별시 양천구 신월3동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신월동'] });
+addLocation('서울특별시 양천구 신월4동', { lat: 37.5219055555555, lon: 126.842155555555, name: '서울특별시 양천구 신월4동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신월동'] });
+addLocation('서울특별시 양천구 신월5동', { lat: 37.5368888888888, lon: 126.829444444444, name: '서울특별시 양천구 신월5동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신월동'] });
+addLocation('서울특별시 양천구 신월6동', { lat: 37.5133027777777, lon: 126.845766666666, name: '서울특별시 양천구 신월6동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신월동'] });
+addLocation('서울특별시 양천구 신월7동', { lat: 37.5190916666666, lon: 126.836763888888, name: '서울특별시 양천구 신월7동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신월동'] });
+addLocation('서울특별시 양천구 신정1동', { lat: 37.5157305555555, lon: 126.856397222222, name: '서울특별시 양천구 신정1동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신정동'] });
+addLocation('서울특별시 양천구 신정2동', { lat: 37.5164083333333, lon: 126.872697222222, name: '서울특별시 양천구 신정2동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신정동'] });
+addLocation('서울특별시 양천구 신정3동', { lat: 37.5123361111111, lon: 126.856886111111, name: '서울특별시 양천구 신정3동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신정동'] });
+addLocation('서울특별시 양천구 신정4동', { lat: 37.5206361111111, lon: 126.8608, name: '서울특별시 양천구 신정4동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신정동'] });
+addLocation('서울특별시 양천구 신정6동', { lat: 37.5142472222222, lon: 126.866486111111, name: '서울특별시 양천구 신정6동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신정동'] });
+addLocation('서울특별시 양천구 신정7동', { lat: 37.5116, lon: 126.861755555555, name: '서울특별시 양천구 신정7동', type: '행정동', admin_parent: '서울특별시 양천구', legal_divisions: ['신정동'] });
+
+
+
+
+
+
+
+
+
+
+
+
+    
     
     // =============================================================
     // 부산광역시 행정 데이터 추가
