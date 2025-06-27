@@ -1613,7 +1613,83 @@ addLocation('대전광역시 대덕구 법2동', { lat: 36.3643194444444, lon: 1
 
     
 
+// 울산광역시 (광역자치단체)
+addLocation('울산광역시', { lat: 35.5354083333333, lon: 129.313688888888, name: '울산광역시', type: '광역시', admin_parent: '', aliases: ['울산', '울산시'], priority_score: 100 });
 
+// 울산광역시 중구 (기초자치단체)
+addLocation('울산광역시 중구', { lat: 35.5663416666666, lon: 129.334875, name: '울산광역시 중구', type: '기초자치단체', admin_parent: '울산광역시', aliases: ['중구'], priority_score: 90 });
+// 중구 하위 행정동 (legal_divisions 포함)
+addLocation('울산광역시 중구 학성동', { lat: 35.5523194444444, lon: 129.336986111111, name: '울산광역시 중구 학성동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['학성동'] });
+addLocation('울산광역시 중구 반구1동', { lat: 35.5533861111111, lon: 129.343911111111, name: '울산광역시 중구 반구1동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['반구동'] });
+addLocation('울산광역시 중구 반구2동', { lat: 35.5603055555555, lon: 129.343097222222, name: '울산광역시 중구 반구2동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['반구동'] });
+addLocation('울산광역시 중구 복산동', { lat: 35.56579338, lon: 129.3342518, name: '울산광역시 중구 복산동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['복산동'] });
+addLocation('울산광역시 중구 중앙동', { lat: 35.557542, lon: 129.32405, name: '울산광역시 중구 중앙동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['학산동', '복산동', '성남동', '옥교동', '학성동', '반구동', '태화동', '우정동', '다운동'] });
+addLocation('울산광역시 중구 우정동', { lat: 35.5517361111111, lon: 129.314641666666, name: '울산광역시 중구 우정동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['우정동'] });
+addLocation('울산광역시 중구 태화동', { lat: 35.5535166666666, lon: 129.306730555555, name: '울산광역시 중구 태화동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['태화동'] });
+addLocation('울산광역시 중구 다운동', { lat: 35.5533, lon: 129.277988888888, name: '울산광역시 중구 다운동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['다운동'] });
+addLocation('울산광역시 중구 병영1동', { lat: 35.5670111111111, lon: 129.348855555555, name: '울산광역시 중구 병영1동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['남외동', '진장동', '산정동', '동동', '서동'] });
+addLocation('울산광역시 중구 병영2동', { lat: 35.57635, lon: 129.348275, name: '울산광역시 중구 병영2동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['남외동', '진장동', '산정동', '동동', '서동'] });
+addLocation('울산광역시 중구 약사동', { lat: 35.5673916666666, lon: 129.339541666666, name: '울산광역시 중구 약사동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['약사동'] });
+addLocation('울산광역시 중구 성안동', { lat: 35.5743416666667, lon: 129.309697222222, name: '울산광역시 중구 성안동', type: '행정동', admin_parent: '울산광역시 중구', legal_divisions: ['성안동'] });
+
+// 울산광역시 남구 (기초자치단체)
+addLocation('울산광역시 남구', { lat: 35.5407638888888, lon: 129.332386111111, name: '울산광역시 남구', type: '기초자치단체', admin_parent: '울산광역시', aliases: ['남구'], priority_score: 90 });
+// 남구 하위 행정동 (legal_divisions 포함)
+addLocation('울산광역시 남구 신정1동', { lat: 35.5382916666666, lon: 129.308844444444, name: '울산광역시 남구 신정1동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['신정동'] });
+addLocation('울산광역시 남구 신정2동', { lat: 35.5316111111111, lon: 129.310177777777, name: '울산광역시 남구 신정2동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['신정동'] });
+addLocation('울산광역시 남구 신정3동', { lat: 35.5419666666666, lon: 129.318722222222, name: '울산광역시 남구 신정3동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['신정동'] });
+addLocation('울산광역시 남구 신정4동', { lat: 35.5262805555555, lon: 129.316777777777, name: '울산광역시 남구 신정4동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['신정동'] });
+addLocation('울산광역시 남구 신정5동', { lat: 35.54185, lon: 129.323722222222, name: '울산광역시 남구 신정5동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['신정동'] });
+addLocation('울산광역시 남구 달동', { lat: 35.5333944444444, lon: 129.318844444444, name: '울산광역시 남구 달동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['달동'] });
+addLocation('울산광역시 남구 삼산동', { lat: 35.5413888888888, lon: 129.334155555555, name: '울산광역시 남구 삼산동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['삼산동'] });
+addLocation('울산광역시 남구 삼호동', { lat: 35.5469444444444, lon: 129.268275, name: '울산광역시 남구 삼호동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['삼호동'] });
+addLocation('울산광역시 남구 무거동', { lat: 35.5479222222222, lon: 129.263011111111, name: '울산광역시 남구 무거동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['무거동'] });
+addLocation('울산광역시 남구 옥동', { lat: 35.5322444444444, lon: 129.296166666666, name: '울산광역시 남구 옥동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['옥동'] });
+addLocation('울산광역시 남구 대현동', { lat: 35.5235083333333, lon: 129.329122222222, name: '울산광역시 남구 대현동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['대현동'] });
+addLocation('울산광역시 남구 수암동', { lat: 35.5213583333333, lon: 129.320666666666, name: '울산광역시 남구 수암동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['수암동'] });
+addLocation('울산광역시 남구 선암동', { lat: 35.5098611111111, lon: 129.3375, name: '울산광역시 남구 선암동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['선암동'] });
+addLocation('울산광역시 남구 야음장생포동', { lat: 35.5165805555555, lon: 129.341275, name: '울산광역시 남구 야음장생포동', type: '행정동', admin_parent: '울산광역시 남구', legal_divisions: ['야음동', '장생포동'] });
+
+// 울산광역시 동구 (기초자치단체)
+addLocation('울산광역시 동구', { lat: 35.5018888888888, lon: 129.418952777777, name: '울산광역시 동구', type: '기초자치단체', admin_parent: '울산광역시', aliases: ['동구'], priority_score: 90 });
+// 동구 하위 행정동 (legal_divisions 포함)
+addLocation('울산광역시 동구 방어동', { lat: 35.482975, lon: 129.426411111111, name: '울산광역시 동구 방어동', type: '행정동', admin_parent: '울산광역시 동구', legal_divisions: ['방어동'] });
+addLocation('울산광역시 동구 일산동', { lat: 35.4950305555555, lon: 129.428544444444, name: '울산광역시 동구 일산동', type: '행정동', admin_parent: '울산광역시 동구', legal_divisions: ['일산동'] });
+addLocation('울산광역시 동구 화정동', { lat: 35.4907, lon: 129.426863888888, name: '울산광역시 동구 화정동', type: '행정동', admin_parent: '울산광역시 동구', legal_divisions: ['화정동'] });
+addLocation('울산광역시 동구 대송동', { lat: 35.5001361111111, lon: 129.420644444444, name: '울산광역시 동구 대송동', type: '행정동', admin_parent: '울산광역시 동구', legal_divisions: ['대송동'] });
+addLocation('울산광역시 동구 전하1동', { lat: 35.5137583333333, lon: 129.430875, name: '울산광역시 동구 전하1동', type: '행정동', admin_parent: '울산광역시 동구', legal_divisions: ['전하동'] });
+addLocation('울산광역시 동구 전하2동', { lat: 35.5063027777777, lon: 129.431574999999, name: '울산광역시 동구 전하2동', type: '행정동', admin_parent: '울산광역시 동구', legal_divisions: ['전하동'] });
+addLocation('울산광역시 동구 남목1동', { lat: 35.5363416666666, lon: 129.423133333333, name: '울산광역시 동구 남목1동', type: '행정동', admin_parent: '울산광역시 동구', legal_divisions: ['남목동'] });
+addLocation('울산광역시 동구 남목2동', { lat: 35.5215638888888, lon: 129.433888888888, name: '울산광역시 동구 남목2동', type: '행정동', admin_parent: '울산광역시 동구', legal_divisions: ['남목동'] });
+addLocation('울산광역시 동구 남목3동', { lat: 35.5429444444444, lon: 129.433633333333, name: '울산광역시 동구 남목3동', type: '행정동', admin_parent: '울산광역시 동구', legal_divisions: ['남목동'] });
+
+// 울산광역시 북구 (기초자치단체)
+addLocation('울산광역시 북구', { lat: 35.5796888888888, lon: 129.363544444444, name: '울산광역시 북구', type: '기초자치단체', admin_parent: '울산광역시', aliases: ['북구'], priority_score: 90 });
+// 북구 하위 행정동 (legal_divisions 포함)
+addLocation('울산광역시 북구 농소1동', { lat: 35.6197527777777, lon: 129.358333333333, name: '울산광역시 북구 농소1동', type: '행정동', admin_parent: '울산광역시 북구', legal_divisions: ['신천동', '매곡동', '창평동', '달천동', '가대동'] });
+addLocation('울산광역시 북구 농소2동', { lat: 35.6352388888888, lon: 129.350475, name: '울산광역시 북구 농소2동', type: '행정동', admin_parent: '울산광역시 북구', legal_divisions: ['호계동', '신천동', '매곡동'] });
+addLocation('울산광역시 북구 농소3동', { lat: 35.6256333333333, lon: 129.341933333333, name: '울산광역시 북구 농소3동', type: '행정동', admin_parent: '울산광역시 북구', legal_divisions: ['호계동', '매곡동', '신천동'] });
+addLocation('울산광역시 북구 강동동', { lat: 35.6124055555555, lon: 129.450652777777, name: '울산광역시 북구 강동동', type: '행정동', admin_parent: '울산광역시 북구', legal_divisions: ['구유동', '정자동', '어물동', '주전동', '신명동', '당사동', '무룡동'] });
+addLocation('울산광역시 북구 효문동', { lat: 35.5747916666666, lon: 129.363397222222, name: '울산광역시 북구 효문동', type: '행정동', admin_parent: '울산광역시 북구', legal_divisions: ['효문동', '양정동', '진장동', '명촌동'] });
+addLocation('울산광역시 북구 송정동', { lat: 35.591775, lon: 129.359811111111, name: '울산광역시 북구 송정동', type: '행정동', admin_parent: '울산광역시 북구', legal_divisions: ['송정동'] });
+addLocation('울산광역시 북구 양정동', { lat: 35.5429361111111, lon: 129.387808333333, name: '울산광역시 북구 양정동', type: '행정동', admin_parent: '울산광역시 북구', legal_divisions: ['양정동'] });
+addLocation('울산광역시 북구 염포동', { lat: 35.5238194444444, lon: 129.401397222222, name: '울산광역시 북구 염포동', type: '행정동', admin_parent: '울산광역시 북구', legal_divisions: ['염포동'] });
+
+// 울산광역시 울주군 (기초자치단체)
+addLocation('울산광역시 울주군', { lat: 35.5307388888888, lon: 129.297163888888, name: '울산광역시 울주군', type: '기초자치단체', admin_parent: '울산광역시', aliases: ['울주군'], priority_score: 95 });
+// 울주군 하위 읍/면 (legal_divisions 포함)
+addLocation('울산광역시 울주군 온산읍', { lat: 35.4315805555555, lon: 129.316863888888, name: '울산광역시 울주군 온산읍', type: '읍', admin_parent: '울산광역시 울주군', legal_divisions: ['덕신리', '망양리', '방도리', '산암리', '화산리', '삼평리', '강양리', '용암리', '우봉리', '원산리'] });
+addLocation('울산광역시 울주군 언양읍', { lat: 35.5663722222222, lon: 129.128044444444, name: '울산광역시 울주군 언양읍', type: '읍', admin_parent: '울산광역시 울주군', legal_divisions: ['동부리', '서부리', '남부리', '북부리', '평리', '반곡리', '대곡리', '구수리', '태기리', '직동리', '고정리', '반천리', '송대리', '어음리', '반연리', '다개리', '상대리', '반송리'] });
+addLocation('울산광역시 울주군 온양읍', { lat: 35.4159027777777, lon: 129.283055555555, name: '울산광역시 울주군 온양읍', type: '읍', admin_parent: '울산광역시 울주군', legal_divisions: ['남창리', '동상리', '발리', '대안리', '운화리', '고산리', '내광리', '외광리', '삼광리'] });
+addLocation('울산광역시 울주군 범서읍', { lat: 35.5659027777777, lon: 129.232419444444, name: '울산광역시 울주군 범서읍', type: '읍', admin_parent: '울산광역시 울주군', legal_divisions: ['구영리', '천상리', '굴화리', '다운리', '무거동', '두동', '입암리', '중리', '사연리', '척과리'] });
+addLocation('울산광역시 울주군 청량읍', { lat: 35.49313, lon: 129.306002, name: '울산광역시 울주군 청량읍', type: '읍', admin_parent: '울산광역시 울주군', legal_divisions: ['율리', '문수리', '상남리', '중리', '용암리', '삼정리', '두왕리', '덕하리', '동천리', '남암리'] });
+addLocation('울산광역시 울주군 삼남읍', { lat: 35.5388225, lon: 129.1065147, name: '울산광역시 울주군 삼남읍', type: '읍', admin_parent: '울산광역시 울주군', legal_divisions: ['교동리', '가천리', '상천리', '방기리', '조일리', '수남리', '신화리'] });
+addLocation('울산광역시 울주군 서생면', { lat: 35.3461722222222, lon: 129.328566666666, name: '울산광역시 울주군 서생면', type: '면', admin_parent: '울산광역시 울주군', legal_divisions: ['신암리', '대송리', '명산리', '화산리', '위곡리', '나사리', '서생리', '평동리', '간절곶리'] });
+addLocation('울산광역시 울주군 웅촌면', { lat: 35.4631305555555, lon: 129.211844444444, name: '울산광역시 울주군 웅촌면', type: '면', admin_parent: '울산광역시 울주군', legal_divisions: ['곡천리', '고연리', '대대리', '대복리', '검단리', '석천리', '은현리'] });
+addLocation('울산광역시 울주군 두동면', { lat: 35.6512166666666, lon: 129.203530555555, name: '울산광역시 울주군 두동면', type: '면', admin_parent: '울산광역시 울주군', legal_divisions: ['천전리', '만화리', '구미리', '은편리', '봉계리', '월평리', '백정리', '이곡리'] });
+addLocation('울산광역시 울주군 두서면', { lat: 35.6404305555555, lon: 129.1612, name: '울산광역시 울주군 두서면', type: '면', admin_parent: '울산광역시 울주군', legal_divisions: ['인보리', '활천리', '복안리', '내와리', '미호리', '차리', '전읍리', '서하리', '소호리', '구량리'] });
+addLocation('울산광역시 울주군 상북면', { lat: 35.5875611111111, lon: 129.093463888888, name: '울산광역시 울주군 상북면', type: '면', admin_parent: '울산광역시 울주군', legal_divisions: ['산전리', '향산리', '이천리', '양등리', '궁근정리', '명촌리', '천전리', '길천리', '덕현리', '등억리', '고헌리'] });
+addLocation('울산광역시 울주군 삼동면', { lat: 35.5190861111111, lon: 129.159155555555, name: '울산광역시 울주군 삼동면', type: '면', admin_parent: '울산광역시 울주군', legal_divisions: ['하잠리', '금곡리', '보은리', '작동리', '둔기리'] });
 
 
 
