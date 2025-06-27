@@ -1611,6 +1611,143 @@ addLocation('대전광역시 대덕구 목상동', { lat: 36.445575, lon: 127.41
 addLocation('대전광역시 대덕구 법1동', { lat: 36.3679055555555, lon: 127.428897222222, name: '대전광역시 대덕구 법1동', type: '행정동', admin_parent: '대전광역시 대덕구', legal_divisions: ['법동'] });
 addLocation('대전광역시 대덕구 법2동', { lat: 36.3643194444444, lon: 127.432908333333, name: '대전광역시 대덕구 법2동', type: '행정동', admin_parent: '대전광역시 대덕구', legal_divisions: ['법동'] });
 
+
+
+// 광주광역시 (광역자치단체)
+// 파일: 광주위경도.txt, 광주시행정코드.txt 기반
+// 위경도는 광주광역시 대표 지점 (시청 중심)
+addLocation('광주광역시', { lat: 35.1569749999999, lon: 126.853363888888, name: '광주광역시', type: '광역자치단체', admin_parent: '', aliases: ['광주', '광주시'], priority_score: 100 });
+
+// =============================================================
+// 동구 (기초자치단체)
+// 파일: 광주위경도.txt, 광주시행정코드.txt 기반
+addLocation('광주광역시 동구', { lat: 35.1431, lon: 126.925177777777, name: '광주광역시 동구', type: '기초자치단체', admin_parent: '광주광역시', aliases: ['동구'], priority_score: 90 });
+// 동구 하위 행정동 (Dong)
+addLocation('광주광역시 동구 충장동', { lat: 35.1462861111111, lon: 126.919377777777, name: '광주광역시 동구 충장동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['금남로1가', '금남로2가', '금남로3가', '금남로4가', '금남로5가', '대인동', '불로동', '서석동', '수기동', '충장로1가', '충장로2가', '충장로3가', '충장로4가', '충장로5가', '황금동'] });
+addLocation('광주광역시 동구 동명동', { lat: 35.1481138888888, lon: 126.927244444444, name: '광주광역시 동구 동명동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['동명동', '계림동 일부'] });
+addLocation('광주광역시 동구 계림1동', { lat: 35.1554527777777, lon: 126.921641666666, name: '광주광역시 동구 계림1동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['계림동 일부'] });
+addLocation('광주광역시 동구 계림2동', { lat: 35.1550527777777, lon: 126.925441666666, name: '광주광역시 동구 계림2동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['계림동 일부'] });
+addLocation('광주광역시 동구 산수1동', { lat: 35.1542555555555, lon: 126.932777777777, name: '광주광역시 동구 산수1동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['산수동 일부'] });
+addLocation('광주광역시 동구 산수2동', { lat: 35.1515111111111, lon: 126.9382, name: '광주광역시 동구 산수2동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['산수동 일부'] });
+addLocation('광주광역시 동구 지산1동', { lat: 35.1458861111111, lon: 126.934833333333, name: '광주광역시 동구 지산1동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['지산동 일부'] });
+addLocation('광주광역시 동구 지산2동', { lat: 35.1449055555555, lon: 126.936575, name: '광주광역시 동구 지산2동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['지산동 일부'] });
+addLocation('광주광역시 동구 서남동', { lat: 35.1418583333333, lon: 126.925219444444, name: '광주광역시 동구 서남동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['구동', '남동', '대의동', '서석동 일부', '충장로4가 일부', '충장로5가 일부'] });
+addLocation('광주광역시 동구 학동', { lat: 35.1313722222222, lon: 126.926263888888, name: '광주광역시 동구 학동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['학동'] });
+addLocation('광주광역시 동구 학운동', { lat: 35.1293888888888, lon: 126.935611111111, name: '광주광역시 동구 학운동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['학운동'] });
+addLocation('광주광역시 동구 지원1동', { lat: 35.1160555555555, lon: 126.933022222222, name: '광주광역시 동구 지원1동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['소태동', '용산동', '월남동', '내남동'] });
+addLocation('광주광역시 동구 지원2동', { lat: 35.1174388888888, lon: 126.934852777777, name: '광주광역시 동구 지원2동', type: '행정동', admin_parent: '광주광역시 동구', legal_divisions: ['선교동', '운림동', '지산동 일부', '학동 일부', '계림동 일부'] });
+
+// =============================================================
+// 서구 (기초자치단체)
+// 파일: 광주위경도.txt, 광주시행정코드.txt 기반
+addLocation('광주광역시 서구', { lat: 35.1494833333333, lon: 126.893411111111, name: '광주광역시 서구', type: '기초자치단체', admin_parent: '광주광역시', aliases: ['서구'], priority_score: 90 });
+// 서구 하위 행정동 (Dong)
+addLocation('광주광역시 서구 양동', { lat: 35.1517277777777, lon: 126.902908333333, name: '광주광역시 서구 양동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['양동'] });
+addLocation('광주광역시 서구 양3동', { lat: 35.1543138888888, lon: 126.896222222222, name: '광주광역시 서구 양3동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['양동 일부', '화정동 일부'] });
+addLocation('광주광역시 서구 농성1동', { lat: 35.1536111111111, lon: 126.891777777777, name: '광주광역시 서구 농성1동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['농성동 일부'] });
+addLocation('광주광역시 서구 농성2동', { lat: 35.1473111111111, lon: 126.892311111111, name: '광주광역시 서구 농성2동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['농성동 일부'] });
+addLocation('광주광역시 서구 광천동', { lat: 35.1613388888888, lon: 126.882375, name: '광주광역시 서구 광천동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['광천동'] });
+addLocation('광주광역시 서구 유덕동', { lat: 35.1622444444444, lon: 126.854019444444, name: '광주광역시 서구 유덕동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['유촌동', '덕흥동', '동림동 일부'] });
+addLocation('광주광역시 서구 치평동', { lat: 35.1469916666666, lon: 126.845177777777, name: '광주광역시 서구 치평동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['치평동'] });
+addLocation('광주광역시 서구 상무1동', { lat: 35.1506833333333, lon: 126.869452777777, name: '광주광역시 서구 상무1동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['쌍촌동 일부', '치평동 일부'] });
+addLocation('광주광역시 서구 상무2동', { lat: 35.1434111111111, lon: 126.868444444444, name: '광주광역시 서구 상무2동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['쌍촌동 일부', '치평동 일부'] });
+addLocation('광주광역시 서구 화정1동', { lat: 35.1531138888888, lon: 126.879799999999, name: '광주광역시 서구 화정1동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['화정동 일부'] });
+addLocation('광주광역시 서구 화정2동', { lat: 35.1425222222222, lon: 126.884444444444, name: '광주광역시 서구 화정2동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['화정동 일부'] });
+addLocation('광주광역시 서구 화정3동', { lat: 35.1404138888888, lon: 126.878952777777, name: '광주광역시 서구 화정3동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['화정동 일부'] });
+addLocation('광주광역시 서구 화정4동', { lat: 35.1387972222222, lon: 126.875955555555, name: '광주광역시 서구 화정4동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['화정동 일부'] });
+addLocation('광주광역시 서구 서창동', { lat: 35.1114361111111, lon: 126.832286111111, name: '광주광역시 서구 서창동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['서창동', '세하동', '벽진동', '용두동', '매월동', '신촌동', '금호동 일부'] });
+addLocation('광주광역시 서구 금호1동', { lat: 35.1320833333333, lon: 126.859188888888, name: '광주광역시 서구 금호1동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['금호동 일부'] });
+addLocation('광주광역시 서구 금호2동', { lat: 35.1290888888888, lon: 126.860911111111, name: '광주광역시 서구 금호2동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['금호동 일부'] });
+addLocation('광주광역시 서구 풍암동', { lat: 35.121725, lon: 126.880686111111, name: '광주광역시 서구 풍암동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['풍암동', '송하동', '대촌동 일부'] });
+addLocation('광주광역시 서구 동천동', { lat: 35.17129, lon: 126.864704, name: '광주광역시 서구 동천동', type: '행정동', admin_parent: '광주광역시 서구', legal_divisions: ['동천동'] });
+
+// =============================================================
+// 남구 (기초자치단체)
+// 파일: 광주위경도.txt, 광주시행정코드.txt 기반
+addLocation('광주광역시 남구', { lat: 35.1190361111111, lon: 126.910144444444, name: '광주광역시 남구', type: '기초자치단체', admin_parent: '광주광역시', aliases: ['남구'], priority_score: 90 });
+// 남구 하위 행정동 (Dong)
+addLocation('광주광역시 남구 양림동', { lat: 35.1338416666666, lon: 126.917733333333, name: '광주광역시 남구 양림동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['양림동'] });
+addLocation('광주광역시 남구 방림1동', { lat: 35.1312805555555, lon: 126.920355555555, name: '광주광역시 남구 방림1동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['방림동 일부'] });
+addLocation('광주광역시 남구 방림2동', { lat: 35.1288638888888, lon: 126.924066666666, name: '광주광역시 남구 방림2동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['방림동 일부'] });
+addLocation('광주광역시 남구 봉선1동', { lat: 35.1274777777777, lon: 126.913063888888, name: '광주광역시 남구 봉선1동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['봉선동 일부'] });
+addLocation('광주광역시 남구 봉선2동', { lat: 35.1204444444444, lon: 126.915833333333, name: '광주광역시 남구 봉선2동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['봉선동 일부'] });
+addLocation('광주광역시 남구 사직동', { lat: 35.1427138888888, lon: 126.909955555555, name: '광주광역시 남구 사직동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['사직동', '주월동 일부'] });
+addLocation('광주광역시 남구 월산동', { lat: 35.144475, lon: 126.904688888888, name: '광주광역시 남구 월산동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['월산동 일부'] });
+addLocation('광주광역시 남구 월산4동', { lat: 35.1436166666666, lon: 126.892908333333, name: '광주광역시 남구 월산4동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['월산동 일부'] });
+addLocation('광주광역시 남구 월산5동', { lat: 35.1370916666666, lon: 126.894597222222, name: '광주광역시 남구 월산5동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['월산동 일부'] });
+addLocation('광주광역시 남구 백운1동', { lat: 35.135175, lon: 126.905977777777, name: '광주광역시 남구 백운1동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['백운동 일부'] });
+addLocation('광주광역시 남구 백운2동', { lat: 35.1330222222222, lon: 126.904386111111, name: '광주광역시 남구 백운2동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['백운동 일부'] });
+addLocation('광주광역시 남구 주월1동', { lat: 35.1289111111111, lon: 126.895488888888, name: '광주광역시 남구 주월1동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['주월동 일부'] });
+addLocation('광주광역시 남구 주월2동', { lat: 35.1315972222222, lon: 126.896208333333, name: '광주광역시 남구 주월2동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['주월동 일부'] });
+addLocation('광주광역시 남구 진월동', { lat: 35.1124569948764, lon: 126.898566431855, name: '광주광역시 남구 진월동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['진월동'] });
+addLocation('광주광역시 남구 효덕동', { lat: 35.1093638888888, lon: 126.900644444444, name: '광주광역시 남구 효덕동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['노대동', '덕남동', '만성동', '양과동', '원산동', '행암동', '송하동 일부'] });
+addLocation('광주광역시 남구 송암동', { lat: 35.108425, lon: 126.879288888888, name: '광주광역시 남구 송암동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['송암동', '대지동', '양촌동', '지석동', '도금동', '칠석동'] });
+addLocation('광주광역시 남구 대촌동', { lat: 35.0782555555555, lon: 126.836066666666, name: '광주광역시 남구 대촌동', type: '행정동', admin_parent: '광주광역시 남구', legal_divisions: ['압촌동', '도덕동', '월성동', '칠석동 일부', '용산동', '하촌동', '등룡동', '선암동', '구소동', '양촌동 일부'] });
+
+// =============================================================
+// 북구 (기초자치단체)
+// 파일: 광주위경도.txt, 광주시행정코드.txt 기반
+addLocation('광주광역시 북구', { lat: 35.1711249999999, lon: 126.914122222222, name: '광주광역시 북구', type: '기초자치단체', admin_parent: '광주광역시', aliases: ['북구'], priority_score: 90 });
+// 북구 하위 행정동 (Dong)
+addLocation('광주광역시 북구 중흥1동', { lat: 35.1585722222222, lon: 126.916011111111, name: '광주광역시 북구 중흥1동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['중흥동 일부'] });
+addLocation('광주광역시 북구 중흥동', { lat: 35.16937875, lon: 126.9140941, name: '광주광역시 북구 중흥동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['중흥동 일부'] });
+addLocation('광주광역시 북구 중앙동', { lat: 35.154375, lon: 126.908252777777, name: '광주광역시 북구 중앙동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['중앙동'] });
+addLocation('광주광역시 북구 임동', { lat: 35.1627694444444, lon: 126.896330555555, name: '광주광역시 북구 임동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['임동'] });
+addLocation('광주광역시 북구 신안동', { lat: 35.164375, lon: 126.900752777777, name: '광주광역시 북구 신안동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['신안동'] });
+addLocation('광주광역시 북구 용봉동', { lat: 35.1773055555555, lon: 126.903308333333, name: '광주광역시 북구 용봉동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['용봉동'] });
+addLocation('광주광역시 북구 운암1동', { lat: 35.1717888888888, lon: 126.876477777777, name: '광주광역시 북구 운암1동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['운암동 일부'] });
+addLocation('광주광역시 북구 운암2동', { lat: 35.1709722222222, lon: 126.884752777777, name: '광주광역시 북구 운암2동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['운암동 일부'] });
+addLocation('광주광역시 북구 운암3동', { lat: 35.1796749999999, lon: 126.876430555555, name: '광주광역시 북구 운암3동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['운암동 일부'] });
+addLocation('광주광역시 북구 동림동', { lat: 35.1838805555555, lon: 126.868599999999, name: '광주광역시 북구 동림동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['동림동', '운암동 일부'] });
+addLocation('광주광역시 북구 우산동', { lat: 35.1672416666666, lon: 126.923022222222, name: '광주광역시 북구 우산동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['우산동'] });
+addLocation('광주광역시 북구 풍향동', { lat: 35.1614416666666, lon: 126.925130555555, name: '광주광역시 북구 풍향동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['풍향동'] });
+addLocation('광주광역시 북구 문화동', { lat: 35.1784388888888, lon: 126.938919444444, name: '광주광역시 북구 문화동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['문화동'] });
+addLocation('광주광역시 북구 문흥1동', { lat: 35.1836944444444, lon: 126.9237, name: '광주광역시 북구 문흥1동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['문흥동 일부'] });
+addLocation('광주광역시 북구 문흥2동', { lat: 35.1812194444444, lon: 126.924019444444, name: '광주광역시 북구 문흥2동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['문흥동 일부'] });
+addLocation('광주광역시 북구 두암1동', { lat: 35.1679611111111, lon: 126.930986111111, name: '광주광역시 북구 두암1동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['두암동 일부'] });
+addLocation('광주광역시 북구 두암2동', { lat: 35.1710416666666, lon: 126.934075, name: '광주광역시 북구 두암2동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['두암동 일부'] });
+addLocation('광주광역시 북구 두암3동', { lat: 35.1599527777777, lon: 126.936830555555, name: '광주광역시 북구 두암3동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['두암동 일부'] });
+addLocation('광주광역시 북구 삼각동', { lat: 35.1962083333333, lon: 126.9016, name: '광주광역시 북구 삼각동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['삼각동', '일곡동 일부'] });
+addLocation('광주광역시 북구 일곡동', { lat: 35.2029555555555, lon: 126.899466666666, name: '광주광역시 북구 일곡동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['일곡동'] });
+addLocation('광주광역시 북구 매곡동', { lat: 35.186425, lon: 126.894188888888, name: '광주광역시 북구 매곡동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['매곡동'] });
+addLocation('광주광역시 북구 오치1동', { lat: 35.1861194444444, lon: 126.91, name: '광주광역시 북구 오치1동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['오치동 일부'] });
+addLocation('광주광역시 북구 오치2동', { lat: 35.1870138888888, lon: 126.902622222222, name: '광주광역시 북구 오치2동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['오치동 일부'] });
+addLocation('광주광역시 북구 석곡동', { lat: 35.2119194444444, lon: 126.952041666666, name: '광주광역시 북구 석곡동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['충효동', '금곡동', '망월동', '청풍동', '화암동', '석곡동'] });
+addLocation('광주광역시 북구 건국동', { lat: 35.21985, lon: 126.8837, name: '광주광역시 북구 건국동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['용두동', '지야동', '신창동 일부'] });
+addLocation('광주광역시 북구 양산동', { lat: 35.20917073, lon: 126.879628, name: '광주광역시 북구 양산동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['양산동'] });
+addLocation('광주광역시 북구 신용동', { lat: 35.2064889, lon: 126.8629158, name: '광주광역시 북구 신용동', type: '행정동', admin_parent: '광주광역시 북구', legal_divisions: ['신용동'] });
+
+// =============================================================
+// 광산구 (기초자치단체)
+// 파일: 광주위경도.txt, 광주시행정코드.txt 기반
+addLocation('광주광역시 광산구', { lat: 35.1364277777777, lon: 126.795788888888, name: '광주광역시 광산구', type: '기초자치단체', admin_parent: '광주광역시', aliases: ['광산구'], priority_score: 90 });
+// 광산구 하위 읍 (Eup) 및 법정리 (legal_divisions) - 광산구에는 '읍'이 없고 '동'과 '면'만 존재
+// 광산구 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('광주광역시 광산구 임곡동', { lat: 35.2165638888888, lon: 126.746811111111, name: '광주광역시 광산구 임곡동', type: '면', admin_parent: '광주광역시 광산구', legal_divisions: ['임곡동', '광산동', '등임동', '산막동', '선동', '고룡동', '신룡동', '오운동', '하룡동', '두산동', '신등동'] });
+addLocation('광주광역시 광산구 동곡동', { lat: 35.0956083333333, lon: 126.774133333333, name: '광주광역시 광산구 동곡동', type: '면', admin_parent: '광주광역시 광산구', legal_divisions: ['요기동', '복룡동', '황룡동', '송대동', '용봉동', '하산동', '유계동', '본덕동', '연산동'] });
+addLocation('광주광역시 광산구 평동', { lat: 35.1216722222222, lon: 126.762333333333, name: '광주광역시 광산구 평동', type: '면', admin_parent: '광주광역시 광산구', legal_divisions: ['지정동', '장록동', '옥동', '월전동', '용동', '선암동', '등룡동 일부', '신동'] });
+addLocation('광주광역시 광산구 삼도동', { lat: 35.1591166666666, lon: 126.699608333333, name: '광주광역시 광산구 삼도동', type: '면', admin_parent: '광주광역시 광산구', legal_divisions: ['송학동', '도덕동', '삼거동', '덕림동', '하남동 일부'] });
+addLocation('광주광역시 광산구 본량동', { lat: 35.1776972222222, lon: 126.730875, name: '광주광역시 광산구 본량동', type: '면', admin_parent: '광주광역시 광산구', legal_divisions: ['남산동', '명도동', '동호동', '북산동', '송산동', '용진동', '왕동', '요동', '벽동', '삼거동 일부'] });
+
+// 광산구 하위 행정동 (Dong)
+addLocation('광주광역시 광산구 송정1동', { lat: 35.1377222222222, lon: 126.8008, name: '광주광역시 광산구 송정1동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['송정동 일부', '도산동 일부'] });
+addLocation('광주광역시 광산구 송정2동', { lat: 35.1359777777777, lon: 126.796708333333, name: '광주광역시 광산구 송정2동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['송정동 일부'] });
+addLocation('광주광역시 광산구 도산동', { lat: 35.1263111111111, lon: 126.7936, name: '광주광역시 광산구 도산동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['도산동'] });
+addLocation('광주광역시 광산구 신흥동', { lat: 35.1421027777777, lon: 126.802744444444, name: '광주광역시 광산구 신흥동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['신흥동'] });
+addLocation('광주광역시 광산구 어룡동', { lat: 35.1394416666666, lon: 126.797197222222, name: '광주광역시 광산구 어룡동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['소촌동', '지죽동', '운수동'] });
+addLocation('광주광역시 광산구 우산동', { lat: 35.1547416666666, lon: 126.811533333333, name: '광주광역시 광산구 우산동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['우산동'] });
+addLocation('광주광역시 광산구 월곡1동', { lat: 35.1688111111111, lon: 126.811933333333, name: '광주광역시 광산구 월곡1동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['월곡동 일부'] });
+addLocation('광주광역시 광산구 월곡2동', { lat: 35.1713027777777, lon: 126.809866666666, name: '광주광역시 광산구 월곡2동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['월곡동 일부'] });
+addLocation('광주광역시 광산구 비아동', { lat: 35.2189638888888, lon: 126.826419444444, name: '광주광역시 광산구 비아동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['비아동', '도천동', '월계동', '장덕동', '수완동 일부'] });
+addLocation('광주광역시 광산구 첨단1동', { lat: 35.2165277777777, lon: 126.844244444444, name: '광주광역시 광산구 첨단1동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['월계동 일부', '비아동 일부'] });
+addLocation('광주광역시 광산구 첨단2동', { lat: 35.2132472222222, lon: 126.845475, name: '광주광역시 광산구 첨단2동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['월계동 일부'] });
+addLocation('광주광역시 광산구 신가동', { lat: 35.1785111111111, lon: 126.829641666666, name: '광주광역시 광산구 신가동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['신가동', '운남동 일부'] });
+addLocation('광주광역시 광산구 운남동', { lat: 35.1703472222222, lon: 126.823855555555, name: '광주광역시 광산구 운남동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['운남동'] });
+addLocation('광주광역시 광산구 수완동', { lat: 35.1971, lon: 126.825751, name: '광주광역시 광산구 수완동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['수완동'] });
+addLocation('광주광역시 광산구 하남동', { lat: 35.181875, lon: 126.796086111111, name: '광주광역시 광산구 하남동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['하남동', '장덕동 일부', '수완동 일부'] });
+addLocation('광주광역시 광산구 신창동', { lat: 35.195582, lon: 126.8407192, name: '광주광역시 광산구 신창동', type: '행정동', admin_parent: '광주광역시 광산구', legal_divisions: ['신창동'] });
+
+    
     
 
 // 울산광역시 (광역자치단체)
