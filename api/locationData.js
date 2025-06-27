@@ -306,17 +306,6 @@ const locationData = (() => {
 
 
 
-
-    // 부산광역시 중구 행정동
-    addLocation({lat: 35.0981861111111, lon: 129.037588888888, name: '부산광역시 중구 중앙동', type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['중앙동1가', '중앙동2가', '중앙동3가', '중앙동4가', '중앙동5가', '중앙동6가', '중앙동7가']});
-    addLocation({lat: 35.1019333333333, lon: 129.036877777777, name: '부산광역시 중구 동광동', type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['동광동1가', '동광동2가', '동광동3가', '동광동4가', '동광동5가']});
-    addLocation({lat: 35.1011472222222, lon: 129.033333333333, name: '부산광역시 중구 대청동', type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['대청동1가', '대청동2가', '대청동3가', '대청동4가']});
-    addLocation({lat: 35.1007027777777, lon: 129.027622222222, name: '부산광역시 중구 보수동', type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['보수동1가', '보수동2가', '보수동3가']});
-    addLocation({lat: 35.0972972222222, lon: 129.028797222222, name: '부산광역시 중구 부평동', type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['부평동1가', '부평동2가', '부평동3가', '부평동4가']});
-    addLocation({lat: 35.0968583333333, lon: 129.032752777777, name: '부산광역시 중구 광복동', type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['광복동1가', '광복동2가', '광복동3가']});
-    addLocation({lat: 35.0943055555555, lon: 129.034086111111, name: '부산광역시 중구 남포동', type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['남포동1가', '남포동2가', '남포동3가', '남포동4가', '남포동5가', '남포동6가'], aliases: ['남포동']});
-    addLocation({lat: 35.1080472222222, lon: 129.037286111111, name: '부산광역시 중구 영주제1동', type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['영주동']});
-    addLocation({lat: 35.1085083333333, lon: 129.034033333333, name: '부산광역시 중구 영주제2동', type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['영주동']});
     
 
 
