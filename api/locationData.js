@@ -1829,6 +1829,46 @@ addLocation('울산광역시 울주군 상북면', { lat: 35.5875611111111, lon:
 addLocation('울산광역시 울주군 삼동면', { lat: 35.5190861111111, lon: 129.159155555555, name: '울산광역시 울주군 삼동면', type: '면', admin_parent: '울산광역시 울주군', legal_divisions: ['하잠리', '금곡리', '보은리', '작동리', '둔기리'] });
 
 
+// 세종특별자치시 (광역자치단체)
+// 파일: 세종시위경도.txt, 세종시행정코드.txt 기반
+// 위경도는 세종특별자치시 대표 지점 (시청 중심)
+addLocation('세종특별자치시', { lat: 36.4800121, lon: 127.2890691, name: '세종특별자치시', type: '광역자치단체', admin_parent: '', aliases: ['세종', '세종시'], priority_score: 100 });
+
+// 세종특별자치시 하위 읍 (Eup) 및 법정리 (legal_divisions)
+// 파일: 세종시위경도.txt, 세종시행정코드.txt 기반
+addLocation('세종특별자치시 조치원읍', { lat: 36.604528, lon: 127.298399, name: '세종특별자치시 조치원읍', type: '읍', admin_parent: '세종특별자치시', legal_divisions: ['원리', '교리', '정리', '평리', '상리', '남리', '번암리', '죽림리', '신안리', '서창리', '봉산리', '침산리', '명리', '동리', '도원리'] });
+
+// 세종특별자치시 하위 면 (Myeon) 및 법정리 (legal_divisions)
+// 파일: 세종시위경도.txt, 세종시행정코드.txt 기반
+addLocation('세종특별자치시 연기면', { lat: 36.5418737, lon: 127.2737741, name: '세종특별자치시 연기면', type: '면', admin_parent: '세종특별자치시', legal_divisions: ['보통리', '연기리', '산울리', '세종리', '송담리', '수산리', '고성리', '누리'] });
+addLocation('세종특별자치시 연동면', { lat: 36.5590889, lon: 127.3268658, name: '세종특별자치시 연동면', type: '면', admin_parent: '세종특별자치시', legal_divisions: ['내판리', '응암리', '예양리', '명학리', '송용리', '용호리', '노송리'] });
+addLocation('세종특별자치시 부강면', { lat: 36.527112, lon: 127.370376, name: '세종특별자치시 부강면', type: '면', admin_parent: '세종특별자치시', legal_divisions: ['부강리', '산수리', '문곡리', '노호리', '금호리', '갈산리', '장산리', '등곡리', '봉산리'] });
+addLocation('세종특별자치시 금남면', { lat: 36.463826, lon: 127.28035, name: '세종특별자치시 금남면', type: '면', admin_parent: '세종특별자치시', legal_divisions: ['용담리', '용포리', '발산리', '호암리', '영대리', '박산리', '도남리', '황용리', '성덕리', '두만리', '장재리', '대박리', '축산리', '국곡리', '남곡리', '영곡리', '부용리'] });
+addLocation('세종특별자치시 장군면', { lat: 36.4967934, lon: 127.2056006, name: '세종특별자치시 장군면', type: '면', admin_parent: '세종특별자치시', legal_divisions: ['송문리', '도계리', '산학리', '봉안리', '하봉리', '대교리', '금암리', '평기리', '용암리', '송학리'] });
+addLocation('세종특별자치시 연서면', { lat: 36.592587, lon: 127.2716217, name: '세종특별자치시 연서면', type: '면', admin_parent: '세종특별자치시', legal_divisions: ['봉암리', '고복리', '용암리', '부동리', '성제리', '국촌리', '청라리', '쌍류리', '와촌리', '신대리', '월하리', '기룡리'] });
+addLocation('세종특별자치시 전의면', { lat: 36.6812513, lon: 127.1955125, name: '세종특별자치시 전의면', type: '면', admin_parent: '세종특별자치시', legal_divisions: ['동교리', '신방리', '원성리', '유천리', '다방리', '노곡리', '관정리', '소정리 일부'] }); // 소정리 일부는 전의면 관할
+addLocation('세종특별자치시 전동면', { lat: 36.6560904, lon: 127.2641625, name: '세종특별자치시 전동면', type: '면', admin_parent: '세종특별자치시', legal_divisions: ['노장리', '송정리', '청송리', '보덕리', '미곡리', '심중리', '석곡리', '송성리'] });
+addLocation('세종특별자치시 소정면', { lat: 36.7223175, lon: 127.1582525, name: '세종특별자치시 소정면', type: '면', admin_parent: '세종특별자치시', legal_divisions: ['소정리', '운당리', '고등리'] });
+
+// 세종특별자치시 하위 행정동 (Dong)
+// 세종시는 단일 기초자치단체이므로 '세종특별자치시'가 직접 행정동을 관할
+addLocation('세종특별자치시 한솔동', { lat: 36.4790361111111, lon: 127.254625, name: '세종특별자치시 한솔동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['한솔동'] });
+addLocation('세종특별자치시 새롬동', { lat: 36.486542, lon: 127.256899, name: '세종특별자치시 새롬동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['새롬동', '가람동'] });
+addLocation('세종특별자치시 나성동', { lat: 36.4891526, lon: 127.26430552, name: '세종특별자치시 나성동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['나성동'] });
+addLocation('세종특별자치시 도담동', { lat: 36.51731111, lon: 127.2623972, name: '세종특별자치시 도담동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['도담동', '방축동'] });
+addLocation('세종특별자치시 어진동', { lat: 36.50174491, lon: 127.2567079, name: '세종특별자치시 어진동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['어진동'] });
+addLocation('세종특별자치시 해밀동', { lat: 36.5270220158487, lon: 127.268085471711, name: '세종특별자치시 해밀동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['해밀동'] });
+addLocation('세종특별자치시 아름동', { lat: 36.5120416666667, lon: 127.248222222222, name: '세종특별자치시 아름동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['아름동'] });
+addLocation('세종특별자치시 종촌동', { lat: 36.5119569, lon: 127.247612, name: '세종특별자치시 종촌동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['종촌동'] });
+addLocation('세종특별자치시 고운동', { lat: 36.519776, lon: 127.236841, name: '세종특별자치시 고운동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['고운동'] });
+addLocation('세종특별자치시 소담동', { lat: 36.4835223, lon: 127.3011911, name: '세종특별자치시 소담동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['소담동', '장군면 일부', '금남면 일부'] }); // 장군면, 금남면 법정동 포함될 수 있음
+addLocation('세종특별자치시 반곡동', { lat: 36.4987531567432, lon: 127.310678329828, name: '세종특별자치시 반곡동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['반곡동', '집현동'] });
+addLocation('세종특별자치시 보람동', { lat: 36.47885, lon: 127.290412, name: '세종특별자치시 보람동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['보람동', '금남면 일부'] }); // 금남면 법정동 포함될 수 있음
+addLocation('세종특별자치시 대평동', { lat: 36.4712699, lon: 127.2795296, name: '세종특별자치시 대평동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['대평동', '금남면 일부'] }); // 금남면 법정동 포함될 수 있음
+addLocation('세종특별자치시 다정동', { lat: 36.4939773, lon: 127.2479133, name: '세종특별자치시 다정동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['다정동'] });
+
+
+    
 
 // 제주특별자치도 (광역자치단체)
 addLocation('제주특별자치도', { lat: 33.4856944444444, lon: 126.500333333333, name: '제주특별자치도', type: '광역자치단체', admin_parent: '', aliases: ['제주', '제주도'], priority_score: 100 });
