@@ -585,6 +585,14 @@ const locationData = [
 
 
 
+// 이 데이터를 외부에서 사용할 수 있도록 내보냅니다.
+// CommonJS 환경을 가정하고 작성합니다.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        locationData: locationData,
+        latLonToGrid: latLonToGrid
+    };
+}
 
 
 
