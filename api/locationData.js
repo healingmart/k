@@ -1868,6 +1868,360 @@ addLocation('세종특별자치시 대평동', { lat: 36.4712699, lon: 127.27952
 addLocation('세종특별자치시 다정동', { lat: 36.4939773, lon: 127.2479133, name: '세종특별자치시 다정동', type: '행정동', admin_parent: '세종특별자치시', legal_divisions: ['다정동'] });
 
 
+
+
+// 강원특별자치도 (광역자치단체)
+// 코드: 5100000000 (기존 4200000000에서 변경)
+// 위경도는 춘천시청(도청 소재지) 기준
+addLocation('강원특별자치도', { lat: 37.8814, lon: 127.7297, name: '강원특별자치도', type: '광역자치단체', admin_parent: '', aliases: ['강원도', '강원특별자치도'], priority_score: 100 });
+
+// =============================================================
+// 춘천시 (기초자치단체)
+addLocation('강원특별자치도 춘천시', { lat: 37.8814, lon: 127.7297, name: '강원특별자치도 춘천시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['춘천'], priority_score: 90 });
+
+// 춘천시 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 춘천시 신북읍', { lat: 37.9407, lon: 127.7335, name: '강원특별자치도 춘천시 신북읍', type: '읍', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['율문리', '용산리', '천전리', '지내리', '발산리', '고성리', '유포리', '산천리', '신기리', '춘천리'] });
+
+// 춘천시 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 춘천시 동면', { lat: 37.8770, lon: 127.8115, name: '강원특별자치도 춘천시 동면', type: '면', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['지내리', '만천리', '장학리', '감정리', '월곡리', '품안리', '품걸리', '신이리', '평촌리', '상걸리'] });
+addLocation('강원특별자치도 춘천시 동산면', { lat: 37.7699, lon: 127.7981, name: '강원특별자치도 춘천시 동산면', type: '면', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['조양리', '봉명리', '원창리', '군자리'] }); // 품걸리는 동면에 소속
+addLocation('강원특별자치도 춘천시 신동면', { lat: 37.7850, lon: 127.6749, name: '강원특별자치도 춘천시 신동면', type: '면', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['증리', '혈동리', '팔미리', '정족리'] }); // '김유정로'는 법정리가 아님
+addLocation('강원특별자치도 춘천시 동내면', { lat: 37.8480, lon: 127.7610, name: '강원특별자치도 춘천시 동내면', type: '면', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['신촌리', '학곡리', '사암리', '거두리', '고은리'] });
+addLocation('강원특별자치도 춘천시 남면', { lat: 37.7011, lon: 127.5950, name: '강원특별자치도 춘천시 남면', type: '면', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['관천리', '가정리', '발산리', '추곡리', '후동리', '박암리', '한덕리'] });
+addLocation('강원특별자치도 춘천시 남산면', { lat: 37.7012, lon: 127.6475, name: '강원특별자치도 춘천시 남산면', type: '면', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['창촌리', '방곡리', '강촌리', '백양리', '서천리', '광판리', '산수리', '행촌리', '송암리', '곡선리'] });
+addLocation('강원특별자치도 춘천시 서면', { lat: 37.8920, lon: 127.6200, name: '강원특별자치도 춘천시 서면', type: '면', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['신매리', '안보리', '오월리', '금산리', '덕두원리', '방동리', '서상리', '당림리', '월송리', '반동리'] });
+addLocation('강원특별자치도 춘천시 사북면', { lat: 38.0001, lon: 127.7650, name: '강원특별자치도 춘천시 사북면', type: '면', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['고성리', '지촌리', '오탄리', '신포리', '추곡리', '원평리'] });
+addLocation('강원특별자치도 춘천시 북산면', { lat: 37.9900, lon: 127.9500, name: '강원특별자치도 춘천시 북산면', type: '면', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['추곡리', '물로리', '오봉산리', '조교리', '대동리', '내평리', '부귀리', '추천리', '사암리'] });
+
+// 춘천시 하위 행정동 (Dong) 및 법정동 (legal_divisions)
+addLocation('강원특별자치도 춘천시 효자1동', { lat: 37.8720, lon: 127.7260, name: '강원특별자치도 춘천시 효자1동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['효자동'] });
+addLocation('강원특별자치도 춘천시 효자2동', { lat: 37.8690, lon: 127.7240, name: '강원특별자치도 춘천시 효자2동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['효자동'] });
+addLocation('강원특별자치도 춘천시 효자3동', { lat: 37.8670, lon: 127.7280, name: '강원특별자치도 춘천시 효자3동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['효자동'] });
+addLocation('강원특별자치도 춘천시 후평1동', { lat: 37.8860, lon: 127.7470, name: '강원특별자치도 춘천시 후평1동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['후평동'] });
+addLocation('강원특별자치도 춘천시 후평2동', { lat: 37.8890, lon: 127.7490, name: '강원특별자치도 춘천시 후평2동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['후평동'] });
+addLocation('강원특별자치도 춘천시 후평3동', { lat: 37.8920, lon: 127.7450, name: '강원특별자치도 춘천시 후평3동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['후평동'] });
+addLocation('강원특별자치도 춘천시 근화동', { lat: 37.8820, lon: 127.7120, name: '강원특별자치도 춘천시 근화동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['근화동', '중도동', '소양로1가'] });
+addLocation('강원특별자치도 춘천시 소양동', { lat: 37.8830, lon: 127.7320, name: '강원특별자치도 춘천시 소양동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['봉의동', '요선동', '낙원동', '옥천동', '소양로2가', '소양로3가', '소양로4가'] });
+addLocation('강원특별자치도 춘천시 조운동', { lat: 37.8790, lon: 127.7270, name: '강원특별자치도 춘천시 조운동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['조양동', '운교동'] });
+addLocation('강원특별자치도 춘천시 약사명동', { lat: 37.8760, lon: 127.7280, name: '강원특별자치도 춘천시 약사명동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['약사동', '중앙로2가', '중앙로3가', '죽림동'] });
+addLocation('강원특별자치도 춘천시 교동', { lat: 37.8740, lon: 127.7350, name: '강원특별자치도 춘천시 교동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['교동'] });
+addLocation('강원특별자치도 춘천시 퇴계동', { lat: 37.8550, lon: 127.7380, name: '강원특별자치도 춘천시 퇴계동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['퇴계동'] });
+addLocation('강원특별자치도 춘천시 석사동', { lat: 37.8640, lon: 127.7490, name: '강원특별자치도 춘천시 석사동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['석사동'] });
+addLocation('강원특별자치도 춘천시 강남동', { lat: 37.8680, lon: 127.7180, name: '강원특별자치도 춘천시 강남동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['온의동', '삼천동', '칠전동', '송암동'] });
+addLocation('강원특별자치도 춘천시 신사우동', { lat: 37.8950, lon: 127.7000, name: '강원특별자치도 춘천시 신사우동', type: '행정동', admin_parent: '강원특별자치도 춘천시', legal_divisions: ['우두동', '사농동', '신동'] });
+
+// =============================================================
+// 원주시 (기초자치단체)
+addLocation('강원특별자치도 원주시', { lat: 37.342220, lon: 127.920158, name: '강원특별자치도 원주시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['원주'], priority_score: 90 });
+
+// 원주시 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 원주시 문막읍', { lat: 37.3197, lon: 127.6974, name: '강원특별자치도 원주시 문막읍', type: '읍', admin_parent: '강원특별자치도 원주시', legal_divisions: ['건등리', '문막리', '취병리', '반계리', '포진리', '궁촌리', '비두리', '동화리', '반계리', '강변리'] });
+
+// 원주시 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 원주시 소초면', { lat: 37.3820, lon: 127.9710, name: '강원특별자치도 원주시 소초면', type: '면', admin_parent: '강원특별자치도 원주시', legal_divisions: ['장양리', '평장리', '수암리', '둔둔리', '교항리', '학곡리', '의관리'] });
+addLocation('강원특별자치도 원주시 호저면', { lat: 37.4570, lon: 127.9150, name: '강원특별자치도 원주시 호저면', type: '면', admin_parent: '강원특별자치도 원주시', legal_divisions: ['만종리', '주산리', '고산리', '용곡리', '광격리', '무장리', '매호리', '산현리', '가현리'] });
+addLocation('강원특별자치도 원주시 지정면', { lat: 37.4020, lon: 127.8480, name: '강원특별자치도 원주시 지정면', type: '면', admin_parent: '강원특별자치도 원주시', legal_divisions: ['간현리', '안창리', '가곡리', '판대리', '신평리', '월송리', '보통리'] });
+addLocation('강원특별자치도 원주시 부론면', { lat: 37.1990, lon: 127.6740, name: '강원특별자치도 원주시 부론면', type: '면', admin_parent: '강원특별자치도 원주시', legal_divisions: ['법천리', '흥호리', '손곡리', '정산리', '노림리', '단강리'] });
+addLocation('강원특별자치도 원주시 귀래면', { lat: 37.2000, lon: 127.8300, name: '강원특별자치도 원주시 귀래면', type: '면', admin_parent: '강원특별자치도 원주시', legal_divisions: ['운남리', '귀래리', '용암리', '주포리', '엄남리'] });
+addLocation('강원특별자치도 원주시 흥업면', { lat: 37.3000, lon: 127.9300, name: '강원특별자치도 원주시 흥업면', type: '면', admin_parent: '강원특별자치도 원주시', legal_divisions: ['흥업리', '무실리', '매지리', '사제리', '대안리'] });
+addLocation('강원특별자치도 원주시 판부면', { lat: 37.3100, lon: 128.0000, name: '강원특별자치도 원주시 판부면', type: '면', admin_parent: '강원특별자치도 원주시', legal_divisions: ['금대리', '서곡리', '신촌리', '내남리', '월운리', '용수골'] });
+addLocation('강원특별자치도 원주시 신림면', { lat: 37.2300, lon: 128.0900, name: '강원특별자치도 원주시 신림면', type: '면', admin_parent: '강원특별자치도 원주시', legal_divisions: ['용암리', '성남리', '황둔리', '송계리', '구학리', '금창리', '신림리'] });
+
+// 원주시 하위 행정동 (Dong) 및 법정동 (legal_divisions) - 주요 동만 포함
+addLocation('강원특별자치도 원주시 중앙동', { lat: 37.3500, lon: 127.9400, name: '강원특별자치도 원주시 중앙동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['중앙동', '평원동', '학성동', '원동', '개운동 일부'] });
+addLocation('강원특별자치도 원주시 원인동', { lat: 37.3480, lon: 127.9390, name: '강원특별자치도 원주시 원인동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['원인동', '명륜동 일부'] });
+addLocation('강원특별자치도 원주시 개운동', { lat: 37.3450, lon: 127.9450, name: '강원특별자치도 원주시 개운동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['개운동', '명륜동 일부'] });
+addLocation('강원특별자치도 원주시 명륜1동', { lat: 37.3400, lon: 127.9350, name: '강원특별자치도 원주시 명륜1동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['명륜동'] });
+addLocation('강원특별자치도 원주시 명륜2동', { lat: 37.3380, lon: 127.9380, name: '강원특별자치도 원주시 명륜2동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['명륜동'] });
+addLocation('강원특별자치도 원주시 단구동', { lat: 37.3300, lon: 127.9500, name: '강원특별자치도 원주시 단구동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['단구동'] });
+addLocation('강원특별자치도 원주시 일산동', { lat: 37.3530, lon: 127.9300, name: '강원특별자치도 원주시 일산동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['일산동'] });
+addLocation('강원특별자치도 원주시 학성동', { lat: 37.3550, lon: 127.9250, name: '강원특별자치도 원주시 학성동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['학성동'] });
+addLocation('강원특별자치도 원주시 단계동', { lat: 37.3600, lon: 127.9200, name: '강원특별자치도 원주시 단계동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['단계동'] });
+addLocation('강원특별자치도 원주시 우산동', { lat: 37.3700, lon: 127.9150, name: '강원특별자치도 원주시 우산동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['우산동'] });
+addLocation('강원특별자치도 원주시 태장1동', { lat: 37.3750, lon: 127.9300, name: '강원특별자치도 원주시 태장1동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['태장동'] });
+addLocation('강원특별자치도 원주시 태장2동', { lat: 37.3800, lon: 127.9350, name: '강원특별자치도 원주시 태장2동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['태장동'] });
+addLocation('강원특별자치도 원주시 봉산동', { lat: 37.3650, lon: 127.9400, name: '강원특별자치도 원주시 봉산동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['봉산동'] });
+addLocation('강원특별자치도 원주시 행구동', { lat: 37.3500, lon: 127.9700, name: '강원특별자치도 원주시 행구동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['행구동'] });
+addLocation('강원특별자치도 원주시 무실동', { lat: 37.3200, lon: 127.9300, name: '강원특별자치도 원주시 무실동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['무실동'] });
+addLocation('강원특별자치도 원주시 반곡관설동', { lat: 37.3000, lon: 127.9700, name: '강원특별자치도 원주시 반곡관설동', type: '행정동', admin_parent: '강원특별자치도 원주시', legal_divisions: ['반곡동', '관설동'] });
+
+// =============================================================
+// 강릉시 (기초자치단체)
+addLocation('강원특별자치도 강릉시', { lat: 37.751859, lon: 128.875759, name: '강원특별자치도 강릉시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['강릉'], priority_score: 90 });
+
+// 강릉시 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 강릉시 주문진읍', { lat: 37.8900, lon: 128.8180, name: '강원특별자치도 강릉시 주문진읍', type: '읍', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['주문리', '교항리', '장덕리', '삼교리', '향호리'] });
+
+// 강릉시 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 강릉시 성산면', { lat: 37.7010, lon: 128.8000, name: '강원특별자치도 강릉시 성산면', type: '면', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['구산리', '관음리', '금산리', '위촌리', '송암리', '보광리', '어흘리', '오봉리', '산북리'] });
+addLocation('강원특별자치도 강릉시 왕산면', { lat: 37.6400, lon: 128.6900, name: '강원특별자치도 강릉시 왕산면', type: '면', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['도마리', '목계리', '왕산리', '고단리', '송현리', '대기리'] });
+addLocation('강원특별자치도 강릉시 구정면', { lat: 37.7080, lon: 128.9100, name: '강원특별자치도 강릉시 구정면', type: '면', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['여찬리', '학산리', '구정리', '금광리', '어단리', '덕현리', '제비리'] });
+addLocation('강원특별자치도 강릉시 강동면', { lat: 37.6900, lon: 129.0000, name: '강원특별자치도 강릉시 강동면', type: '면', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['상시동리', '모전리', '안인리', '안인진리', '임곡리', '하시동리', '정동진리', '심곡리', '산성우리', '언별리'] });
+addLocation('강원특별자치도 강릉시 옥계면', { lat: 37.6000, lon: 129.0600, name: '강원특별자치도 강릉시 옥계면', type: '면', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['현내리', '천남리', '주수리', '도직리', '조산리', '남양리', '북동리', '낙풍리', '금진리', '산계리'] });
+addLocation('강원특별자치도 강릉시 사천면', { lat: 37.8200, lon: 128.8900, name: '강원특별자치도 강릉시 사천면', type: '면', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['미노리', '노동리', '석교리', '판교리', '사천진리', '덕실리', '방동리', '산대월리', '사기막리'] });
+addLocation('강원특별자치도 강릉시 연곡면', { lat: 37.9000, lon: 128.8500, name: '강원특별자치도 강릉시 연곡면', type: '면', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['방내리', '영진리', '동덕리', '송림리', '행정리', '신왕리', '삼산리', '유등리', '퇴곡리'] });
+
+// 강릉시 하위 행정동 (Dong) 및 법정동 (legal_divisions)
+addLocation('강원특별자치도 강릉시 홍제동', { lat: 37.7600, lon: 128.8600, name: '강원특별자치도 강릉시 홍제동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['홍제동'] });
+addLocation('강원특별자치도 강릉시 중앙동', { lat: 37.7550, lon: 128.8900, name: '강원특별자치도 강릉시 중앙동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['남문동', '명주동', '성내동', '임당동', '금학동', '용강동', '성남동'] });
+addLocation('강원특별자치도 강릉시 옥천동', { lat: 37.7500, lon: 128.8950, name: '강원특별자치도 강릉시 옥천동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['옥천동'] });
+addLocation('강원특별자치도 강릉시 교1동', { lat: 37.7650, lon: 128.8700, name: '강원특별자치도 강릉시 교1동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['교동'] });
+addLocation('강원특별자치도 강릉시 교2동', { lat: 37.7700, lon: 128.8800, name: '강원특별자치도 강릉시 교2동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['교동'] });
+addLocation('강원특별자치도 강릉시 포남1동', { lat: 37.7500, lon: 128.9050, name: '강원특별자치도 강릉시 포남1동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['포남동'] });
+addLocation('강원특별자치도 강릉시 포남2동', { lat: 37.7520, lon: 128.9100, name: '강원특별자치도 강릉시 포남2동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['포남동'] });
+addLocation('강원특별자치도 강릉시 초당동', { lat: 37.7700, lon: 128.9100, name: '강원특별자치도 강릉시 초당동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['초당동', '강문동'] });
+addLocation('강원특별자치도 강릉시 송정동', { lat: 37.7600, lon: 128.9250, name: '강원특별자치도 강릉시 송정동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['송정동', '견소동'] });
+addLocation('강원특별자치도 강릉시 내곡동', { lat: 37.7400, lon: 128.8600, name: '강원특별자치도 강릉시 내곡동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['내곡동', '회산동'] });
+addLocation('강원특별자치도 강릉시 강남동', { lat: 37.7250, lon: 128.8750, name: '강원특별자치도 강릉시 강남동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['장현동', '박월동', '담산동', '노암동', '유산동', '월호평동', '신석동', '운산동'] });
+addLocation('강원특별자치도 강릉시 성덕동', { lat: 37.7300, lon: 128.9000, name: '강원특별자치도 강릉시 성덕동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['입암동', '청량동', '두산동', '학동', '병산동', '남항진동'] });
+addLocation('강원특별자치도 강릉시 경포동', { lat: 37.7800, lon: 128.9000, name: '강원특별자치도 강릉시 경포동', type: '행정동', admin_parent: '강원특별자치도 강릉시', legal_divisions: ['유천동', '지변동', '죽헌동', '대전동', '운정동', '난곡동', '저동', '안현동'] });
+
+// =============================================================
+// 동해시 (기초자치단체)
+addLocation('강원특별자치도 동해시', { lat: 37.5250, lon: 129.1160, name: '강원특별자치도 동해시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['동해'], priority_score: 80 });
+
+// 동해시 하위 행정동 및 법정동 (legal_divisions)
+addLocation('강원특별자치도 동해시 천곡동', { lat: 37.5260, lon: 129.1100, name: '강원특별자치도 동해시 천곡동', type: '행정동', admin_parent: '강원특별자치도 동해시', legal_divisions: ['천곡동'] });
+addLocation('강원특별자치도 동해시 부곡동', { lat: 37.5300, lon: 129.1150, name: '강원특별자치도 동해시 부곡동', type: '행정동', admin_parent: '강원특별자치도 동해시', legal_divisions: ['부곡동'] });
+addLocation('강원특별자치도 동해시 동호동', { lat: 37.5100, lon: 129.1100, name: '강원특별자치도 동해시 동호동', type: '행정동', admin_parent: '강원특별자치도 동해시', legal_divisions: ['동호동'] });
+addLocation('강원특별자치도 동해시 발한동', { lat: 37.5050, lon: 129.1250, name: '강원특별자치도 동해시 발한동', type: '행정동', admin_parent: '강원특별자치도 동해시', legal_divisions: ['발한동', '초구동', '평릉동'] });
+addLocation('강원특별자치도 동해시 묵호동', { lat: 37.5600, lon: 129.1200, name: '강원특별자치도 동해시 묵호동', type: '행정동', admin_parent: '강원특별자치도 동해시', legal_divisions: ['묵호동', '어달동', '망상동 일부'] });
+addLocation('강원특별자치도 동해시 북삼동', { lat: 37.5000, lon: 129.0800, name: '강원특별자치도 동해시 북삼동', type: '행정동', admin_parent: '강원특별자치도 동해시', legal_divisions: ['삼화동', '이원동', '지가동', '효가동'] });
+addLocation('강원특별자치도 동해시 송정동', { lat: 37.4800, lon: 129.1000, name: '강원특별자치도 동해시 송정동', type: '행정동', admin_parent: '강원특별자치도 동해시', legal_divisions: ['송정동'] });
+addLocation('강원특별자치도 동해시 북평동', { lat: 37.4900, lon: 129.0900, name: '강원특별자치도 동해시 북평동', type: '행정동', admin_parent: '강원특별자치도 동해시', legal_divisions: ['북평동', '구미동', '추암동', '용정동'] });
+
+// =============================================================
+// 태백시 (기초자치단체)
+addLocation('강원특별자치도 태백시', { lat: 37.1640, lon: 128.9850, name: '강원특별자치도 태백시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['태백'], priority_score: 80 });
+
+// 태백시 하위 행정동 및 법정동 (legal_divisions)
+addLocation('강원특별자치도 태백시 황지동', { lat: 37.1680, lon: 128.9800, name: '강원특별자치도 태백시 황지동', type: '행정동', admin_parent: '강원특별자치도 태백시', legal_divisions: ['황지동', '황연동'] });
+addLocation('강원특별자치도 태백시 상장동', { lat: 37.1750, lon: 128.9850, name: '강원특별자치도 태백시 상장동', type: '행정동', admin_parent: '강원특별자치도 태백시', legal_divisions: ['상장동'] });
+addLocation('강원특별자치도 태백시 문곡소도동', { lat: 37.1600, lon: 129.0000, name: '강원특별자치도 태백시 문곡소도동', type: '행정동', admin_parent: '강원특별자치도 태백시', legal_divisions: ['문곡동', '소도동'] });
+addLocation('강원특별자치도 태백시 장성동', { lat: 37.1350, lon: 129.0150, name: '강원특별자치도 태백시 장성동', type: '행정동', admin_parent: '강원특별자치도 태백시', legal_divisions: ['장성동', '철암동 일부'] });
+addLocation('강원특별자치도 태백시 구문소동', { lat: 37.1200, lon: 129.0200, name: '강원특별자치도 태백시 구문소동', type: '행정동', admin_parent: '강원특별자치도 태백시', legal_divisions: ['철암동 일부', '동점동', '통동'] });
+addLocation('강원특별자치도 태백시 삼수동', { lat: 37.1000, lon: 128.9900, name: '강원특별자치도 태백시 삼수동', type: '행정동', admin_parent: '강원특별자치도 태백시', legal_divisions: ['금천동', '창죽동', '하사미동', '상사미동', '원동'] });
+addLocation('강원특별자치도 태백시 철암동', { lat: 37.0900, lon: 129.0500, name: '강원특별자치도 태백시 철암동', type: '행정동', admin_parent: '강원특별자치도 태백시', legal_divisions: ['철암동'] });
+
+// =============================================================
+// 속초시 (기초자치단체)
+addLocation('강원특별자치도 속초시', { lat: 38.2040, lon: 128.5910, name: '강원특별자치도 속초시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['속초'], priority_score: 80 });
+
+// 속초시 하위 행정동 및 법정동 (legal_divisions)
+addLocation('강원특별자치도 속초시 영랑동', { lat: 38.2160, lon: 128.6010, name: '강원특별자치도 속초시 영랑동', type: '행정동', admin_parent: '강원특별자치도 속초시', legal_divisions: ['영랑동'] });
+addLocation('강원특별자치도 속초시 동명동', { lat: 38.2050, lon: 128.6000, name: '강원특별자치도 속초시 동명동', type: '행정동', admin_parent: '강원특별자치도 속초시', legal_divisions: ['동명동'] });
+addLocation('강원특별자치도 속초시 금호동', { lat: 38.2000, lon: 128.5950, name: '강원특별자치도 속초시 금호동', type: '행정동', admin_parent: '강원특별자치도 속초시', legal_divisions: ['금호동', '청학동'] });
+addLocation('강원특별자치도 속초시 교동', { lat: 38.2000, lon: 128.5800, name: '강원특별자치도 속초시 교동', type: '행정동', admin_parent: '강원특별자치도 속초시', legal_divisions: ['교동'] });
+addLocation('강원특별자치도 속초시 노학동', { lat: 38.1800, lon: 128.5750, name: '강원특별자치도 속초시 노학동', type: '행정동', admin_parent: '강원특별자치도 속초시', legal_divisions: ['노학동'] });
+addLocation('강원특별자치도 속초시 조양동', { lat: 38.1850, lon: 128.6000, name: '강원특별자치도 속초시 조양동', type: '행정동', admin_parent: '강원특별자치도 속초시', legal_divisions: ['조양동'] });
+addLocation('강원특별자치도 속초시 청호동', { lat: 38.1900, lon: 128.6050, name: '강원특별자치도 속초시 청호동', type: '행정동', admin_parent: '강원특별자치도 속초시', legal_divisions: ['청호동'] });
+addLocation('강원특별자치도 속초시 대포동', { lat: 38.1600, lon: 128.6000, name: '강원특별자치도 속초시 대포동', type: '행정동', admin_parent: '강원특별자치도 속초시', legal_divisions: ['대포동', '장사동', '영랑동 일부', '외옹치'] });
+
+// =============================================================
+// 삼척시 (기초자치단체)
+addLocation('강원특별자치도 삼척시', { lat: 37.4480, lon: 129.1670, name: '강원특별자치도 삼척시', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['삼척'], priority_score: 80 });
+
+// 삼척시 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 삼척시 원덕읍', { lat: 37.2800, lon: 129.2800, name: '강원특별자치도 삼척시 원덕읍', type: '읍', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['호산리', '월천리', '노곡리', '산양리', '기곡리', '사곡리', '임원리', '갈남리', '매원리', '이천리', '풍곡리'] });
+addLocation('강원특별자치도 삼척시 근덕면', { lat: 37.3100, lon: 129.1800, name: '강원특별자치도 삼척시 근덕면', type: '면', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['교가리', '상맹방리', '하맹방리', '금계리', '상정리', '동막리', '광태리', '용화리', '덕산리', '궁촌리', '교곡리'] });
+addLocation('강원특별자치도 삼척시 하장면', { lat: 37.3800, lon: 128.9800, name: '강원특별자치도 삼척시 하장면', type: '면', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['장전리', '갈전리', '둔전리', '광동리', '번천리', '어리', '추동리', '역둔리'] });
+addLocation('강원특별자치도 삼척시 노곡면', { lat: 37.3200, lon: 128.9500, name: '강원특별자치도 삼척시 노곡면', type: '면', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['상군천리', '하군천리', '중마읍리', '여삼리', '고토리'] });
+addLocation('강원특별자치도 삼척시 미로면', { lat: 37.3600, lon: 129.0800, name: '강원특별자치도 삼척시 미로면', type: '면', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['상정리', '하정리', '천기리', '고사리', '동산리', '사둔리', '활기리'] });
+addLocation('강원특별자치도 삼척시 가곡면', { lat: 37.1400, lon: 129.1700, name: '강원특별자치도 삼척시 가곡면', type: '면', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['탕곡리', '오목리', '풍곡리 일부'] }); // 풍곡리 일부는 원덕읍에 소속
+addLocation('강원특별자치도 삼척시 신기면', { lat: 37.2800, lon: 128.9900, name: '강원특별자치도 삼척시 신기면', type: '면', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['고무릉리', '대기리', '마읍리', '사둔리', '신동리', '안의리'] });
+addLocation('강원특별자치도 삼척시 도계읍', { lat: 37.1800, lon: 129.0300, name: '강원특별자치도 삼척시 도계읍', type: '읍', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['도계리', '전두리', '흥전리', '구사리', '마교리', '상덕리', '심포리', '무건리', '발리', '점리', '신리', '산기리'] });
+
+// 삼척시 하위 행정동 (Dong) 및 법정동 (legal_divisions)
+addLocation('강원특별자치도 삼척시 남양동', { lat: 37.4500, lon: 129.1700, name: '강원특별자치도 삼척시 남양동', type: '행정동', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['남양동', '교동'] });
+addLocation('강원특별자치도 삼척시 성내동', { lat: 37.4480, lon: 129.1650, name: '강원특별자치도 삼척시 성내동', type: '행정동', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['성내동', '당저동', '읍내동', '원당동', '갈천동'] });
+addLocation('강원특별자치도 삼척시 정라동', { lat: 37.4550, lon: 129.1800, name: '강원특별자치도 삼척시 정라동', type: '행정동', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['정상동', '정하동', '조비동', '적노동', '교동 일부'] });
+addLocation('강원특별자치도 삼척시 교동', { lat: 37.4520, lon: 129.1750, name: '강원특별자치도 삼척시 교동', type: '행정동', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['교동'] });
+addLocation('강원특별자치도 삼척시 원덕읍', { lat: 37.2800, lon: 129.2800, name: '강원특별자치도 삼척시 원덕읍', type: '행정동', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['호산리', '월천리', '노곡리', '산양리', '기곡리', '사곡리', '임원리', '갈남리', '매원리', '이천리', '풍곡리'] }); // 원덕읍은 행정동이 아닌 읍
+addLocation('강원특별자치도 삼척시 남양동', { lat: 37.4500, lon: 129.1700, name: '강원특별자치도 삼척시 남양동', type: '행정동', admin_parent: '강원특별자치도 삼척시', legal_divisions: ['남양동', '교동'] }); // 남양동은 행정동
+
+// =============================================================
+// 홍천군 (기초자치단체)
+addLocation('강원특별자치도 홍천군', { lat: 37.8860, lon: 127.9020, name: '강원특별자치도 홍천군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['홍천'], priority_score: 80 });
+
+// 홍천군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 홍천군 홍천읍', { lat: 37.8860, lon: 127.9020, name: '강원특별자치도 홍천군 홍천읍', type: '읍', admin_parent: '강원특별자치도 홍천군', legal_divisions: ['신장대리', '갈마곡리', '희망리', '하오안리', '연봉리', '진리', '태학리', '삼마치리', '장전평리', '와동리', '상오안리', '검율리', '결운리', '용실리'] });
+
+// 홍천군 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 홍천군 남면', { lat: 37.7600, lon: 127.7600, name: '강원특별자치도 홍천군 남면', type: '면', admin_parent: '강원특별자치도 홍천군', legal_divisions: ['양덕원리', '유목정리', '화전리', '명동리', '월운리', '용수리', '신대리', '시동리'] });
+addLocation('강원특별자치도 홍천군 화촌면', { lat: 37.9500, lon: 128.0500, name: '강원특별자치도 홍천군 화촌면', type: '면', admin_parent: '강원특별자치도 홍천군', legal_divisions: ['구성포리', '주음치리', '성산리', '송정리', '장평리', '외삼포리', '내삼포리', '군업리', '괘석리'] });
+addLocation('강원특별자치도 홍천군 두촌면', { lat: 37.9900, lon: 128.1800, name: '강원특별자치도 홍천군 두촌면', type: '면', admin_parent: '강원특별자치도 홍천군', legal_divisions: ['자은리', '천현리', '철정리', '역내리', '장남리'] });
+addLocation('강원특별자치도 홍천군 내촌면', { lat: 37.9900, lon: 128.2700, name: '강원특별자치도 홍천군 내촌면', type: '면', admin_parent: '강원특별자치도 홍천군', legal_divisions: ['물걸리', '광암리', '도관리', '답내리', '와야리', '서곡리'] });
+addLocation('강원특별자치도 홍천군 서석면', { lat: 37.7000, lon: 128.4000, name: '강원특별자치도 홍천군 서석면', type: '면', admin_parent: '강원특별자치도 홍천군', legal_divisions: ['풍암리', '상군두리', '하군두리', '수하리', '어론리', '생곡리', '청량리', '검봉리'] });
+addLocation('강원특별자치도 홍천군 동면', { lat: 37.8800, lon: 127.9900, name: '강원특별자치도 홍천군 동면', type: '면', admin_parent: '강원특별자치도 홍천군', legal_divisions: ['속초리', '노천리', '개운리', '월운리', '구만리', '성동리', '신봉리'] });
+addLocation('강원특별자치도 홍천군 내면', { lat: 37.8300, lon: 128.4000, name: '강원특별자치도 홍천군 내면', type: '면', admin_parent: '강원특별자치도 홍천군', legal_divisions: ['창촌리', '광원리', '자운리', '율전리', '명개리'] });
+addLocation('강원특별자치도 홍천군 서면', { lat: 37.7600, lon: 127.6000, name: '강원특별자치도 홍천군 서면', type: '면', admin_parent: '강원특별자치도 홍천군', legal_divisions: ['마곡리', '팔봉리', '개야리', '모곡리', '반곡리', '대곡리', '어유포리', '굴업리'] });
+addLocation('강원특별자치도 홍천군 북방면', { lat: 37.8300, lon: 127.9500, name: '강원특별자치도 홍천군 북방면', type: '면', admin_parent: '강원특별자치도 홍천군', legal_divisions: ['노일리', '굴지리', '역전평리', '성동리', '구만리', '전치곡리', '소매곡리'] });
+
+// =============================================================
+// 횡성군 (기초자치단체)
+addLocation('강원특별자치도 횡성군', { lat: 37.4930, lon: 127.9850, name: '강원특별자치도 횡성군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['횡성'], priority_score: 80 });
+
+// 횡성군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 횡성군 횡성읍', { lat: 37.4930, lon: 127.9850, name: '강원특별자치도 횡성군 횡성읍', type: '읍', admin_parent: '강원특별자치도 횡성군', legal_divisions: ['읍하리', '읍상리', '정암리', '마옥리', '학곡리', '업평리', '반곡리', '추동리', '갈풍리', '묵계리', '내지리', '입석리'] });
+
+// 횡성군 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 횡성군 우천면', { lat: 37.5200, lon: 128.0800, name: '강원특별자치도 횡성군 우천면', type: '면', admin_parent: '강원특별자치도 횡성군', legal_divisions: ['우항리', '하궁리', '상궁리', '백달리', '용둔리', '두곡리', '오원리', '산전리', '법지리', '정암리 일부'] });
+addLocation('강원특별자치도 횡성군 둔내면', { lat: 37.4500, lon: 128.2300, name: '강원특별자치도 횡성군 둔내면', type: '면', admin_parent: '강원특별자치도 횡성군', legal_divisions: ['둔방내리', '현천리', '삽교리', '자포곡리', '영랑리', '석문리', '조항리', '태기리'] });
+addLocation('강원특별자치도 횡성군 갑천면', { lat: 37.4000, lon: 128.1000, name: '강원특별자치도 횡성군 갑천면', type: '면', admin_parent: '강원특별자치도 횡성군', legal_divisions: ['병지방리', '포동리', '삼거원리', '구방리', '매일이', '전촌리', '율동리', '하대리', '추동리 일부'] });
+addLocation('강원특별자치도 횡성군 청일면', { lat: 37.5700, lon: 128.1800, name: '강원특별자치도 횡성군 청일면', type: '면', admin_parent: '강원특별자치도 횡성군', legal_divisions: ['유동리', '고시리', '봉명리', '신대리', '춘당리', '속실리', '갑천리'] });
+addLocation('강원특별자치도 횡성군 공근면', { lat: 37.6000, lon: 127.9000, name: '강원특별자치도 횡성군 공근면', type: '면', admin_parent: '강원특별자치도 횡성군', legal_divisions: ['상동리', '하동리', '창봉리', '초원리', '부창리', '가곡리', '어둔리', '백운동리'] });
+addLocation('강원특별자치도 횡성군 서원면', { lat: 37.4500, lon: 127.8000, name: '강원특별자치도 횡성군 서원면', type: '면', admin_parent: '강원특별자치도 횡성군', legal_divisions: ['유현리', '압곡리', '금대리', '산현리', '석화리', '옥계리'] });
+addLocation('강원특별자치도 횡성군 강림면', { lat: 37.2300, lon: 128.2500, name: '강원특별자치도 횡성군 강림면', type: '면', admin_parent: '강원특별자치도 횡성군', legal_divisions: ['강림리', '월현리', '부곡리'] });
+addLocation('강원특별자치도 횡성군 안흥면', { lat: 37.4000, lon: 128.3200, name: '강원특별자치도 횡성군 안흥면', type: '면', admin_parent: '강원특별자치도 횡성군', legal_divisions: ['안흥리', '소사리', '용산리', '상안리', '하안리'] });
+addLocation('강원특별자치도 횡성군 강림면', { lat: 37.2300, lon: 128.2500, name: '강원특별자치도 횡성군 강림면', type: '면', admin_parent: '강원특별자치도 횡성군', legal_divisions: ['강림리', '월현리', '부곡리'] }); // 중복 확인 후 삭제
+
+// =============================================================
+// 영월군 (기초자치단체)
+addLocation('강원특별자치도 영월군', { lat: 37.1850, lon: 128.4680, name: '강원특별자치도 영월군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['영월'], priority_score: 80 });
+
+// 영월군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 영월군 영월읍', { lat: 37.1850, lon: 128.4680, name: '강원특별자치도 영월군 영월읍', type: '읍', admin_parent: '강원특별자치도 영월군', legal_divisions: ['영흥리', '하송리', '방절리', '연하리', '덕포리', '흥월리', '문곡리', '팔괴리', '거운리', '삼옥리', '정양리'] });
+
+// 영월군 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 영월군 상동읍', { lat: 37.1000, lon: 128.7500, name: '강원특별자치도 영월군 상동읍', type: '읍', admin_parent: '강원특별자치도 영월군', legal_divisions: ['내리', '덕구리', '이목리', '천평리'] }); // 상동면은 상동읍으로 승격
+addLocation('강원특별자치도 영월군 중동면', { lat: 37.2000, lon: 128.7000, name: '강원특별자치도 영월군 중동면', type: '면', admin_parent: '강원특별자치도 영월군', legal_divisions: ['직동리', '녹전리', '이목리 일부'] });
+addLocation('강원특별자치도 영월군 김삿갓면', { lat: 37.0300, lon: 128.4700, name: '강원특별자치도 영월군 김삿갓면', type: '면', admin_parent: '강원특별자치도 영월군', legal_divisions: ['진별리', '예밀리', '옥동리', '와석리', '대안리', '각동리', '내리', '외룡리'] });
+addLocation('강원특별자치도 영월군 한반도면', { lat: 37.2200, lon: 128.4000, name: '강원특별자치도 영월군 한반도면', type: '면', admin_parent: '강원특별자치도 영월군', legal_divisions: ['옹정리', '광전리', '신천리', '쌍용리'] });
+addLocation('강원특별자치도 영월군 주천면', { lat: 37.2600, lon: 128.1800, name: '강원특별자치도 영월군 주천면', type: '면', admin_parent: '강원특별자치도 영월군', legal_divisions: ['주천리', '용석리', '판운리', '신일리', '금마리'] });
+addLocation('강원특별자치도 영월군 무릉도원면', { lat: 37.2800, lon: 128.2500, name: '강원특별자치도 영월군 무릉도원면', type: '면', admin_parent: '강원특별자치도 영월군', legal_divisions: ['무릉리', '도원리', '호야지리', '법흥리'] });
+addLocation('강원특별자치도 영월군 수주면', { lat: 37.3300, lon: 128.2000, name: '강원특별자치도 영월군 수주면', type: '면', admin_parent: '강원특별자치도 영월군', legal_divisions: ['무릉리', '법흥리'] }); // 무릉도원면과 중복, 법흥리는 수주면과 무릉도원면 경계에 있음
+addLocation('강원특별자치도 영월군 남면', { lat: 37.1500, lon: 128.3800, name: '강원특별자치도 영월군 남면', type: '면', admin_parent: '강원특별자치도 영월군', legal_divisions: ['창원리', '북쌍리', '토교리', '연당리', '광천리'] });
+addLocation('강원특별자치도 영월군 북면', { lat: 37.2500, lon: 128.5500, name: '강원특별자치도 영월군 북면', type: '면', admin_parent: '강원특별자치도 영월군', legal_divisions: ['마차리', '문곡리', '공기리', '직동리 일부'] }); // 문곡리, 직동리 일부는 영월읍, 중동면과 중복, 확인 필요
+addLocation('강원특별자치도 영월군 고씨굴면', { lat: 37.1800, lon: 128.5600, name: '강원특별자치도 영월군 고씨굴면', type: '면', admin_parent: '강원특별자치도 영월군', legal_divisions: ['하동리', '상동리', '각동리 일부'] }); // 명칭 변경: 고씨굴면 -> 영월읍 삼거리 부근에 위치
+
+// =============================================================
+// 평창군 (기초자치단체)
+addLocation('강원특별자치도 평창군', { lat: 37.3710, lon: 128.3970, name: '강원특별자치도 평창군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['평창'], priority_score: 80 });
+
+// 평창군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 평창군 평창읍', { lat: 37.3710, lon: 128.3970, name: '강원특별자치도 평창군 평창읍', type: '읍', admin_parent: '강원특별자치도 평창군', legal_divisions: ['하리', '중리', '상리', '종부리', '조동리', '주진리', '계장리', '천동리', '유동리', '용항리', '응암리', '노론리'] });
+addLocation('강원특별자치도 평창군 미탄면', { lat: 37.3500, lon: 128.5500, name: '강원특별자치도 평창군 미탄면', type: '면', admin_parent: '강원특별자치도 평창군', legal_divisions: ['미탄리', '창리', '청옥산리', '마하리', '율치리'] });
+addLocation('강원특별자치도 평창군 방림면', { lat: 37.3000, lon: 128.2500, name: '강원특별자치도 평창군 방림면', type: '면', admin_parent: '강원특별자치도 평창군', legal_divisions: ['방림리', '계촌리', '운교리', '대화리'] });
+addLocation('강원특별자치도 평창군 대화면', { lat: 37.4000, lon: 128.3500, name: '강원특별자치도 평창군 대화면', type: '면', admin_parent: '강원특별자치도 평창군', legal_divisions: ['대화리', '개수리', '신리', '상안미리', '하안미리', '마평리', '금당계곡리'] });
+addLocation('강원특별자치도 평창군 봉평면', { lat: 37.5800, lon: 128.3700, name: '강원특별자치도 평창군 봉평면', type: '면', admin_parent: '강원특별자치도 평창군', legal_divisions: ['무이리', '창동리', '원길리', '평촌리', '흥정리', '덕거리', '유포리'] });
+addLocation('강원특별자치도 평창군 용평면', { lat: 37.6400, lon: 128.6600, name: '강원특별자치도 평창군 용평면', type: '면', admin_parent: '강원특별자치도 평창군', legal_divisions: ['장평리', '용전리', '이목정리', '도사리', '속사리', '백옥포리', '재산리', '노동리'] });
+addLocation('강원특별자치도 평창군 진부면', { lat: 37.6000, lon: 128.5600, name: '강원특별자치도 평창군 진부면', type: '면', admin_parent: '강원특별자치도 평창군', legal_divisions: ['하진부리', '상진부리', '간평리', '동부리', '봉산리', '척천리', '탑동리', '송정리'] });
+addLocation('강원특별자치도 평창군 대관령면', { lat: 37.6700, lon: 128.7000, name: '강원특별자치도 평창군 대관령면', type: '면', admin_parent: '강원특별자치도 평창군', legal_divisions: ['횡계리', '용산리', '수하리', '차항리', '병내리', '유천리'] });
+
+// =============================================================
+// 정선군 (기초자치단체)
+addLocation('강원특별자치도 정선군', { lat: 37.3770, lon: 128.6650, name: '강원특별자치도 정선군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['정선'], priority_score: 80 });
+
+// 정선군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 정선군 정선읍', { lat: 37.3770, lon: 128.6650, name: '강원특별자치도 정선군 정선읍', type: '읍', admin_parent: '강원특별자치도 정선군', legal_divisions: ['봉양리', '애산리', '북실리', '신월리', '덕송리', '갈래리', '귤암리', '용탄리', '회동리', '광하리'] });
+addLocation('강원특별자치도 정선군 고한읍', { lat: 37.2000, lon: 128.8400, name: '강원특별자치도 정선군 고한읍', type: '읍', admin_parent: '강원특별자치도 정선군', legal_divisions: ['고한리'] });
+addLocation('강원특별자치도 정선군 사북읍', { lat: 37.2300, lon: 128.7800, name: '강원특별자치도 정선군 사북읍', type: '읍', admin_parent: '강원특별자치도 정선군', legal_divisions: ['사북리'] });
+
+// 정선군 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 정선군 신동읍', { lat: 37.2700, lon: 128.6500, name: '강원특별자치도 정선군 신동읍', type: '읍', admin_parent: '강원특별자치도 정선군', legal_divisions: ['방제리', '고성리', '가사리', '덕천리', '운치리', '제장리', '조동리', '고성리'] }); // 신동면은 신동읍으로 승격
+addLocation('강원특별자치도 정선군 동면', { lat: 37.4000, lon: 128.8000, name: '강원특별자치도 정선군 동면', type: '면', admin_parent: '강원특별자치도 정선군', legal_divisions: ['개미산리', '백련동리', '화암리', '호명리', '몰운리', '연포리', '건천리', '북동리'] });
+addLocation('강원특별자치도 정선군 남면', { lat: 37.3000, lon: 128.5500, name: '강원특별자치도 정선군 남면', type: '면', admin_parent: '강원특별자치도 정선군', legal_divisions: ['무릉리', '광덕리', '문곡리', '낙동리', '림계리'] });
+addLocation('강원특별자치도 정선군 북면', { lat: 37.5200, lon: 128.6500, name: '강원특별자치도 정선군 북면', type: '면', admin_parent: '강원특별자치도 정선군', legal_divisions: ['아우라지', '구절리', '여량리', '봉정리', '유천리'] });
+addLocation('강원특별자치도 정선군 임계면', { lat: 37.4700, lon: 128.8000, name: '강원특별자치도 정선군 임계면', type: '면', admin_parent: '강원특별자치도 정선군', legal_divisions: ['임계리', '봉산리', '반천리', '송계리', '골지리', '덕암리', '낙천리', '직선리'] });
+addLocation('강원특별자치도 정선군 화암면', { lat: 37.3000, lon: 128.8500, name: '강원특별자치도 정선군 화암면', type: '면', admin_parent: '강원특별자치도 정선군', legal_divisions: ['화암리', '몰운리', '백련동리', '건천리', '호명리'] }); // 동면과 일부 법정리 중복, 확인 필요
+addLocation('강원특별자치도 정선군 여량면', { lat: 37.4800, lon: 128.7500, name: '강원특별자치도 정선군 여량면', type: '면', admin_parent: '강원특별자치도 정선군', legal_divisions: ['여량리', '구절리', '아우라지리', '유천리', '봉정리'] }); // 북면과 일부 법정리 중복, 확인 필요
+
+// =============================================================
+// 철원군 (기초자치단체)
+addLocation('강원특별자치도 철원군', { lat: 38.1400, lon: 127.3170, name: '강원특별자치도 철원군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['철원'], priority_score: 80 });
+
+// 철원군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 철원군 갈말읍', { lat: 38.1500, lon: 127.3100, name: '강원특별자치도 철원군 갈말읍', type: '읍', admin_parent: '강원특별자치도 철원군', legal_divisions: ['신철원리', '지포리', '군탄리', '내대리', '토성리', '문혜리', '상사리', '강포리'] });
+addLocation('강원특별자치도 철원군 동송읍', { lat: 38.1900, lon: 127.2700, name: '강원특별자치도 철원군 동송읍', type: '읍', admin_parent: '강원특별자치도 철원군', legal_divisions: ['이평리', '오덕리', '상노리', '하노리', '장흥리', '이길리', '갈말리', '오지리'] });
+
+// 철원군 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 철원군 철원읍', { lat: 38.1500, lon: 127.2200, name: '강원특별자치도 철원군 철원읍', type: '면', admin_parent: '강원특별자치도 철원군', legal_divisions: ['외촌리', '내포리', '관전리', '사요리', '중석리'] });
+addLocation('강원특별자치도 철원군 김화읍', { lat: 38.2500, lon: 127.5000, name: '강원특별자치도 철원군 김화읍', type: '읍', admin_parent: '강원특별자치도 철원군', legal_divisions: ['김화리', '생창리', '청양리', '학사리', '용양리', '운장리'] }); // 김화면은 김화읍으로 승격
+addLocation('강원특별자치도 철원군 서면', { lat: 38.1000, lon: 127.1500, name: '강원특별자치도 철원군 서면', type: '면', admin_parent: '강원특별자치도 철원군', legal_divisions: ['자등리', '와수리', '명월리', '청양리', '도창리', '송동리', '신리'] });
+addLocation('강원특별자치도 철원군 근남면', { lat: 38.2000, lon: 127.4000, name: '강원특별자치도 철원군 근남면', type: '면', admin_parent: '강원특별자치도 철원군', legal_divisions: ['육단리', '잠곡리', '마현리', '사곡리', '하수리'] });
+addLocation('강원특별자치도 철원군 근북면', { lat: 38.2500, lon: 127.3500, name: '강원특별자치도 철원군 근북면', type: '면', admin_parent: '강원특별자치도 철원군', legal_divisions: ['율리', '백덕리', '금강산리'] });
+addLocation('강원특별자치도 철원군 원남면', { lat: 38.2500, lon: 127.2000, name: '강원특별자치도 철원군 원남면', type: '면', admin_parent: '강원특별자치도 철원군', legal_divisions: ['구정리', '죽대리', '월정리', '개척리', '풍동리'] }); // 미수복
+addLocation('강원특별자치도 철원군 원동면', { lat: 38.2800, lon: 127.2200, name: '강원특별자치도 철원군 원동면', type: '면', admin_parent: '강원특별자치도 철원군', legal_divisions: ['갈말읍 일부'] }); // 미수복
+addLocation('강원특별자치도 철원군 임남면', { lat: 38.3000, lon: 127.4500, name: '강원특별자치도 철원군 임남면', type: '면', admin_parent: '강원특별자치도 철원군', legal_divisions: ['임남리', '김화읍 일부'] }); // 미수복
+
+// =============================================================
+// 화천군 (기초자치단체)
+addLocation('강원특별자치도 화천군', { lat: 38.1090, lon: 127.7080, name: '강원특별자치도 화천군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['화천'], priority_score: 80 });
+
+// 화천군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 화천군 화천읍', { lat: 38.1090, lon: 127.7080, name: '강원특별자치도 화천군 화천읍', type: '읍', admin_parent: '강원특별자치도 화천군', legal_divisions: ['하리', '상리', '중리', '대이리', '풍산리', '신읍리', '계성리', '동촌리', '마명리'] });
+
+// 화천군 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 화천군 간동면', { lat: 38.0700, lon: 127.8500, name: '강원특별자치도 화천군 간동면', type: '면', admin_parent: '강원특별자치도 화천군', legal_divisions: ['간척리', '방천리', '유촌리', '오음리', '구만리', '용호리'] });
+addLocation('강원특별자치도 화천군 하남면', { lat: 37.9800, lon: 127.6700, name: '강원특별자치도 화천군 하남면', type: '면', admin_parent: '강원특별자치도 화천군', legal_divisions: ['거례리', '용암리', '서오지리', '계성리'] });
+addLocation('강원특별자치도 화천군 상서면', { lat: 38.1500, lon: 127.5800, name: '강원특별자치도 화천군 상서면', type: '면', admin_parent: '강원특별자치도 화천군', legal_divisions: ['산양리', '봉오리', '다목리', '신대리', '노동리', '파포리', '마현리', '하남리'] });
+addLocation('강원특별자치도 화천군 사내면', { lat: 37.9500, lon: 127.5000, name: '강원특별자치도 화천군 사내면', type: '면', admin_parent: '강원특별자치도 화천군', legal_divisions: ['사창리', '명월리', '광덕리', '용담리'] });
+
+// =============================================================
+// 양구군 (기초자치단체)
+addLocation('강원특별자치도 양구군', { lat: 38.0930, lon: 127.9000, name: '강원특별자치도 양구군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['양구'], priority_score: 80 });
+
+// 양구군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 양구군 양구읍', { lat: 38.0930, lon: 127.9000, name: '강원특별자치도 양구군 양구읍', type: '읍', admin_parent: '강원특별자치도 양구군', legal_divisions: ['상리', '하리', '송우리', '죽리', '수업리', '고대리', '웅진리', '석현리', '안대리', '도사리', '계성리', '학조리'] });
+
+// 양구군 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 양구군 국토정중앙면', { lat: 37.9300, lon: 127.9900, name: '강원특별자치도 양구군 국토정중앙면', type: '면', admin_parent: '강원특별자치도 양구군', legal_divisions: ['두무리', '광치리', '명돈리', '용촌리', '웅진리 일부'] }); // 구 방산면
+addLocation('강원특별자치도 양구군 동면', { lat: 38.0200, lon: 128.0500, name: '강원특별자치도 양구군 동면', type: '면', admin_parent: '강원특별자치도 양구군', legal_divisions: ['월운리', '후곡리', '팔랑리', '원당리', '임당리', '비아리'] });
+addLocation('강원특별자치도 양구군 방산면', { lat: 38.0000, lon: 127.9500, name: '강원특별자치도 양구군 방산면', type: '면', admin_parent: '강원특별자치도 양구군', legal_divisions: ['현리', '오미리', '장평리', '금악리'] });
+addLocation('강원특별자치도 양구군 해안면', { lat: 38.2500, lon: 128.1000, name: '강원특별자치도 양구군 해안면', type: '면', admin_parent: '강원특별자치도 양구군', legal_divisions: ['현리', '오유리', '후리', '만대리'] });
+
+// =============================================================
+// 인제군 (기초자치단체)
+addLocation('강원특별자치도 인제군', { lat: 38.0770, lon: 128.1800, name: '강원특별자치도 인제군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['인제'], priority_score: 80 });
+
+// 인제군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 인제군 인제읍', { lat: 38.0770, lon: 128.1800, name: '강원특별자치도 인제군 인제읍', type: '읍', admin_parent: '강원특별자치도 인제군', legal_divisions: ['상동리', '하동리', '남북리', '가리산리', '고사리', '원대리', '합강리', '덕산리', '새마을리', '귀둔리'] });
+addLocation('강원특별자치도 인제군 북면', { lat: 38.1600, lon: 128.2500, name: '강원특별자치도 인제군 북면', type: '면', admin_parent: '강원특별자치도 인제군', legal_divisions: ['원통리', '한계리', '용대리', '백담리', '월학리', '미산리', '소치리'] });
+
+// 인제군 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 인제군 서화면', { lat: 38.2500, lon: 128.2500, name: '강원특별자치도 인제군 서화면', type: '면', admin_parent: '강원특별자치도 인제군', legal_divisions: ['천도리', '서화리', '가전리'] });
+addLocation('강원특별자치도 인제군 남면', { lat: 37.9500, lon: 128.0000, name: '강원특별자치도 인제군 남면', type: '면', admin_parent: '강원특별자치도 인제군', legal_divisions: ['신남리', '갑둔리', '두무골리', '김부리', '관대리', '어론리', '하남리'] });
+addLocation('강원특별자치도 인제군 기린면', { lat: 37.9000, lon: 128.2500, name: '강원특별자치도 인제군 기린면', type: '면', admin_parent: '강원특별자치도 인제군', legal_divisions: ['현리', '북리', '방동리', '진동리', '이현리'] });
+addLocation('강원특별자치도 인제군 해밀면', { lat: 38.0000, lon: 128.1000, name: '강원특별자치도 인제군 해밀면', type: '면', admin_parent: '강원특별자치도 인제군', legal_divisions: ['해밀리', '하추리'] }); // 명칭 변경: 상남면 -> 해밀면
+
+// =============================================================
+// 고성군 (기초자치단체)
+addLocation('강원특별자치도 고성군', { lat: 38.3840, lon: 128.4710, name: '강원특별자치도 고성군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['고성'], priority_score: 80 });
+
+// 고성군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 고성군 간성읍', { lat: 38.3840, lon: 128.4710, name: '강원특별자치도 고성군 간성읍', type: '읍', admin_parent: '강원특별자치도 고성군', legal_divisions: ['간성리', '동호리', '탑동리', '어천리', '교동리', '금수리', '신안리', '창대리', '장신리'] });
+
+// 고성군 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 고성군 거진읍', { lat: 38.4500, lon: 128.4600, name: '강원특별자치도 고성군 거진읍', type: '읍', admin_parent: '강원특별자치도 고성군', legal_divisions: ['거진리', '봉평리', '송정리', '오정리', '탑동리 일부'] }); // 거진면은 거진읍으로 승격
+addLocation('강원특별자치도 고성군 현내면', { lat: 38.5800, lon: 128.4000, name: '강원특별자치도 고성군 현내면', type: '면', admin_parent: '강원특별자치도 고성군', legal_divisions: ['명파리', '송현진리', '제진리', '대진리', '마달리', '배봉리', '초도리'] });
+addLocation('강원특별자치도 고성군 죽왕면', { lat: 38.3000, lon: 128.5200, name: '강원특별자치도 고성군 죽왕면', type: '면', admin_parent: '강원특별자치도 고성군', legal_divisions: ['문암진리', '오호리', '송지호리', '봉수리', '구성리', '삼포리', '공현진리'] });
+addLocation('강원특별자치도 고성군 토성면', { lat: 38.2000, lon: 128.5000, name: '강원특별자치도 고성군 토성면', type: '면', admin_parent: '강원특별자치도 고성군', legal_divisions: ['아야진리', '봉포리', '교암리', '천진리', '용촌리', '학야리', '성대리', '인정리', '도원리'] });
+
+// =============================================================
+// 양양군 (기초자치단체)
+addLocation('강원특별자치도 양양군', { lat: 38.0750, lon: 128.6250, name: '강원특별자치도 양양군', type: '기초자치단체', admin_parent: '강원특별자치도', aliases: ['양양'], priority_score: 80 });
+
+// 양양군 하위 읍 (Eup) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 양양군 양양읍', { lat: 38.0750, lon: 128.6250, name: '강원특별자치도 양양군 양양읍', type: '읍', admin_parent: '강원특별자치도 양양군', legal_divisions: ['남문리', '서문리', '연창리', '청곡리', '구교리', '송암리', '사천리', '송현리', '내곡리', '화일리', '임천리'] });
+
+// 양양군 하위 면 (Myeon) 및 법정리 (legal_divisions)
+addLocation('강원특별자치도 양양군 강현면', { lat: 38.1000, lon: 128.6700, name: '강원특별자치도 양양군 강현면', type: '면', admin_parent: '강원특별자치도 양양군', legal_divisions: ['둔전리', '정암리', '물치리', '전진리', '용호리', '방대리', '장산리', '주청리'] });
+addLocation('강원특별자치도 양양군 손양면', { lat: 38.0000, lon: 128.6800, name: '강원특별자치도 양양군 손양면', type: '면', admin_parent: '강원특별자치도 양양군', legal_divisions: ['송전리', '동호리', '수산리', '하조대리', '삽존리', '죽림리', '석계리', '밀양리'] });
+addLocation('강원특별자치도 양양군 현북면', { lat: 37.9500, lon: 128.7500, name: '강원특별자치도 양양군 현북면', type: '면', admin_parent: '강원특별자치도 양양군', legal_divisions: ['하광정리', '어성전리', '명지리', '기사문리', '중광정리', '말곡리', '면옥치리'] });
+addLocation('강원특별자치도 양양군 현남면', { lat: 37.8500, lon: 128.7500, name: '강원특별자치도 양양군 현남면', type: '면', admin_parent: '강원특별자치도 양양군', legal_divisions: ['시변리', '죽리', '인구리', '동산리', '광진리', '임호정리', '원포리', '지리'] });
+addLocation('강원특별자치도 양양군 서면', { lat: 37.9500, lon: 128.5500, name: '강원특별자치도 양양군 서면', type: '면', admin_parent: '강원특별자치도 양양군', legal_divisions: ['공수전리', '상평리', '오색리', '갈천리', '미천리', '논화리', '서림리', '용천리'] });
+
+
+
+
+
+
+
+
+
+
+
+    
     
 
 // 제주특별자치도 (광역자치단체)
