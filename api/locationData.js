@@ -305,292 +305,227 @@ const locationData = (() => {
 
 
     
-// 부산광역시 행정 데이터
-const locationData = [
-    // 부산광역시 (광역시)
-    { lat: 35.1770194444444, lon: 129.076952777777, name: '부산광역시', kma_nx: 98, kma_ny: 76, type: '광역시', admin_parent: '', aliases: ['부산', '부산시'] },
 
-    // 부산광역시 중구 (기초자치단체)
-    { lat: 35.1032166666666, lon: 129.034508333333, name: '부산광역시 중구', kma_nx: 97, kma_ny: 74, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['중구'] },
-    // 중구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.0981861111111, lon: 129.037588888888, name: '부산광역시 중구 중앙동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['중앙동1가', '중앙동2가', '중앙동3가', '중앙동4가', '중앙동5가', '중앙동6가', '중앙동7가', '대교동1가', '대교동2가', '영주동'] },
-    { lat: 35.1019333333333, lon: 129.036877777777, name: '부산광역시 중구 동광동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['동광동1가', '동광동2가', '동광동3가', '동광동4가', '동광동5가'] },
-    { lat: 35.1011472222222, lon: 129.033333333333, name: '부산광역시 중구 대청동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['대청동1가', '대청동2가', '대청동3가', '대청동4가'] },
-    { lat: 35.1007027777777, lon: 129.027622222222, name: '부산광역시 중구 보수동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['보수동1가', '보수동2가', '보수동3가'] },
-    { lat: 35.0972972222222, lon: 129.028797222222, name: '부산광역시 중구 부평동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['부평동1가', '부평동2가', '부평동3가', '부평동4가'] },
-    { lat: 35.0968583333333, lon: 129.032752777777, name: '부산광역시 중구 광복동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['광복동1가', '광복동2가', '광복동3가', '남포동1가', '남포동2가', '남포동3가', '남포동4가', '남포동5가', '남포동6가'] },
-    { lat: 35.0943055555555, lon: 129.034086111111, name: '부산광역시 중구 남포동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['남포동1가', '남포동2가', '남포동3가', '남포동4가', '남포동5가', '남포동6가'] }, // 광복동에 통합된 남포동 처리
-    { lat: 35.1080472222222, lon: 129.037286111111, name: '부산광역시 중구 영주제1동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['영주동'] },
-    { lat: 35.1085083333333, lon: 129.034033333333, name: '부산광역시 중구 영주제2동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 중구', legal_divisions: ['영주동'] },
+    
+    // =============================================================
+    // 제주특별자치도 (광역자치단체)
+    addLocation('제주특별자치도', {
+        lat: 33.4891, lon: 126.5135, name: '제주특별자치도', type: '광역자치단체',
+        aliases: ['제주', '제주도'],
+        priority_score: priorityMap['제주특별자치도']
+    });
 
-    // 부산광역시 서구 (기초자치단체)
-    { lat: 35.0948361111111, lon: 129.026377777777, name: '부산광역시 서구', kma_nx: 97, kma_ny: 74, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['서구'] },
-    // 서구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.1065361111111, lon: 129.022508333333, name: '부산광역시 서구 동대신제1동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['동대신동1가'] },
-    { lat: 35.1098527777777, lon: 129.025430555555, name: '부산광역시 서구 동대신제2동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['동대신동2가'] },
-    { lat: 35.1113388888888, lon: 129.019508333333, name: '부산광역시 서구 동대신제3동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['동대신동3가'] },
-    { lat: 35.1080138888888, lon: 129.016675, name: '부산광역시 서구 서대신제1동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['서대신동1가'] },
-    { lat: 35.1103666666666, lon: 129.014188888888, name: '부산광역시 서구 서대신제3동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['서대신동3가'] },
-    { lat: 35.1160722222222, lon: 129.014833333333, name: '부산광역시 서구 서대신제4동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['서대신동2가', '서대신동3가'] }, // 2, 3가 일부 포함
-    { lat: 35.1006861111111, lon: 129.020752777777, name: '부산광역시 서구 부민동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['부민동1가', '부민동2가', '부민동3가'] },
-    { lat: 35.0970888888888, lon: 129.017686111111, name: '부산광역시 서구 아미동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['아미동1가', '아미동2가'] },
-    { lat: 35.0928777777777, lon: 129.022563888888, name: '부산광역시 서구 초장동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['초장동'] },
-    { lat: 35.0949361111111, lon: 129.023897222222, name: '부산광역시 서구 충무동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['충무동1가', '충무동2가'] },
-    { lat: 35.0896583333333, lon: 129.025563888888, name: '부산광역시 서구 남부민제1동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['남부민동'] },
-    { lat: 35.08155, lon: 129.021863888888, name: '부산광역시 서구 남부민제2동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['남부민동'] },
-    { lat: 35.0769055555555, lon: 129.0236, name: '부산광역시 서구 암남동', kma_nx: 97, kma_ny: 73, type: '행정동', admin_parent: '부산광역시 서구', legal_divisions: ['암남동'] },
+    // =============================================================
+    // 제주시 (기초자치단체)
+    addLocation('제주시', {
+        lat: 33.5073, lon: 126.5148, name: '제주특별자치시 제주시', type: '기초자치단체', admin_parent: '제주특별자치도',
+        aliases: [],
+        priority_score: priorityMap['제주시']
+    });
 
-    // 부산광역시 동구 (기초자치단체)
-    { lat: 35.1358944444444, lon: 129.059175, name: '부산광역시 동구', kma_nx: 98, kma_ny: 75, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['동구'] },
-    // 동구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.1108777777777, lon: 129.039188888888, name: '부산광역시 동구 초량제1동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['초량동'] },
-    { lat: 35.1134472222222, lon: 129.0408, name: '부산광역시 동구 초량제2동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['초량동'] },
-    { lat: 35.1181861111111, lon: 129.042066666666, name: '부산광역시 동구 초량제3동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['초량동'] },
-    { lat: 35.1229083333333, lon: 129.036744444444, name: '부산광역시 동구 초량제6동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['초량동'] },
-    { lat: 35.122275, lon: 129.044533333333, name: '부산광역시 동구 수정제1동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['수정동'] },
-    { lat: 35.1252527777777, lon: 129.047263888888, name: '부산광역시 동구 수정제2동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['수정동'] },
-    { lat: 35.1239972222222, lon: 129.042963888888, name: '부산광역시 동구 수정제4동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['수정동'] },
-    { lat: 35.1307333333333, lon: 129.044688888888, name: '부산광역시 동구 수정제5동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['수정동'] },
-    { lat: 35.1319861111111, lon: 129.052791666667, name: '부산광역시 동구 좌천동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['좌천동'] },
-    { lat: 35.1362722222222, lon: 129.058308333333, name: '부산광역시 동구 범일제1동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['범일동'] },
-    { lat: 35.1318722222222, lon: 129.061986111111, name: '부산광역시 동구 범일제2동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['범일동'] },
-    { lat: 35.1273055555555, lon: 129.056019444444, name: '부산광역시 동구 범일제5동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 동구', legal_divisions: ['범일동'] },
+    // 제주시 행정동
+    addLocation('일도1동', {
+        lat: 33.5130, lon: 126.5270, name: '제주특별자치시 제주시 일도1동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['일도일동'], aliases: [], priority_score: priorityMap['일도1동']
+    });
+    addLocation('일도2동', {
+        lat: 33.5078, lon: 126.5362, name: '제주특별자치시 제주시 일도2동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['일도이동'], aliases: [], priority_score: priorityMap['일도2동']
+    });
+    addLocation('이도1동', {
+        lat: 33.5060, lon: 126.5180, name: '제주특별자치시 제주시 이도1동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['이도일동'], aliases: [], priority_score: priorityMap['이도1동']
+    });
+    addLocation('이도2동', {
+        lat: 33.4975, lon: 126.5337, name: '제주특별자치시 제주시 이도2동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['이도이동', '도남동', '영평동', '오등동'], aliases: ['도남'], priority_score: priorityMap['이도2동']
+    }); // 영평동, 오등동은 현재 이도2동 관할 (법정동)
+    addLocation('삼도1동', {
+        lat: 33.5113, lon: 126.5120, name: '제주특별자치시 제주시 삼도1동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['삼도일동'], aliases: [], priority_score: priorityMap['삼도1동']
+    });
+    addLocation('삼도2동', {
+        lat: 33.5090, lon: 126.5080, name: '제주특별자치시 제주시 삼도2동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['삼도이동'], aliases: [], priority_score: priorityMap['삼도2동']
+    });
+    addLocation('건입동', {
+        lat: 33.5140, lon: 126.5360, name: '제주특별자치시 제주시 건입동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['건입동'], aliases: [], priority_score: priorityMap['건입동']
+    });
+    addLocation('화북동', {
+        lat: 33.5210, lon: 126.5700, name: '제주특별자치시 제주시 화북동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['화북일동', '화북이동'], aliases: [], priority_score: priorityMap['화북동']
+    });
+    addLocation('삼양동', {
+        lat: 33.5260, lon: 126.6010, name: '제주특별자치시 제주시 삼양동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['삼양일동', '삼양이동', '삼양삼동'], aliases: [], priority_score: priorityMap['삼양동']
+    });
+    addLocation('봉개동', {
+        lat: 33.4590, lon: 126.6190, name: '제주특별자치시 제주시 봉개동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['봉개동'], aliases: [], priority_score: priorityMap['봉개동']
+    });
+    addLocation('아라동', {
+        lat: 33.4680, lon: 126.5490, name: '제주특별자치시 제주시 아라동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['아라일동', '아라이동'], aliases: [], priority_score: priorityMap['아라동']
+    });
+    addLocation('오라동', {
+        lat: 33.4800, lon: 126.4990, name: '제주특별자치시 제주시 오라동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['오라일동', '오라이동', '오라삼동'], aliases: [], priority_score: priorityMap['오라동']
+    });
+    addLocation('연동', {
+        lat: 33.4890, lon: 126.4900, name: '제주특별자치시 제주시 연동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['연동'], aliases: [], priority_score: priorityMap['연동']
+    });
+    addLocation('노형동', {
+        lat: 33.4850, lon: 126.4670, name: '제주특별자치시 제주시 노형동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['노형동'], aliases: [], priority_score: priorityMap['노형동']
+    });
+    addLocation('외도동', {
+        lat: 33.5040, lon: 126.4490, name: '제주특별자치시 제주시 외도동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['외도일동', '외도이동', '외도삼동'], aliases: [], priority_score: priorityMap['외도동']
+    });
+    addLocation('이호동', {
+        lat: 33.5130, lon: 126.4710, name: '제주특별자치시 제주시 이호동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['이호일동', '이호이동'], aliases: [], priority_score: priorityMap['이호동']
+    });
+    addLocation('도두동', {
+        lat: 33.5160, lon: 126.4350, name: '제주특별자치시 제주시 도두동', type: '행정동', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['도두일동', '도두이동'], aliases: [], priority_score: priorityMap['도두동']
+    });
 
-    // 부산광역시 영도구 (기초자치단체)
-    { lat: 35.0881166666666, lon: 129.070186111111, name: '부산광역시 영도구', kma_nx: 98, kma_ny: 74, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['영도구'] },
-    // 영도구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.0867888888888, lon: 129.039852777777, name: '부산광역시 영도구 남항동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['남항동1가', '남항동2가', '남항동3가'] },
-    { lat: 35.0871611111111, lon: 129.047033333333, name: '부산광역시 영도구 영선제1동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['영선동1가', '영선동2가'] },
-    { lat: 35.08385, lon: 129.043641666666, name: '부산광역시 영도구 영선제2동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['영선동3가', '영선동4가'] },
-    { lat: 35.0802444444444, lon: 129.047455555555, name: '부산광역시 영도구 신선동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['신선동1가', '신선동2가', '신선동3가'] },
-    { lat: 35.0903916666666, lon: 129.046622222222, name: '부산광역시 영도구 봉래제1동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['봉래동1가', '봉래동2가', '봉래동3가', '봉래동4가', '봉래동5가'] },
-    { lat: 35.0911083333333, lon: 129.048397222222, name: '부산광역시 영도구 봉래제2동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['봉래동', '청학동'] }, // 봉래동 전체 및 청학동 일부
-    { lat: 35.0938333333333, lon: 129.060686111111, name: '부산광역시 영도구 청학제1동', kma_nx: 98, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['청학동'] },
-    { lat: 35.088825, lon: 129.068030555555, name: '부산광역시 영도구 청학제2동', kma_nx: 98, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['청학동'] },
-    { lat: 35.0717944444444, lon: 129.070708333333, name: '부산광역시 영도구 동삼제1동', kma_nx: 98, kma_ny: 73, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['동삼동'] },
-    { lat: 35.0647416666666, lon: 129.082922222222, name: '부산광역시 영도구 동삼제2동', kma_nx: 98, kma_ny: 73, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['동삼동'] },
-    { lat: 35.0815805555555, lon: 129.070922222222, name: '부산광역시 영도구 동삼제3동', kma_nx: 98, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 영도구', legal_divisions: ['동삼동'] },
-
-    // 부산광역시 부산진구 (기초자치단체)
-    { lat: 35.1599527777777, lon: 129.055319444444, name: '부산광역시 부산진구', kma_nx: 97, kma_ny: 75, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['부산진구'] },
-    // 부산진구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.1572583333333, lon: 129.060922222222, name: '부산광역시 부산진구 부전제1동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['부전동'] },
-    { lat: 35.1495222222222, lon: 129.059075, name: '부산광역시 부산진구 부전제2동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['부전동'] },
-    { lat: 35.1697138888888, lon: 129.055008333333, name: '부산광역시 부산진구 연지동', kma_nx: 97, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['연지동'] },
-    { lat: 35.175625, lon: 129.049833333333, name: '부산광역시 부산진구 초읍동', kma_nx: 97, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['초읍동'] },
-    { lat: 35.1713972222222, lon: 129.066655555555, name: '부산광역시 부산진구 양정제1동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['양정동'] },
-    { lat: 35.1697805555555, lon: 129.077988888888, name: '부산광역시 부산진구 양정제2동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['양정동'] },
-    { lat: 35.1512694444444, lon: 129.069622222222, name: '부산광역시 부산진구 전포제1동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['전포동'] },
-    { lat: 35.1586305555555, lon: 129.068444444444, name: '부산광역시 부산진구 전포제2동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['전포동'] },
-    { lat: 35.1604611111111, lon: 129.051777777777, name: '부산광역시 부산진구 부암제1동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['부암동'] },
-    { lat: 35.1659222222222, lon: 129.042055555555, name: '부산광역시 부산진구 부암제3동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['부암동'] },
-    { lat: 35.1597, lon: 129.042366666666, name: '부산광역시 부산진구 당감제1동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['당감동'] },
-    { lat: 35.1548888888888, lon: 129.050277777777, name: '부산광역시 부산진구 당감제2동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['당감동'] },
-    { lat: 35.1649138888888, lon: 129.038797222222, name: '부산광역시 부산진구 당감제4동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['당감동'] },
-    { lat: 35.1519111111111, lon: 129.044052777777, name: '부산광역시 부산진구 가야제1동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['가야동'] },
-    { lat: 35.1466805555555, lon: 129.031288888888, name: '부산광역시 부산진구 가야제2동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['가야동'] },
-    { lat: 35.1495666666666, lon: 129.024175, name: '부산광역시 부산진구 개금제1동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['개금동'] },
-    { lat: 35.1417055555555, lon: 129.021688888888, name: '부산광역시 부산진구 개금제2동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['개금동'] },
-    { lat: 35.1526861111111, lon: 129.024222222222, name: '부산광역시 부산진구 개금제3동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['개금동'] },
-    { lat: 35.14385, lon: 129.0633, name: '부산광역시 부산진구 범천제1동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['범천동'] },
-    { lat: 35.1432777777777, lon: 129.058397222222, name: '부산광역시 부산진구 범천제2동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 부산진구', legal_divisions: ['범천동'] },
-
-    // 부산광역시 동래구 (기초자치단체)
-    { lat: 35.2018722222222, lon: 129.085855555555, name: '부산광역시 동래구', kma_nx: 98, kma_ny: 76, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['동래구'] },
-    // 동래구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.192975, lon: 129.093388888888, name: '부산광역시 동래구 수민동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['수안동', '복천동', '낙민동', '칠산동', '명륜동'] }, // 수안동, 복천동, 낙민동, 칠산동
-    { lat: 35.2027083333333, lon: 129.088375, name: '부산광역시 동래구 복산동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['복산동', '명륜동'] },
-    { lat: 35.2124914, lon: 129.081561, name: '부산광역시 동래구 명륜동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['명륜동'] },
-    { lat: 35.2169666666666, lon: 129.082386111111, name: '부산광역시 동래구 온천제1동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['온천동'] },
-    { lat: 35.2048833333333, lon: 129.075252777777, name: '부산광역시 동래구 온천제2동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['온천동'] },
-    { lat: 35.2018666666666, lon: 129.068552777777, name: '부산광역시 동래구 온천제3동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['온천동'] },
-    { lat: 35.1959333333333, lon: 129.064344444444, name: '부산광역시 동래구 사직제1동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['사직동'] },
-    { lat: 35.1971749999999, lon: 129.059166666666, name: '부산광역시 동래구 사직제2동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['사직동'] },
-    { lat: 35.1963888888888, lon: 129.071722222222, name: '부산광역시 동래구 사직제3동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['사직동'] },
-    { lat: 35.1940472222222, lon: 129.100911111111, name: '부산광역시 동래구 안락제1동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['안락동'] },
-    { lat: 35.1946444444444, lon: 129.112311111111, name: '부산광역시 동래구 안락제2동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['안락동'] },
-    { lat: 35.2015805555555, lon: 129.106499999999, name: '부산광역시 동래구 명장제1동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['명장동'] },
-    { lat: 35.2048666666666, lon: 129.104655555555, name: '부산광역시 동래구 명장제2동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 동래구', legal_divisions: ['명장동'] },
-
-    // 부산광역시 남구 (기초자치단체)
-    { lat: 35.1334083333333, lon: 129.0865, name: '부산광역시 남구', kma_nx: 98, kma_ny: 75, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['남구'] },
-    // 남구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.1314638888888, lon: 129.095719444444, name: '부산광역시 남구 대연제1동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['대연동'] },
-    { lat: 35.1316361111111, lon: 129.102577777777, name: '부산광역시 남구 대연제3동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['대연동'] },
-    { lat: 35.1267111111111, lon: 129.093619444444, name: '부산광역시 남구 대연제4동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['대연동'] },
-    { lat: 35.1353694444444, lon: 129.092488888888, name: '부산광역시 남구 대연제5동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['대연동'] },
-    { lat: 35.1318666666666, lon: 129.085841666666, name: '부산광역시 남구 대연제6동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['대연동'] },
-    { lat: 35.1177138888888, lon: 129.111297222222, name: '부산광역시 남구 용호제1동', kma_nx: 99, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['용호동'] },
-    { lat: 35.11175, lon: 129.115686111111, name: '부산광역시 남구 용호제2동', kma_nx: 99, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['용호동'] },
-    { lat: 35.1179222222222, lon: 129.115063888888, name: '부산광역시 남구 용호제3동', kma_nx: 99, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['용호동'] },
-    { lat: 35.1101444444444, lon: 129.112663888888, name: '부산광역시 남구 용호제4동', kma_nx: 99, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['용호동'] },
-    { lat: 35.1144111111111, lon: 129.097455555555, name: '부산광역시 남구 용당동', kma_nx: 98, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['용당동'] },
-    { lat: 35.1137888888888, lon: 129.082888888888, name: '부산광역시 남구 감만제1동', kma_nx: 98, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['감만동'] },
-    { lat: 35.1194583333333, lon: 129.086777777777, name: '부산광역시 남구 감만제2동', kma_nx: 98, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['감만동'] },
-    { lat: 35.12499999, lon: 129.0758507, name: '부산광역시 남구 우암동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['우암동'] },
-    { lat: 35.1393944444444, lon: 129.073577777777, name: '부산광역시 남구 문현제1동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['문현동'] },
-    { lat: 35.1422222222222, lon: 129.070997222222, name: '부산광역시 남구 문현제2동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['문현동'] },
-    { lat: 35.1351222222222, lon: 129.073919444444, name: '부산광역시 남구 문현제3동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['문현동'] },
-    { lat: 35.1330305555555, lon: 129.0712, name: '부산광역시 남구 문현제4동', kma_nx: 98, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 남구', legal_divisions: ['문현동'] },
-
-    // 부산광역시 북구 (기초자치단체)
-    { lat: 35.1941805555555, lon: 128.992474999999, name: '부산광역시 북구', kma_nx: 96, kma_ny: 76, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['북구'] },
-    // 북구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.2033694444444, lon: 129.003411111111, name: '부산광역시 북구 구포제1동', kma_nx: 97, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['구포동'] },
-    { lat: 35.1996361111111, lon: 129.000244444444, name: '부산광역시 북구 구포제2동', kma_nx: 96, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['구포동'] },
-    { lat: 35.1917583333333, lon: 129.011044444444, name: '부산광역시 북구 구포제3동', kma_nx: 97, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['구포동'] },
-    { lat: 35.2470055555555, lon: 129.015088888888, name: '부산광역시 북구 금곡동', kma_nx: 97, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['금곡동'] },
-    { lat: 35.2216944444444, lon: 129.012466666666, name: '부산광역시 북구 화명제1동', kma_nx: 97, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['화명동'] },
-    { lat: 35.240525, lon: 129.022022222222, name: '부산광역시 북구 화명제2동', kma_nx: 97, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['화명동'] },
-    { lat: 35.2287722222222, lon: 129.012333333333, name: '부산광역시 북구 화명제3동', kma_nx: 97, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['화명동'] },
-    { lat: 35.2093888888888, lon: 129.019019444444, name: '부산광역시 북구 덕천제1동', kma_nx: 97, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['덕천동'] },
-    { lat: 35.2092666666666, lon: 129.010244444444, name: '부산광역시 북구 덕천제2동', kma_nx: 97, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['덕천동'] },
-    { lat: 35.2068194444444, lon: 129.019697222222, name: '부산광역시 북구 덕천제3동', kma_nx: 97, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['덕천동'] },
-    { lat: 35.2103666666666, lon: 129.038519444444, name: '부산광역시 북구 만덕제1동', kma_nx: 97, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['만덕동'] },
-    { lat: 35.2071194444444, lon: 129.039466666666, name: '부산광역시 북구 만덕제2동', kma_nx: 97, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['만덕동'] },
-    { lat: 35.2083083333333, lon: 129.031397222222, name: '부산광역시 북구 만덕제3동', kma_nx: 97, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 북구', legal_divisions: ['만덕동'] },
-
-    // 부산광역시 해운대구 (기초자치단체)
-    { lat: 35.1600194444444, lon: 129.165808333333, name: '부산광역시 해운대구', kma_nx: 99, kma_ny: 75, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['해운대구'] },
-    // 해운대구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.1598111111111, lon: 129.160286111111, name: '부산광역시 해운대구 우제1동', kma_nx: 99, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['우동'] },
-    { lat: 35.1681555555555, lon: 129.142211111111, name: '부산광역시 해운대구 우제2동', kma_nx: 99, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['우동'] },
-    { lat: 35.1592915, lon: 129.1424022, name: '부산광역시 해운대구 우제3동', kma_nx: 99, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['우동'] },
-    { lat: 35.1594583333333, lon: 129.166477777777, name: '부산광역시 해운대구 중제1동', kma_nx: 99, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['중동'] },
-    { lat: 35.1587972222222, lon: 129.182108333333, name: '부산광역시 해운대구 중제2동', kma_nx: 100, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['중동'] },
-    { lat: 35.1678222222222, lon: 129.176552777777, name: '부산광역시 해운대구 좌제1동', kma_nx: 100, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['좌동'] },
-    { lat: 35.1660611111111, lon: 129.184919444444, name: '부산광역시 해운대구 좌제2동', kma_nx: 100, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['좌동'] },
-    { lat: 35.1692638888888, lon: 129.168986111111, name: '부산광역시 해운대구 좌제3동', kma_nx: 100, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['좌동'] },
-    { lat: 35.1748666666666, lon: 129.178477777777, name: '부산광역시 해운대구 좌제4동', kma_nx: 100, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['좌동'] },
-    { lat: 35.1805611111111, lon: 129.205897222222, name: '부산광역시 해운대구 송정동', kma_nx: 100, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['송정동'] },
-    { lat: 35.1980555555555, lon: 129.121188888888, name: '부산광역시 해운대구 반여제1동', kma_nx: 99, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['반여동'] },
-    { lat: 35.1928305555555, lon: 129.132352777777, name: '부산광역시 해운대구 반여제2동', kma_nx: 99, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['반여동'] },
-    { lat: 35.1980055555555, lon: 129.135699999999, name: '부산광역시 해운대구 반여제3동', kma_nx: 99, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['반여동'] },
-    { lat: 35.2061027777777, lon: 129.119344444444, name: '부산광역시 해운대구 반여제4동', kma_nx: 99, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['반여동'] },
-    { lat: 35.2220527777777, lon: 129.150008333333, name: '부산광역시 해운대구 반송제1동', kma_nx: 99, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['반송동'] },
-    { lat: 35.2257638888888, lon: 129.162697222222, name: '부산광역시 해운대구 반송제2동', kma_nx: 99, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['반송동'] },
-    { lat: 35.1808638888888, lon: 129.125644444444, name: '부산광역시 해운대구 재송제1동', kma_nx: 99, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['재송동'] },
-    { lat: 35.18655, lon: 129.127719444444, name: '부산광역시 해운대구 재송제2동', kma_nx: 99, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 해운대구', legal_divisions: ['재송동'] },
-
-    // 부산광역시 사하구 (기초자치단체)
-    { lat: 35.1014277777777, lon: 128.977041666666, name: '부산광역시 사하구', kma_nx: 96, kma_ny: 74, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['사하구'] },
-    // 사하구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.0965027777777, lon: 128.991622222222, name: '부산광역시 사하구 괴정제1동', kma_nx: 96, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['괴정동'] },
-    { lat: 35.1004305555555, lon: 129.006275, name: '부산광역시 사하구 괴정제2동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['괴정동'] },
-    { lat: 35.0972111111111, lon: 129.000422222222, name: '부산광역시 사하구 괴정제3동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['괴정동'] },
-    { lat: 35.0960166666666, lon: 128.9854, name: '부산광역시 사하구 괴정제4동', kma_nx: 96, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['괴정동'] },
-    { lat: 35.0998444444444, lon: 128.978930555555, name: '부산광역시 사하구 당리동', kma_nx: 96, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['당리동'] },
-    { lat: 35.1008333333333, lon: 128.966533333333, name: '부산광역시 사하구 하단제1동', kma_nx: 96, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['하단동'] },
-    { lat: 35.1114333333333, lon: 128.962686111111, name: '부산광역시 사하구 하단제2동', kma_nx: 96, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['하단동'] },
-    { lat: 35.0869138888888, lon: 128.976575, name: '부산광역시 사하구 신평제1동', kma_nx: 96, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['신평동'] },
-    { lat: 35.0915333333333, lon: 128.961633333333, name: '부산광역시 사하구 신평제2동', kma_nx: 96, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['신평동'] },
-    { lat: 35.0798194444444, lon: 128.969141666666, name: '부산광역시 사하구 장림제1동', kma_nx: 96, kma_ny: 73, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['장림동'] },
-    { lat: 35.0747277777777, lon: 128.974844444444, name: '부산광역시 사하구 장림제2동', kma_nx: 96, kma_ny: 73, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['장림동'] },
-    { lat: 35.0561027777777, lon: 128.973577777777, name: '부산광역시 사하구 다대제1동', kma_nx: 96, kma_ny: 73, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['다대동'] },
-    { lat: 35.0603222222222, lon: 128.984433333333, name: '부산광역시 사하구 다대제2동', kma_nx: 96, kma_ny: 73, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['다대동'] },
-    { lat: 35.0788194444444, lon: 128.990041666666, name: '부산광역시 사하구 구평동', kma_nx: 96, kma_ny: 73, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['구평동'] },
-    { lat: 35.0849055555555, lon: 129.006911111111, name: '부산광역시 사하구 감천제1동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['감천동'] },
-    { lat: 35.091525, lon: 129.0116, name: '부산광역시 사하구 감천제2동', kma_nx: 97, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 사하구', legal_divisions: ['감천동'] },
-
-    // 부산광역시 금정구 (기초자치단체)
-    { lat: 35.2400777777777, lon: 129.094319444444, name: '부산광역시 금정구', kma_nx: 98, kma_ny: 77, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['금정구'] },
-    // 금정구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.2152611111111, lon: 129.101397222222, name: '부산광역시 금정구 서제1동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['서동'] },
-    { lat: 35.2097805555555, lon: 129.106933333333, name: '부산광역시 금정구 서제2동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['서동'] },
-    { lat: 35.212375, lon: 129.109730555555, name: '부산광역시 금정구 서제3동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['서동'] },
-    { lat: 35.2172361111111, lon: 129.113375, name: '부산광역시 금정구 금사회동동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['금사동', '회동동'] },
-    { lat: 35.22135, lon: 129.0944, name: '부산광역시 금정구 부곡제1동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['부곡동'] },
-    { lat: 35.2267277777777, lon: 129.095, name: '부산광역시 금정구 부곡제2동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['부곡동'] },
-    { lat: 35.2374055555555, lon: 129.096133333333, name: '부산광역시 금정구 부곡제3동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['부곡동'] },
-    { lat: 35.2168138888888, lon: 129.090875, name: '부산광역시 금정구 부곡제4동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['부곡동'] },
-    { lat: 35.2346666666666, lon: 129.087211111111, name: '부산광역시 금정구 장전제1동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['장전동'] },
-    { lat: 35.2225305555555, lon: 129.084377777777, name: '부산광역시 금정구 장전제2동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['장전동'] },
-    { lat: 35.2952083333333, lon: 129.115597222222, name: '부산광역시 금정구 선두구동', kma_nx: 98, kma_ny: 78, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['선동', '두구동'] },
-    { lat: 35.27205, lon: 129.092055555555, name: '부산광역시 금정구 청룡노포동', kma_nx: 98, kma_ny: 78, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['청룡동', '노포동'] },
-    { lat: 35.2685555555555, lon: 129.094622222222, name: '부산광역시 금정구 남산동', kma_nx: 98, kma_ny: 78, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['남산동'] },
-    { lat: 35.2419916666666, lon: 129.089230555555, name: '부산광역시 금정구 구서제1동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['구서동'] },
-    { lat: 35.2520833333333, lon: 129.092888888888, name: '부산광역시 금정구 구서제2동', kma_nx: 98, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['구서동'] },
-    { lat: 35.2472527777777, lon: 129.058341666666, name: '부산광역시 금정구 금성동', kma_nx: 97, kma_ny: 77, type: '행정동', admin_parent: '부산광역시 금정구', legal_divisions: ['금성동'] },
-
-    // 부산광역시 강서구 (기초자치단체)
-    { lat: 35.2091638888888, lon: 128.982908333333, name: '부산광역시 강서구', kma_nx: 96, kma_ny: 76, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['강서구'] },
-    // 강서구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.2113944444444, lon: 128.982855555555, name: '부산광역시 강서구 대저1동', kma_nx: 96, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 강서구', legal_divisions: ['대저1동'] },
-    { lat: 35.1753944444444, lon: 128.9587, name: '부산광역시 강서구 대저2동', kma_nx: 96, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 강서구', legal_divisions: ['대저2동'] },
-    { lat: 35.2114638888888, lon: 128.937508333333, name: '부산광역시 강서구 강동동', kma_nx: 95, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 강서구', legal_divisions: ['강동동'] },
-    { lat: 35.108091, lon: 128.926502, name: '부산광역시 강서구 명지1동', kma_nx: 95, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 강서구', legal_divisions: ['명지동'] },
-    { lat: 35.084587, lon: 128.899758, name: '부산광역시 강서구 명지2동', kma_nx: 95, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 강서구', legal_divisions: ['명지동'] },
-    { lat: 35.1933166666666, lon: 128.904075, name: '부산광역시 강서구 가락동', kma_nx: 95, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 강서구', legal_divisions: ['죽림동', '식만동', '봉림동', '가락동'] },
-    { lat: 35.1234638888888, lon: 128.860808333333, name: '부산광역시 강서구 녹산동', kma_nx: 94, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 강서구', legal_divisions: ['녹산동', '송정동', '화전동', '생곡동', '구랑동', '지사동', '범방동', '미음동'] },
-    { lat: 35.0526166666667, lon: 128.814033333333, name: '부산광역시 강서구 가덕도동', kma_nx: 93, kma_ny: 73, type: '행정동', admin_parent: '부산광역시 강서구', legal_divisions: ['천성동', '대항동', '동선동', '성북동', '눌차동', '천가동'] },
-    { lat: 35.085443537101, lon: 128.879107082157, name: '부산광역시 강서구 신호동', kma_nx: 94, kma_ny: 74, type: '행정동', admin_parent: '부산광역시 강서구', legal_divisions: ['신호동'] },
-
-    // 부산광역시 연제구 (기초자치단체)
-    { lat: 35.1731861111111, lon: 129.082075, name: '부산광역시 연제구', kma_nx: 98, kma_ny: 76, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['연제구'] },
-    // 연제구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.1917194444444, lon: 129.083022222222, name: '부산광역시 연제구 거제제1동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['거제동'] },
-    { lat: 35.1845722222222, lon: 129.072541666666, name: '부산광역시 연제구 거제제2동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['거제동'] },
-    { lat: 35.1810333333333, lon: 129.075308333333, name: '부산광역시 연제구 거제제3동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['거제동'] },
-    { lat: 35.1761305555555, lon: 129.070022222222, name: '부산광역시 연제구 거제제4동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['거제동'] },
-    { lat: 35.1858777777777, lon: 129.093844444444, name: '부산광역시 연제구 연산제1동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['연산동'] },
-    { lat: 35.1768333333333, lon: 129.081575, name: '부산광역시 연제구 연산제2동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['연산동'] },
-    { lat: 35.1702694444444, lon: 129.096511111111, name: '부산광역시 연제구 연산제3동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['연산동'] },
-    { lat: 35.1832166666666, lon: 129.087155555555, name: '부산광역시 연제구 연산제4동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['연산동'] },
-    { lat: 35.1814194444444, lon: 129.078355555555, name: '부산광역시 연제구 연산제5동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['연산동'] },
-    { lat: 35.1757722222222, lon: 129.087941666666, name: '부산광역시 연제구 연산제6동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['연산동'] },
-    { lat: 35.1840333333333, lon: 129.103333333333, name: '부산광역시 연제구 연산제8동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['연산동'] },
-    { lat: 35.1855472222222, lon: 129.107197222222, name: '부산광역시 연제구 연산제9동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 연제구', legal_divisions: ['연산동'] },
-
-    // 부산광역시 수영구 (기초자치단체)
-    { lat: 35.1424666666666, lon: 129.115375, name: '부산광역시 수영구', kma_nx: 99, kma_ny: 75, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['수영구'] },
-    // 수영구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.139575, lon: 129.112597222222, name: '부산광역시 수영구 남천제1동', kma_nx: 99, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 수영구', legal_divisions: ['남천동'] },
-    { lat: 35.1407527777777, lon: 129.116986111111, name: '부산광역시 수영구 남천제2동', kma_nx: 99, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 수영구', legal_divisions: ['남천동'] },
-    { lat: 35.1673583333333, lon: 129.118288888888, name: '부산광역시 수영구 수영동', kma_nx: 99, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 수영구', legal_divisions: ['수영동'] },
-    { lat: 35.1713555555555, lon: 129.103241666666, name: '부산광역시 수영구 망미제1동', kma_nx: 98, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 수영구', legal_divisions: ['망미동'] },
-    { lat: 35.1721527777777, lon: 129.117541666666, name: '부산광역시 수영구 망미제2동', kma_nx: 99, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 수영구', legal_divisions: ['망미동'] },
-    { lat: 35.1598666666666, lon: 129.114730555555, name: '부산광역시 수영구 광안제1동', kma_nx: 99, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 수영구', legal_divisions: ['광안동'] },
-    { lat: 35.1506777777777, lon: 129.114866666666, name: '부산광역시 수영구 광안제2동', kma_nx: 99, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 수영구', legal_divisions: ['광안동'] },
-    { lat: 35.1648222222222, lon: 129.115855555555, name: '부산광역시 수영구 광안제3동', kma_nx: 99, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 수영구', legal_divisions: ['광안동'] },
-    { lat: 35.1519666666666, lon: 129.113666666666, name: '부산광역시 수영구 광안제4동', kma_nx: 99, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 수영구', legal_divisions: ['광안동'] },
-    { lat: 35.1541666666666, lon: 129.127677777777, name: '부산광역시 수영구 민락동', kma_nx: 99, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 수영구', legal_divisions: ['민락동'] },
-
-    // 부산광역시 사상구 (기초자치단체)
-    { lat: 35.1494666666666, lon: 128.993333333333, name: '부산광역시 사상구', kma_nx: 96, kma_ny: 75, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['사상구'] },
-    // 사상구 하위 행정동 (legal_divisions 포함)
-    { lat: 35.1738944444444, lon: 128.979966666666, name: '부산광역시 사상구 삼락동', kma_nx: 96, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['삼락동'] },
-    { lat: 35.1845361111111, lon: 128.989688888888, name: '부산광역시 사상구 모라제1동', kma_nx: 96, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['모라동'] },
-    { lat: 35.1815583333333, lon: 128.998333333333, name: '부산광역시 사상구 모라제3동', kma_nx: 96, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['모라동'] },
-    { lat: 35.1672833333333, lon: 128.985530555555, name: '부산광역시 사상구 덕포제1동', kma_nx: 96, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['덕포동'] },
-    { lat: 35.1713805555555, lon: 128.985177777777, name: '부산광역시 사상구 덕포제2동', kma_nx: 96, kma_ny: 76, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['덕포동'] },
-    { lat: 35.1606722222222, lon: 128.989444444444, name: '부산광역시 사상구 괘법동', kma_nx: 96, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['괘법동'] },
-    { lat: 35.1512333333333, lon: 128.981708333333, name: '부산광역시 사상구 감전동', kma_nx: 96, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['감전동'] },
-    { lat: 35.1486194444444, lon: 129.000144444444, name: '부산광역시 사상구 주례제1동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['주례동'] },
-    { lat: 35.1469888888888, lon: 129.012733333333, name: '부산광역시 사상구 주례제2동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['주례동'] },
-    { lat: 35.1442888888888, lon: 129.003722222222, name: '부산광역시 사상구 주례제3동', kma_nx: 97, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['주례동'] },
-    { lat: 35.1409916666666, lon: 128.989677777777, name: '부산광역시 사상구 학장동', kma_nx: 96, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['학장동'] },
-    { lat: 35.1256, lon: 128.974444444444, name: '부산광역시 사상구 엄궁동', kma_nx: 96, kma_ny: 75, type: '행정동', admin_parent: '부산광역시 사상구', legal_divisions: ['엄궁동'] },
-
-    // 부산광역시 기장군 (기초자치단체)
-    { lat: 35.24135, lon: 129.224475, name: '부산광역시 기장군', kma_nx: 100, kma_ny: 77, type: '기초자치단체', admin_parent: '부산광역시', aliases: ['기장군'] },
-    // 기장군 하위 읍/면 (legal_divisions 포함)
-    { lat: 35.2356027777777, lon: 129.218177777777, name: '부산광역시 기장군 기장읍', kma_nx: 100, kma_ny: 77, type: '읍', admin_parent: '부산광역시 기장군', legal_divisions: ['대라리', '동부리', '서부리', '죽성리', '연화리', '대변리', '청강리', '시랑리', '만화리', '석산리', '교리', '대룡리', '용소리'] },
-    { lat: 35.3107027777777, lon: 129.246288888888, name: '부산광역시 기장군 장안읍', kma_nx: 101, kma_ny: 79, type: '읍', admin_parent: '부산광역시 기장군', legal_divisions: ['좌천리', '임랑리', '길천리', '반룡리', '명례리', '월내리', '덕선리', '오리', '장안리'] },
-    { lat: 35.322375, lon: 129.182677777777, name: '부산광역시 기장군 정관읍', kma_nx: 100, kma_ny: 79, type: '읍', admin_parent: '부산광역시 기장군', legal_divisions: ['정관리', '달산리', '병산리', '방곡리', '용수리', '모전리', '임곡리', '과정리', '예림리', '매학리', '월평리', '두명리', '곰내리'] },
-    { lat: 35.2639371829939, lon: 129.23228251585, name: '부산광역시 기장군 일광읍', kma_nx: 101, kma_ny: 78, type: '읍', admin_parent: '부산광역시 기장군', legal_divisions: ['삼성리', '원리', '이천리', '문동리', '학리', '동백리', '칠암리', '신평리', '용천리', '횡계리'] },
-    { lat: 35.2721972222222, lon: 129.152022222222, name: '부산광역시 기장군 철마면', kma_nx: 99, kma_ny: 78, type: '면', admin_parent: '부산광역시 기장군', legal_divisions: ['송정리', '웅천리', '이곡리', '구칠리', '연구리', '와여리', '장전리', '고촌리', '임기리', '백길리', '안평리'] }
-];
+    // 제주시 읍·면
+    addLocation('애월읍', {
+        lat: 33.4560, lon: 126.3300, name: '제주특별자치시 제주시 애월읍', type: '읍', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: [
+            '고내리', '고성리', '곽지리', '광령리', '구엄리', '금성리', '납읍리', '봉성리',
+            '상가리', '상귀리', '소길리', '수산리', '애월리', '어음리', '신엄리', '유수암리'
+        ], aliases: [], priority_score: priorityMap['애월읍']
+    });
+    addLocation('한림읍', {
+        lat: 33.4140, lon: 126.2570, name: '제주특별자치시 제주시 한림읍', type: '읍', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: [
+            '귀덕리', '금능리', '금악리', '대림리', '동명리', '명월리', '상대리', '상명리',
+            '수원리', '옹포리', '월령리', '월림리', '한림리', '한수리', '협재리'
+        ], aliases: [], priority_score: priorityMap['한림읍']
+    });
+    addLocation('구좌읍', {
+        lat: 33.5180, lon: 126.8370, name: '제주특별자치시 제주시 구좌읍', type: '읍', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: [
+            '김녕리', '덕천리', '동복리', '상도리', '세화리', '송당리', '월정리', '종달리',
+            '평대리', '하도리', '한동리', '행원리'
+        ], aliases: [], priority_score: priorityMap['구좌읍']
+    });
+    addLocation('조천읍', {
+        lat: 33.5320, lon: 126.6800, name: '제주특별자치시 제주시 조천읍', type: '읍', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: [
+            '교래리', '대흘리', '북촌리', '선흘리', '신촌리', '신흥리', '와산리', '와흘리',
+            '조천리', '함덕리'
+        ], aliases: [], priority_score: priorityMap['조천읍']
+    });
+    addLocation('한경면', {
+        lat: 33.3280, lon: 126.1730, name: '제주특별자치시 제주시 한경면', type: '면', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: [
+            '고산리', '금등리', '낙천리', '두모리', '신창리', '용수리', '저지리', '조수리',
+            '청수리', '판포리'
+        ], aliases: [], priority_score: priorityMap['한경면']
+    });
+    addLocation('추자면', {
+        lat: 33.9500, lon: 126.3200, name: '제주특별자치시 제주시 추자면', type: '면', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['대서리', '묵리', '신양리', '영흥리', '예초리'], aliases: ['추자'], priority_score: priorityMap['추자면']
+    });
+    addLocation('우도면', {
+        lat: 33.5040, lon: 126.9530, name: '제주특별자치시 제주시 우도면', type: '면', admin_parent: '제주특별자치시 제주시',
+        legal_divisions: ['연평리'], aliases: ['우도'], priority_score: priorityMap['우도면']
+    });
 
 
-// 이 데이터를 외부에서 사용할 수 있도록 내보냅니다.
-// CommonJS 환경을 가정하고 작성합니다.
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        locationData: locationData,
-        latLonToGrid: latLonToGrid
-    };
-}
+    // =============================================================
+    // 서귀포시 (기초자치단체)
+    addLocation('서귀포시', {
+        lat: 33.2540, lon: 126.5600, name: '제주특별자치시 서귀포시', type: '기초자치단체', admin_parent: '제주특별자치도',
+        aliases: ['서귀포'],
+        priority_score: priorityMap['서귀포시']
+    });
 
+    // 서귀포시 행정동
+    addLocation('정방동', {
+        lat: 33.2490, lon: 126.5690, name: '제주특별자치시 서귀포시 정방동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['서귀동'], aliases: [], priority_score: priorityMap['정방동']
+    });
+    addLocation('중앙동', {
+        lat: 33.2500, lon: 126.5630, name: '제주특별자치시 서귀포시 중앙동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['서귀동'], aliases: [], priority_score: priorityMap['중앙동']
+    });
+    addLocation('천지동', {
+        lat: 33.2470, lon: 126.5560, name: '제주특별자치시 서귀포시 천지동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['서귀동', '서홍동'], aliases: [], priority_score: priorityMap['천지동']
+    });
+    addLocation('효돈동', {
+        lat: 33.2800, lon: 126.6100, name: '제주특별자치시 서귀포시 효돈동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['하효동', '신효동'], aliases: [], priority_score: priorityMap['효돈동']
+    });
+    addLocation('영천동', {
+        lat: 33.2850, lon: 126.5800, name: '제주특별자치시 서귀포시 영천동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['토평동', '서귀동'], aliases: [], priority_score: priorityMap['영천동']
+    });
+    addLocation('동홍동', {
+        lat: 33.2700, lon: 126.5750, name: '제주특별자치시 서귀포시 동홍동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['동홍동'], aliases: [], priority_score: priorityMap['동홍동']
+    });
+    addLocation('서홍동', {
+        lat: 33.2600, lon: 126.5400, name: '제주특별자치시 서귀포시 서홍동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['서홍동'], aliases: [], priority_score: priorityMap['서홍동']
+    });
+    addLocation('대륜동', {
+        lat: 33.2450, lon: 126.5200, name: '제주특별자치시 서귀포시 대륜동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['법환동', '서호동', '호근동'], aliases: [], priority_score: priorityMap['대륜동']
+    });
+    addLocation('대천동', {
+        lat: 33.2580, lon: 126.4900, name: '제주특별자치시 서귀포시 대천동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['강정동', '도순동', '영남동', '월평동'], aliases: [], priority_score: priorityMap['대천동']
+    });
+    addLocation('중문동', {
+        lat: 33.2440, lon: 126.4300, name: '제주특별자치시 서귀포시 중문동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['중문동', '대포동', '하원동', '회수동'], aliases: [], priority_score: priorityMap['중문동']
+    });
+    addLocation('예래동', {
+        lat: 33.2480, lon: 126.3800, name: '제주특별자치시 서귀포시 예래동', type: '행정동', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: ['예래동', '상예동', '하예동'], aliases: [], priority_score: priorityMap['예래동']
+    });
+
+    // 서귀포시 읍·면
+    addLocation('대정읍', {
+        lat: 33.2260, lon: 126.2570, name: '제주특별자치시 서귀포시 대정읍', type: '읍', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: [
+            '하모리', '상모리', '신평리', '영락리', '무릉리', '보성리', '안성리', '구억리',
+            '인성리', '일과리', '동일1리', '동일2리', '가파리', '마라리'
+        ], aliases: [], priority_score: priorityMap['대정읍']
+    });
+    addLocation('남원읍', {
+        lat: 33.2800, lon: 126.7300, name: '제주특별자치시 서귀포시 남원읍', type: '읍', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: [
+            '남원리', '위미리', '태흥리', '한남리', '의귀리', '신례리', '하례리'
+        ], aliases: [], priority_score: priorityMap['남원읍']
+    });
+    addLocation('성산읍', {
+        lat: 33.3800, lon: 126.8900, name: '제주특별자치시 서귀포시 성산읍', type: '읍', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: [
+            '성산리', '고성리', '온평리', '신풍리', '수산리', '신천리', '삼달리', '오조리', '시흥리'
+        ], aliases: ['성산일출봉'], // 성산일출봉을 성산읍의 별칭으로 추가
+        priority_score: priorityMap['성산읍']
+    });
+    addLocation('안덕면', {
+        lat: 33.2500, lon: 126.3100, name: '제주특별자치시 서귀포시 안덕면', type: '면', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: [
+            '화순리', '감산리', '서광리', '동광리', '사계리', '창천리', '상창리', '광평리', '덕수리'
+        ], aliases: [], priority_score: priorityMap['안덕면']
+    });
+    addLocation('표선면', {
+        lat: 33.3000, lon: 126.8300, name: '제주특별자치시 서귀포시 표선면', type: '면', admin_parent: '제주특별자치시 서귀포시',
+        legal_divisions: [
+            '표선리', '세화리', '가시리', '성읍리', '하천리', '토산리'
+        ], aliases: [], priority_score: priorityMap['표선면']
+    });
 
 
 
