@@ -1405,7 +1405,7 @@ addLocation('인천광역시 남동구 남촌도림동', { lat: 37.4293777777777
 addLocation('인천광역시 남동구 논현1동', { lat: 37.40568978, lon: 126.7293199, name: '인천광역시 남동구 논현1동', type: '행정동', admin_parent: '인천광역시 남동구', legal_divisions: ['논현동', '고잔동'] });
 addLocation('인천광역시 남동구 논현2동', { lat: 37.40422435, lon: 126.7163943, name: '인천광역시 남동구 논현2동', type: '행정동', admin_parent: '인천광역시 남동구', legal_divisions: ['논현동', '고잔동'] });
 addLocation('인천광역시 남동구 논현고잔동', { lat: 37.4014527777777, lon: 126.718341666666, name: '인천광역시 남동구 논현고잔동', type: '행정동', admin_parent: '인천광역시 남동구', legal_divisions: ['논현동', '고잔동'] });
-
+ 
 // 인천광역시 부평구 (기초자치단체)
 addLocation('인천광역시 부평구', { lat: 37.5042666666666, lon: 126.7241, name: '인천광역시 부평구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['부평구'], priority_score: 90 });
 // 부평구 하위 행정동 (legal_divisions 포함)
