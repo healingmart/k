@@ -305,8 +305,6 @@ const locationData = (() => {
 
 
     
-
-
 // 부산광역시 행정 데이터
 const locationData = [
     // 부산광역시 (광역시)
@@ -584,7 +582,6 @@ const locationData = [
 ];
 
 
-
 // 이 데이터를 외부에서 사용할 수 있도록 내보냅니다.
 // CommonJS 환경을 가정하고 작성합니다.
 if (typeof module !== 'undefined' && module.exports) {
@@ -593,7 +590,6 @@ if (typeof module !== 'undefined' && module.exports) {
         latLonToGrid: latLonToGrid
     };
 }
-
 
 
 
