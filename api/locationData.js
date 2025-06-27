@@ -1303,11 +1303,12 @@ addLocation('대구광역시 군위군 삼국유사면', { lat: 36.1180083333333
 
 
 
+
 // 인천광역시 (광역자치단체)
-addLocation('인천광역시', { lat: 37.4532333333333, lon: 126.707352777777, name: '인천광역시', type: '광역시', admin_parent: '', aliases: ['인천', '인천시'] });
+addLocation('인천광역시', { lat: 37.4532333333333, lon: 126.707352777777, name: '인천광역시', type: '광역시', admin_parent: '', aliases: ['인천', '인천시'], priority_score: 100 });
 
 // 인천광역시 중구 (기초자치단체)
-addLocation('인천광역시 중구', { lat: 37.4709333333333, lon: 126.623566666666, name: '인천광역시 중구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['중구'] });
+addLocation('인천광역시 중구', { lat: 37.4709333333333, lon: 126.623566666666, name: '인천광역시 중구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['중구'], priority_score: 90 });
 // 중구 하위 행정동 (legal_divisions 포함)
 addLocation('인천광역시 중구 연안동', { lat: 37.4504194444444, lon: 126.6066, name: '인천광역시 중구 연안동', type: '행정동', admin_parent: '인천광역시 중구', legal_divisions: ['항동1가', '항동2가', '항동3가', '항동4가', '항동5가', '항동6가', '항동7가', '연안동', '신흥동1가', '신흥동2가', '신흥동3가', '선화동', '유동', '율목동', '도원동', '내동', '경동', '사동', '신생동', '답동', '신포동', '중앙동1가', '중앙동2가', '중앙동3가', '중앙동4가', '해안동1가', '해안동2가', '해안동3가', '해안동4가', '관동1가', '관동2가', '관동3가', '송학동1가', '송학동2가', '송학동3가', '전동', '인현동', '북성동1가', '북성동2가', '북성동3가', '선린동', '송월동1가', '송월동2가', '송월동3가', '운서동', '운남동', '운북동', '영종동', '중산동', '남북동', '을왕동', '정상동', '덕교동', '무의동'] });
 addLocation('인천광역시 중구 신포동', { lat: 37.4675555555555, lon: 126.627155555555, name: '인천광역시 중구 신포동', type: '행정동', admin_parent: '인천광역시 중구', legal_divisions: ['관동1가', '관동2가', '관동3가', '송학동1가', '송학동2가', '송학동3가', '전동', '인현동', '답동', '신포동', '내동', '중앙동1가', '중앙동2가', '중앙동3가', '중앙동4가', '해안동1가', '해안동2가', '해안동3가', '해안동4가'] });
@@ -1323,7 +1324,7 @@ addLocation('인천광역시 중구 운서동', { lat: 37.49339138, lon: 126.488
 addLocation('인천광역시 중구 용유동', { lat: 37.4410694444444, lon: 126.404475, name: '인천광역시 중구 용유동', type: '행정동', admin_parent: '인천광역시 중구', legal_divisions: ['을왕동', '남북동', '덕교동', '무의동'] });
 
 // 인천광역시 동구 (기초자치단체)
-addLocation('인천광역시 동구', { lat: 37.4710361111111, lon: 126.645366666666, name: '인천광역시 동구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['동구'] });
+addLocation('인천광역시 동구', { lat: 37.4710361111111, lon: 126.645366666666, name: '인천광역시 동구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['동구'], priority_score: 90 });
 // 동구 하위 행정동 (legal_divisions 포함)
 addLocation('인천광역시 동구 만석동', { lat: 37.4804444444444, lon: 126.627530555555, name: '인천광역시 동구 만석동', type: '행정동', admin_parent: '인천광역시 동구', legal_divisions: ['만석동'] });
 addLocation('인천광역시 동구 화수1.화평동', { lat: 37.4787361111111, lon: 126.631952777777, name: '인천광역시 동구 화수1.화평동', type: '행정동', admin_parent: '인천광역시 동구', legal_divisions: ['화수동', '화평동'] });
@@ -1338,7 +1339,7 @@ addLocation('인천광역시 동구 송림6동', { lat: 37.4745527777777, lon: 1
 addLocation('인천광역시 동구 금창동', { lat: 37.4697777777777, lon: 126.641944444444, name: '인천광역시 동구 금창동', type: '행정동', admin_parent: '인천광역시 동구', legal_divisions: ['금곡동', '창영동'] });
 
 // 인천광역시 미추홀구 (기초자치단체)
-addLocation('인천광역시 미추홀구', { lat: 37.4606805555555, lon: 126.652686111111, name: '인천광역시 미추홀구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['미추홀구'] });
+addLocation('인천광역시 미추홀구', { lat: 37.4606805555555, lon: 126.652686111111, name: '인천광역시 미추홀구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['미추홀구'], priority_score: 90 });
 // 미추홀구 하위 행정동 (legal_divisions 포함)
 addLocation('인천광역시 미추홀구 숭의2동', { lat: 37.4602527777777, lon: 126.649311111111, name: '인천광역시 미추홀구 숭의2동', type: '행정동', admin_parent: '인천광역시 미추홀구', legal_divisions: ['숭의동'] });
 addLocation('인천광역시 미추홀구 숭의1.3동', { lat: 37.4672428, lon: 126.6471814, name: '인천광역시 미추홀구 숭의1.3동', type: '행정동', admin_parent: '인천광역시 미추홀구', legal_divisions: ['숭의동'] });
@@ -1363,7 +1364,7 @@ addLocation('인천광역시 미추홀구 관교동', { lat: 37.4414166666666, l
 addLocation('인천광역시 미추홀구 문학동', { lat: 37.4348805555555, lon: 126.687097222222, name: '인천광역시 미추홀구 문학동', type: '행정동', admin_parent: '인천광역시 미추홀구', legal_divisions: ['문학동'] });
 
 // 인천광역시 연수구 (기초자치단체)
-addLocation('인천광역시 연수구', { lat: 37.4071222222222, lon: 126.680441666666, name: '인천광역시 연수구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['연수구'] });
+addLocation('인천광역시 연수구', { lat: 37.4071222222222, lon: 126.680441666666, name: '인천광역시 연수구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['연수구'], priority_score: 90 });
 // 연수구 하위 행정동 (legal_divisions 포함)
 addLocation('인천광역시 연수구 옥련1동', { lat: 37.4245333333333, lon: 126.657141666666, name: '인천광역시 연수구 옥련1동', type: '행정동', admin_parent: '인천광역시 연수구', legal_divisions: ['옥련동'] });
 addLocation('인천광역시 연수구 옥련2동', { lat: 37.4235, lon: 126.650286111111, name: '인천광역시 연수구 옥련2동', type: '행정동', admin_parent: '인천광역시 연수구', legal_divisions: ['옥련동'] });
@@ -1382,7 +1383,7 @@ addLocation('인천광역시 연수구 송도4동', { lat: 37.388109, lon: 126.6
 addLocation('인천광역시 연수구 송도5동', { lat: 37.413941, lon: 126.623231, name: '인천광역시 연수구 송도5동', type: '행정동', admin_parent: '인천광역시 연수구', legal_divisions: ['송도동'] });
 
 // 인천광역시 남동구 (기초자치단체)
-addLocation('인천광역시 남동구', { lat: 37.4445194444444, lon: 126.733797222222, name: '인천광역시 남동구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['남동구'] });
+addLocation('인천광역시 남동구', { lat: 37.4445194444444, lon: 126.733797222222, name: '인천광역시 남동구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['남동구'], priority_score: 90 });
 // 남동구 하위 행정동 (legal_divisions 포함)
 addLocation('인천광역시 남동구 구월1동', { lat: 37.4496027777777, lon: 126.713675, name: '인천광역시 남동구 구월1동', type: '행정동', admin_parent: '인천광역시 남동구', legal_divisions: ['구월동'] });
 addLocation('인천광역시 남동구 구월2동', { lat: 37.4532638888888, lon: 126.715422222222, name: '인천광역시 남동구 구월2동', type: '행정동', admin_parent: '인천광역시 남동구', legal_divisions: ['구월동'] });
@@ -1406,7 +1407,7 @@ addLocation('인천광역시 남동구 논현2동', { lat: 37.40422435, lon: 126
 addLocation('인천광역시 남동구 논현고잔동', { lat: 37.4014527777777, lon: 126.718341666666, name: '인천광역시 남동구 논현고잔동', type: '행정동', admin_parent: '인천광역시 남동구', legal_divisions: ['논현동', '고잔동'] });
 
 // 인천광역시 부평구 (기초자치단체)
-addLocation('인천광역시 부평구', { lat: 37.5042666666666, lon: 126.7241, name: '인천광역시 부평구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['부평구'] });
+addLocation('인천광역시 부평구', { lat: 37.5042666666666, lon: 126.7241, name: '인천광역시 부평구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['부평구'], priority_score: 90 });
 // 부평구 하위 행정동 (legal_divisions 포함)
 addLocation('인천광역시 부평구 부평1동', { lat: 37.4914333333333, lon: 126.722108333333, name: '인천광역시 부평구 부평1동', type: '행정동', admin_parent: '인천광역시 부평구', legal_divisions: ['부평동'] });
 addLocation('인천광역시 부평구 부평2동', { lat: 37.4840888888888, lon: 126.720041666666, name: '인천광역시 부평구 부평2동', type: '행정동', admin_parent: '인천광역시 부평구', legal_divisions: ['부평동'] });
@@ -1432,7 +1433,7 @@ addLocation('인천광역시 부평구 십정1동', { lat: 37.4729722222222, lon
 addLocation('인천광역시 부평구 십정2동', { lat: 37.471, lon: 126.710130555555, name: '인천광역시 부평구 십정2동', type: '행정동', admin_parent: '인천광역시 부평구', legal_divisions: ['십정동'] });
 
 // 인천광역시 계양구 (기초자치단체)
-addLocation('인천광역시 계양구', { lat: 37.5347916666666, lon: 126.739752777777, name: '인천광역시 계양구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['계양구'] });
+addLocation('인천광역시 계양구', { lat: 37.5347916666666, lon: 126.739752777777, name: '인천광역시 계양구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['계양구'], priority_score: 90 });
 // 계양구 하위 행정동 (legal_divisions 포함)
 addLocation('인천광역시 계양구 효성1동', { lat: 37.5296055555555, lon: 126.714222222222, name: '인천광역시 계양구 효성1동', type: '행정동', admin_parent: '인천광역시 계양구', legal_divisions: ['효성동'] });
 addLocation('인천광역시 계양구 효성2동', { lat: 37.5222333333333, lon: 126.711863888888, name: '인천광역시 계양구 효성2동', type: '행정동', admin_parent: '인천광역시 계양구', legal_divisions: ['효성동'] });
@@ -1448,7 +1449,7 @@ addLocation('인천광역시 계양구 계양2동', { lat: 37.5409555555555, lon
 addLocation('인천광역시 계양구 계양3동', { lat: 37.5591666666667, lon: 126.7604, name: '인천광역시 계양구 계양3동', type: '행정동', admin_parent: '인천광역시 계양구', legal_divisions: ['상야동', '하야동', '평동', '장기동', '이화동', '둑실동', '목상동', '다남동', '선주지동', '오류동', '갈현동', '귤현동', '동양동', '박촌동', '병방동', '임학동', '용종동', '방축동'] });
 
 // 인천광역시 서구 (기초자치단체)
-addLocation('인천광역시 서구', { lat: 37.5426916666666, lon: 126.6782, name: '인천광역시 서구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['서구'] });
+addLocation('인천광역시 서구', { lat: 37.5426916666666, lon: 126.6782, name: '인천광역시 서구', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['서구'], priority_score: 90 });
 // 서구 하위 행정동 (legal_divisions 포함)
 addLocation('인천광역시 서구 검암경서동', { lat: 37.5616611111111, lon: 126.675708333333, name: '인천광역시 서구 검암경서동', type: '행정동', admin_parent: '인천광역시 서구', legal_divisions: ['검암동', '경서동'] });
 addLocation('인천광역시 서구 연희동', { lat: 37.546225, lon: 126.680266666666, name: '인천광역시 서구 연희동', type: '행정동', admin_parent: '인천광역시 서구', legal_divisions: ['연희동'] });
@@ -1475,7 +1476,7 @@ addLocation('인천광역시 서구 마전동', { lat: 37.5929616, lon: 126.6613
 addLocation('인천광역시 서구 아라동', { lat: 37.594, lon: 126.7156, name: '인천광역시 서구 아라동', type: '행정동', admin_parent: '인천광역시 서구', legal_divisions: ['아라동'] });
 
 // 인천광역시 강화군 (기초자치단체)
-addLocation('인천광역시 강화군', { lat: 37.7438583333333, lon: 126.49, name: '인천광역시 강화군', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['강화군'] });
+addLocation('인천광역시 강화군', { lat: 37.7438583333333, lon: 126.49, name: '인천광역시 강화군', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['강화군'], priority_score: 95 });
 // 강화군 하위 읍/면 (legal_divisions 포함)
 addLocation('인천광역시 강화군 강화읍', { lat: 37.7455416666666, lon: 126.485597222222, name: '인천광역시 강화군 강화읍', type: '읍', admin_parent: '인천광역시 강화군', legal_divisions: ['관청리', '국화리', '남산리', '대산리', '동문리', '용정리', '월곶리', '점등리', '갑곳리', '신문리', '옥림리'] });
 addLocation('인천광역시 강화군 선원면', { lat: 37.7105055555555, lon: 126.486886111111, name: '인천광역시 강화군 선원면', type: '면', admin_parent: '인천광역시 강화군', legal_divisions: ['창리', '지산리', '연리', '신정리', '오리'] });
@@ -1492,7 +1493,7 @@ addLocation('인천광역시 강화군 삼산면', { lat: 37.7006805555555, lon:
 addLocation('인천광역시 강화군 서도면', { lat: 37.6475805555555, lon: 126.242108333333, name: '인천광역시 강화군 서도면', type: '면', admin_parent: '인천광역시 강화군', legal_divisions: ['볼음리', '주문도리', '아차도리', '말도리', '옹암리', '정서리'] });
 
 // 인천광역시 옹진군 (기초자치단체)
-addLocation('인천광역시 옹진군', { lat: 37.4437249999999, lon: 126.638888888888, name: '인천광역시 옹진군', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['옹진군'] });
+addLocation('인천광역시 옹진군', { lat: 37.4437249999999, lon: 126.638888888888, name: '인천광역시 옹진군', type: '기초자치단체', admin_parent: '인천광역시', aliases: ['옹진군'], priority_score: 95 });
 // 옹진군 하위 면 (legal_divisions 포함)
 addLocation('인천광역시 옹진군 북도면', { lat: 37.529675, lon: 126.429133333333, name: '인천광역시 옹진군 북도면', type: '면', admin_parent: '인천광역시 옹진군', legal_divisions: ['신도리', '시도리', '모도리', '장봉리'] });
 addLocation('인천광역시 옹진군 백령면', { lat: 37.9741764, lon: 124.7186911, name: '인천광역시 옹진군 백령면', type: '면', admin_parent: '인천광역시 옹진군', legal_divisions: ['진촌리', '북포리', '남포리', '연화리', '가을리'] });
